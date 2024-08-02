@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import Login from './Login'
 import Register from './Register'
 import wine from './assets/glassWine2.png'
+ 
+
 
 function RegLogin() {
 
@@ -17,7 +19,6 @@ function RegLogin() {
                     <p>" A bottle of wine contains more philosophy than all the books in the world. "</p>
                 </div>
             </div>
-
             {isLogin ? <Login setIslogin={setIslogin}  /> : <Register setIslogin={setIslogin} />}
         </div>
     )

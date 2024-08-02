@@ -1,6 +1,7 @@
 body {
   font-family: "Inter";
   background-color: rgba(142, 179, 166, 0.748);
+  
 }
 
 .login-container {
@@ -137,16 +138,16 @@ button[type="submit"]:hover {
   justify-content: center;
   background-color: #ffffff;
   color: #333;
-  font-size: 16px;
-  padding: 10px;
+  font-size: 14px;
+  padding: 6px;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .google-signin img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   margin-right: 10px;
 }
 

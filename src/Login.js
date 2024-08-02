@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import google from './assets/googleicon.png'  
+
 
 const Login = ({setIslogin}) => {
 
@@ -36,14 +38,15 @@ const Login = ({setIslogin}) => {
           
           <button type="submit">Sign in</button>
           
-          {/* <div className="or-section">
+           <div className="or-section">
             <span>or</span>
           </div>
           
           <button type="button" className="google-signin">
-            <img src="google-icon-path.png" alt="Google Icon" />
+            <img src={google} alt="Google Icon" />
             Sign in with Google
-          </button> */}
+          </button>  
+
           
           <div className="create-account">
             <a href="#" onClick={()=>setIslogin(false)}>New User? Create Account</a>
