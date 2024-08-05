@@ -59,6 +59,7 @@ REST_FRAMEWORK = {
     ),
 }
 
+AUTH_USER_MODEL = 'authentication.User'
 
 ROOT_URLCONF = 'winehauspro.urls'
 

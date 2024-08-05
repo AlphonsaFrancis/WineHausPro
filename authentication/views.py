@@ -49,7 +49,7 @@ def user_login(request):
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'user': UserSerializer(user).data
+                    'user': UserSerializer(user).data['id']
                 }, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "Account is disabled."}, status=status.HTTP_403_FORBIDDEN)
