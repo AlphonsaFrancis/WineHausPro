@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import google from './assets/googleicon.png'  
+import google from '../../assets/googleicon.png'  
+import config from '../../config/config';
+import axios from 'axios';
 
 const Register = ({setIslogin}) => {
 
@@ -19,7 +21,25 @@ const Register = ({setIslogin}) => {
     }
     else{
       setError('')
-      console.log('Form values accepted !')
+      const formData=new FormData()
+      formData.append('email',username)
+      formData.append('password',confirmPassword)
+      axios.post(`${config.registrationApi}`,formData)
+      .then((response)=>{
+        console.log(response.data)
+        if (response.status===201){
+          console.log("Registration Succesfull")
+          setIslogin(true)
+        }
+        // setIslogin(true)
+      }
+      )
+      .catch((error)=>{
+        console.log(error)
+        setError(error.response.data.error)
+      }
+      )
+
     }
   }
   return (

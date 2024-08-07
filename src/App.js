@@ -1,6 +1,6 @@
 import './App.css';
-import './Loginregist.css'; 
-import RegLogin from './RegLogin';
+import './pages/authentication/Loginregist.css'; 
+import RegLogin from './pages/authentication/RegLogin';
 import "@fontsource/inter"; 
 
 function App() {

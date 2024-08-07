@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Login from './Login'
 import Register from './Register'
-import wine from './assets/glassWine2.png'
+import wine from '../../assets/glassWine2.png'
  
 
 

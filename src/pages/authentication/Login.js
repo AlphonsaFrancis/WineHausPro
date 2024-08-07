@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import google from './assets/googleicon.png'  
-
+import google from '../../assets/googleicon.png'  
+import config from '../../config/config';
+import axios from 'axios';
 
 const Login = ({setIslogin}) => {
 
@@ -16,7 +17,24 @@ const Login = ({setIslogin}) => {
     }
     else{
       setError('');
-      console.log('Form value is accepted.')
+      const formData=new FormData()
+      formData.append('email',username)
+      formData.append('password',password)
+      axios.post(`${config.loginApi}`,formData)
+      .then((response)=>{
+        console.log(response.data)
+        if (response.status===200){
+          console.log("Login Succesfull")
+          alert("Login Successfull")
+        }
+        // setIslogin(true)
+      }
+      )
+      .catch((error)=>{
+        console.log(error)
+        setError(error.response.data.error)
+      }
+      )
     }
   }
   return (
