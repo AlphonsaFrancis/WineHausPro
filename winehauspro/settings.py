@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'authentication',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -183,15 +184,20 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'alphonsafranc@gmail.com'
+# EMAIL_USE_SSL = False
+# ssl_context = ssl.create_default_context()
+# ssl_context.check_hostname = False
+# ssl_context.verify_mode = ssl.CERT_NONE
+# EMAIL_SSL_CONTEXT = ssl_context
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_PORT = 587
 EMAIL_HOST_USER = 'alphonsafranc@gmail.com'
 EMAIL_HOST_PASSWORD = 'mpycvsochvwnuswt'
-DEFAULT_FROM_EMAIL = 'alphonsafranc@gmail.com'
-EMAIL_USE_SSL = False
-ssl_context = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-EMAIL_SSL_CONTEXT = ssl_context

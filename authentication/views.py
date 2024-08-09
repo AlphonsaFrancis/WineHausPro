@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
@@ -71,7 +72,7 @@ def password_reset_request(request):
         user = User.objects.get(email=serializer.validated_data['email'])
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        reset_link = f"{request.scheme}://{request.get_host()}/reset-password/{uid}/{token}/"
+        reset_link = f"{request.scheme}://{request.get_host()}/api/v1/auth/reset-password/{uid}/{token}/"
         message = render_to_string('password_reset_email.html', {
             'user': user,
             'reset_link': reset_link,
@@ -87,36 +88,30 @@ def password_reset_request(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+ 
 
-# function to rest the password with the link sent through email
-@api_view(['POST'])
-
+@api_view(['GET', 'POST'])
 def password_reset_confirm(request, uidb64, token):
-
+    if request.method == 'GET':
+        return render(request, 'password_reset_form.html', context={'uidb64': uidb64, 'token': token})
+ 
     serializer = PasswordResetConfirmSerializer(data=request.data)
-
     if serializer.is_valid():
-
         try:
-
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
-
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-
             return Response({"error": "Invalid reset link"}, status=status.HTTP_400_BAD_REQUEST)
-
+ 
         if not default_token_generator.check_token(user, token):
-
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
  
+        if request.data.get('new_password') != request.data.get('confirm_password'):
+            return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+ 
         user.set_password(serializer.validated_data['new_password'])
-
         user.save()
-
+ 
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
-
+ 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
- 
-
- 
