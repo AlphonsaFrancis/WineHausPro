@@ -193,3 +193,18 @@ button[type="submit"]:hover {
     padding: 40px;
   }
 }
+
+.submit-button{
+  background-color: #007BFF;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Inter";
+}
+ 
+.submit-button:hover {
+  background-color: #0056b3;
+}
