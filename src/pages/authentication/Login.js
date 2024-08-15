@@ -1,13 +1,73 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import google from "../../assets/googleicon.png";
 import config from "../../config/config";
 import axios from "axios";
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+
 
 const Login = ({ setIslogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
   const [isforgetpassword, setisforgetpassword] = useState(false);
+  const [ user, setUser ] = useState([]);
+    const [ profile, setProfile ] = useState([]);
+
+    const login = useGoogleLogin({
+      onSuccess: (codeResponse) => {
+          setUser(codeResponse);
+  
+          axios.post(config.googleAuthLoginApi, {
+              token: codeResponse.access_token
+          }, {
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          })
+          .then((response) => {
+              console.log(response.data);
+              // Store the JWT tokens in your app
+          })
+          .catch((error) => {
+              console.error(error);
+          });
+      },
+      onError: (error) => console.log('Login Failed:', error)
+  });
+    useEffect(
+        () => {
+            if (user) {
+                axios
+                    .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                        headers: {
+                            Authorization: `Bearer ${user.access_token}`,
+                            Accept: 'application/json'
+                        }
+                    })
+                    .then((res) => {
+                        setProfile(res.data);
+                        console.log(res.data)
+                    })
+                    .catch((err) => console.log(err));
+                    axios.post(config.googleAuthLoginApi, {
+  token: user.access_tokenId
+}, {
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+.then((response) => {
+  console.log(response.data);
+  // Store the JWT tokens in your app
+})
+.catch((error) => {
+console.error(error);
+});
+            }
+        },
+        [ user ]
+    );
+  console.log('user',user,profile)
   const formSubmit = (e) => {
     e.preventDefault();
     console.log({ username, password });
@@ -94,7 +154,7 @@ const Login = ({ setIslogin }) => {
             <span>or</span>
           </div>
 
-          <button type="button" className="google-signin">
+          <button type="button" className="google-signin" onClick={() => login()}>
             <img src={google} alt="Google Icon" />
             Sign in with Google
           </button>
