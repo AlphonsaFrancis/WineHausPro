@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from .serializers import PasswordResetRequestSerializer,PasswordResetConfirmSerializer
-
+from allauth.socialaccount.models import SocialAccount
 
 @api_view(['POST'])
 def user_registration(request):
@@ -115,3 +115,54 @@ def password_reset_confirm(request, uidb64, token):
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
  
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 
+
+@api_view(['POST'])
+def google_sign_in(request):
+    access_token = request.data.get('token')
+    print("Received access_token:", access_token)
+    if not access_token:
+        return Response({'error': 'Token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Verify the access token with Google
+    google_response = requests.get(
+        f"https://www.googleapis.com/oauth2/v1/userinfo?access_token={access_token}"
+    )
+
+    if google_response.status_code != 200:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+    google_data = google_response.json()
+    email = google_data.get('email')
+    first_name = google_data.get('given_name')
+    last_name = google_data.get('family_name')
+    google_user_id = google_data.get('id')
+
+    # Use the google_user_id to identify the user
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        user = User.objects.create(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            username=email  # or any other unique identifier
+        )
+        user.save()
+
+    # Generate JWT tokens
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+
+    return Response({
+        'access_token': access_token,
+        'refresh_token': str(refresh),
+        'user': {
+            'id': user.id,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }
+    }, status=status.HTTP_200_OK)

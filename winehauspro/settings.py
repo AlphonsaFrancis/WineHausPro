@@ -47,7 +47,32 @@ INSTALLED_APPS = [
     'authentication',
     'rest_framework_simplejwt',
     'corsheaders',
+    'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '746490227027-jgd865jdv5g6hjq8jv36o9e93eb1grp4.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        }
+    }
+}
+
+DJ_REST_AUTH = {
+    'TOKEN_MODEL': None,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,7 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-  
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 REST_FRAMEWORK = {
