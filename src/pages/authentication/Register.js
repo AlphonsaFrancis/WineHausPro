@@ -57,9 +57,7 @@ const Register = ({setIslogin}) => {
           <label htmlFor="password">Confirm Password</label>
           <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)}/>
           
-          <div className="forgot-password">
-            <a href="#">Forgot password?</a>
-          </div>
+          
 
           <p className='form-error'>{error}</p>
 
