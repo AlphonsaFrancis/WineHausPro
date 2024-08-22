@@ -1,4 +1,4 @@
-from django.urls import path,include
+from django.urls import path
 from .views import user_registration,user_login,google_sign_in
 from .views import password_reset_request, password_reset_confirm
 
