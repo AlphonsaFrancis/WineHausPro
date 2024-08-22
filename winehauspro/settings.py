@@ -63,15 +63,15 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '746490227027-jgd865jdv5g6hjq8jv36o9e93eb1grp4.apps.googleusercontent.com',
-            'secret': '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',
-            'key': ''
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'APP': {
+#             'client_id': '746490227027-jgd865jdv5g6hjq8jv36o9e93eb1grp4.apps.googleusercontent.com',
+#             'secret': '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',
+#             'key': ''
+#         }
+#     }
+# }
 
 DJ_REST_AUTH = {
     'TOKEN_MODEL': None,
