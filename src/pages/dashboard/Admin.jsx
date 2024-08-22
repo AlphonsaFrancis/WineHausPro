@@ -9,25 +9,33 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
+
 function Admin() {
 
     const [menu,setMenu]=useState('Products')
     const [rows,setRows]=useState([])
     const [columns,setColumns]=useState([])
+    
     useEffect(()=>{
         console.log('menu',menu)
         if (menu==='Products'){
           setRows(productRows)
           setColumns(productColumns)
-
         }
         if(menu==='Orders'){
           setRows(orderRows)
           setColumns(orderColumns)
         }
+        if(menu==='Staffs'){
+          setRows(staffRows)
+          setColumns(staffColumns)
+        }
+        if(menu==='Users'){
+          setRows(usersRows)
+          setColumns(usersColumns)
+        }
     },[menu])
-    const orderRows=[]
-    const orderColumns=[]
+    
 
     const productColumns = [
       { field: 'id', headerName: 'ID', flex:1 },
@@ -49,6 +57,8 @@ function Admin() {
         flex:1 },
     ];
     
+
+
     const productRows = [
       { id: 1, name: 'Chateau Margaux', category: 'Red', price: 600 ,stock:50 },
       { id: 2, name: 'Dom Pérignon', category: 'Champaigne', price: 200,stock:100 },
@@ -57,12 +67,110 @@ function Admin() {
       
     ];
 
+    const orderRows=[]
+    const orderColumns=[
+      { field: 'id', headerName: 'ID', flex:1 },
+      { field: 'user_id', headerName: 'User',flex:1  },
+      { field: 'order_date', headerName: 'Ordered On', flex:1  },
+      { field: 'order_status', headerName: 'Order Status', flex:1  },
+      { field: 'total_products', headerName: ' Total Products', flex:1  },
+      { field: 'expected_delivery', headerName: 'Expected Delivery On', flex:1  },
+      { field: 'total_amount', headerName: 'Total Amount', flex:1  },
+      {field: 'actions',headerName: 'Actions',
+        renderCell: (params) => (
+          <div>
+            <IconButton onClick={() => handleEditOrder(params.row.id)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDeleteOrder(params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        ),
+        flex:1 },
+
+    ]
+
+    const staffRows=[]
+    const staffColumns=[
+      { field: 'staff_id', headerName: 'Staff ID', flex:1 },
+      { field: 'user_id', headerName: 'User Id',flex:1  },
+      { field: 'name', headerName: 'Name',flex:1  },
+      { field: 'email', headerName: 'Email',flex:1  },
+      { field: 'status', headerName: 'Status',flex:1  },
+      {field: 'actions',headerName: 'Actions',
+        renderCell: (params) => (
+          <div>
+            <IconButton onClick={() => handleEditStaff(params.row.id)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDeleteStaff(params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        ),
+        flex:1 },
+    ]
+
+
+    const usersRows=[]
+    const usersColumns=[
+      { field: 'user_id', headerName: 'User Id',flex:1  },
+      { field: 'name', headerName: 'Name',flex:1  },
+      { field: 'email', headerName: 'Email',flex:1  },
+      { field: 'joined_on', headerName: 'Joined On', flex:1 },
+      { field: 'status', headerName: 'Status',flex:1  },
+      {field: 'actions',headerName: 'Actions',
+        renderCell: (params) => (
+          <div>
+            <IconButton onClick={() => handleEditUsers(params.row.id)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDeleteUsers(params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        ),
+        flex:1 },
+    ]
+
+
     const handleEdit = (id) => {
       console.log('Edit ID:', id);
       // Add your edit logic here
     };
   
     const handleDelete = (id) => {
+      console.log('Delete ID:', id);
+      // Add your delete logic here
+    };
+
+    const handleEditOrder = (id) => {
+      console.log('Edit ID:', id);
+      // Add your edit logic here
+    };
+  
+    const handleDeleteOrder = (id) => {
+      console.log('Delete ID:', id);
+      // Add your delete logic here
+    };
+
+    const handleEditStaff = (id) => {
+      console.log('Edit ID:', id);
+      // Add your edit logic here
+    };
+  
+    const handleDeleteStaff = (id) => {
+      console.log('Delete ID:', id);
+      // Add your delete logic here
+    };
+
+    const handleEditUsers = (id) => {
+      console.log('Edit ID:', id);
+      // Add your edit logic here
+    };
+  
+    const handleDeleteUsers = (id) => {
       console.log('Delete ID:', id);
       // Add your delete logic here
     };

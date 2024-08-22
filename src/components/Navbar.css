@@ -27,9 +27,9 @@
     cursor: pointer;
 }
 
-/* .logo img{
+.logo img{
     height: 50px;
-} */
+} 
 
 .right-section{
     /* flex-basis: 75%; */

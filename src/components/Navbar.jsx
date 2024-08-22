@@ -1,12 +1,15 @@
 import React from 'react'
 import './Navbar.css'
+import logo from '../assets/logomain.png'
+// import cart from '../.png'
+// import user from '../.png'
 
 function Navbar() {
   return (
     <div className='navbar-container'>
         <div className='left-section'>
             <div className="logo">
-                <img src="" alt="logo" />
+                <img src={logo} alt="logo" />
             </div>
         </div>
 
