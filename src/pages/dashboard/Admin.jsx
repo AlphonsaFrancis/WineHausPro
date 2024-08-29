@@ -6,7 +6,8 @@ import BasicTable from '../../components/Basictable'
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import config from "../../config/config";
+import axios from "axios";
 
 
 
@@ -15,10 +16,54 @@ function Admin() {
     const [menu,setMenu]=useState('Products')
     const [rows,setRows]=useState([])
     const [columns,setColumns]=useState([])
+    const [categories, setCategories] = useState([])
+
+    useEffect(() => {
+      // Fetch categories when the component mounts
+      axios.get(config.getCategoryApi)
+          .then((response) => {
+              setCategories(response.data);
+          })
+          .catch((error) => {
+              console.error("Error fetching categories:", error);
+          });
+  }, []);
+
+  const getCategoryNameById = (categoryId) => {
+      const category = categories.find(cat => cat.id === categoryId);
+      return category ? category.name : 'Unknown';
+  };
+
+
+    const restructureProductData = (data) => {
+      return data.map(item => ({
+          id: item.product_id,
+          name: item.name,
+          category: getCategoryNameById(item.category), // Assuming you have a function to get category name by id
+          price: item.price,
+          stock: item.stock_quantity
+      }));
+  };
+  
     
     useEffect(()=>{
         console.log('menu',menu)
+        
+          console.log('API URL:', config.getProductsApi);
         if (menu==='Products'){
+          console.log("Calling APIs")
+          axios.get(config.getProductApi)
+          .then((response) => {
+            console.log(response.data)
+            const products=restructureProductData(response.data)
+            console.log(products)
+            setRows(products)
+            setColumns(productColumns)
+          })
+          .catch((error)=>{
+            console.log(error)
+
+          })
           setRows(productRows)
           setColumns(productColumns)
         }
@@ -34,7 +79,11 @@ function Admin() {
           setRows(usersRows)
           setColumns(usersColumns)
         }
+
+
     },[menu])
+
+
     
 
     const productColumns = [
