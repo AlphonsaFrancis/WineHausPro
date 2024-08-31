@@ -7,6 +7,7 @@ from .serializers import ProductSerializer,CategorySerializer,MadeOfSerializer,C
 
 
 # product function based views
+
 @api_view(['GET'])
 def product_list(request):
     products = Product.objects.all()
@@ -56,6 +57,7 @@ def product_delete(request, pk):
 
 
 # category function based views
+
 @api_view(['GET'])
 def category_list(request):
     categories = Category.objects.all()
@@ -120,6 +122,14 @@ def madeof_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+def madeof_create(request):
+    serializer = MadeOfSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def madeof_detail(request, madeof_id):
     try:
@@ -143,6 +153,30 @@ def madeof_detail(request, madeof_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['PUT'])
+def madeof_update(request, madeof_id):
+    try:
+        madeof = MadeOf.objects.get(pk=madeof_id)
+    except MadeOf.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = MadeOfSerializer(madeof, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def madeof_delete(request, madeof_id):
+    try:
+        madeof = MadeOf.objects.get(pk=madeof_id)
+    except MadeOf.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    madeof.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 # country function based views
     
 @api_view(['GET', 'POST'])
@@ -158,6 +192,16 @@ def country_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+def country_create(request):
+    if request.method == 'POST':
+        serializer = CountrySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def country_detail(request, country_id):
@@ -182,6 +226,31 @@ def country_detail(request, country_id):
         return Response(status=status.HTTP_204_NO_CONTENT)    
     
 
+@api_view(['PUT'])
+def country_update(request, pk):
+    try:
+        country = Country.objects.get(pk=pk)
+    except Country.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = CountrySerializer(country, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def country_delete(request, pk):
+    try:
+        country = Country.objects.get(pk=pk)
+    except Country.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    country.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 # Brands function based views   
 
 
@@ -198,6 +267,17 @@ def brand_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+def brand_create(request):
+    if request.method == 'POST':
+        serializer = BrandSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def brand_detail(request, pk):
@@ -221,3 +301,27 @@ def brand_detail(request, pk):
         brand.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['PUT'])
+def brand_update(request, pk):
+    try:
+        brand = Brand.objects.get(pk=pk)
+    except Brand.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
+        serializer = BrandSerializer(brand, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def brand_delete(request, pk):
+    try:
+        brand = Brand.objects.get(pk=pk)
+    except Brand.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        brand.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

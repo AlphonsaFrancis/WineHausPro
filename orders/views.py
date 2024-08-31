@@ -43,6 +43,8 @@ def order_detail(request, pk):
     elif request.method == 'DELETE':
         order.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+       
+
 
 @api_view(['GET', 'POST'])
 def order_items_list(request):
