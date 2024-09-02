@@ -19,7 +19,6 @@ function Admin() {
     const [categories, setCategories] = useState([])
 
     useEffect(() => {
-      // Fetch categories when the component mounts
       axios.get(config.getCategoryApi)
           .then((response) => {
               setCategories(response.data);
@@ -39,8 +38,7 @@ function Admin() {
       return data.map(item => ({
           id: item.product_id,
           name: item.name,
-          category: getCategoryNameById(item.category), // Assuming you have a function to get category name by id
-          price: item.price,
+          category: getCategoryNameById(item.category), 
           stock: item.stock_quantity
       }));
   };
@@ -53,9 +51,9 @@ function Admin() {
         if (menu==='Products'){
           console.log("Calling APIs")
           axios.get(config.getProductApi)
-          .then((response) => {
+          .then( async(response) => {
             console.log(response.data)
-            const products=restructureProductData(response.data)
+            const products=await restructureProductData(response.data)
             console.log(products)
             setRows(products)
             setColumns(productColumns)
