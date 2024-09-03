@@ -1,24 +1,29 @@
 import React from 'react';
 import './home.css';
-import chair from '../../assets/main1ethinic.jpg';
-
+import Navbar from '../../components/Navbar'
+import esthetic from '../../assets/main1ethinic.jpg';
+import darkbottle from '../../assets/main2glassbottle.png';
+// import from '../../assets/ma';
+// import from '../../assets/';
+// import from '../../assets/';
+// import from '../../assets/';
 
 function Home() {
   return (
     <div>
       {/* Header */}
-
+      <Navbar></Navbar>
       {/* Hero Section */}
       <section className="wine-banner">
         <div className="main-container">
           <div className="image-item image1">
-            <img src="main3opener.png" alt="Wine Glass" />
+            <img src={esthetic} alt="Wine Glass" />
           </div>
           <div className="image-item image2">
-            <img src="main2glassbottle.png" alt="Wine and Flowers" />
+            <img src={darkbottle} alt="Wine and Flowers" />
           </div>
           <div className="image-item image3">
-            <img src={chair} alt="Opening Wine Bottle" />
+            <img src="" alt="Opening Wine Bottle" />
           </div>
         </div>
         <div className="text-container">
