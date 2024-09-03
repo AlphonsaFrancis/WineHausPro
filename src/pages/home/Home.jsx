@@ -3,9 +3,19 @@ import './home.css';
 import Navbar from '../../components/Navbar'
 import esthetic from '../../assets/main1ethinic.jpg';
 import darkbottle from '../../assets/main2glassbottle.png';
-// import from '../../assets/ma';
-// import from '../../assets/';
-// import from '../../assets/';
+import opener from '../../assets/main3opener.png';
+import red from '../../assets/CataRed.png';
+import white from '../../assets/CataWhite.png';
+import rose from '../../assets/CataRose.png';
+import spark from '../../assets/CataSparkling.png';
+import sweet from '../../assets/CataSweet.png';
+import moffer1 from '../../assets/mainoffer1.png';
+import moffer2 from '../../assets/mainoffer2.png';
+import acces from '../../assets/CataAccessories.png';
+import frat from '../../assets/BestFratelli(1).png';
+import best2 from '../../assets/BestSpade(2).png';
+import best3 from '../../assets/BestChardonney(3).png';
+import best4 from '../../assets/BestZampa(4).png';
 // import from '../../assets/';
 
 function Home() {
@@ -23,7 +33,7 @@ function Home() {
             <img src={darkbottle} alt="Wine and Flowers" />
           </div>
           <div className="image-item image3">
-            <img src="" alt="Opening Wine Bottle" />
+            <img src={opener} alt="Opening Wine Bottle" />
           </div>
         </div>
         <div className="text-container">
@@ -36,7 +46,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataRed.png" alt="Wine and Grapes" />
+              <img src={red} alt="Wine and Grapes" />
             </div>
           </div>
           <p>Red</p>
@@ -45,7 +55,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataWhite.png" alt="Wine and Grapes" />
+              <img src={white} alt="Wine and Grapes" />
             </div>
           </div>
           <p>White</p>
@@ -54,7 +64,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataRose.png" alt="Wine and Grapes" />
+              <img src={rose} alt="Wine and Grapes" />
             </div>
           </div>
           <p>Rose</p>
@@ -63,7 +73,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataSparkling.png" alt="Wine and Grapes" />
+              <img src={spark} alt="Wine and Grapes" />
             </div>
           </div>
           <p>Sparkling</p>
@@ -72,7 +82,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataSweet.png" alt="Wine and Grapes" />
+              <img src={sweet} alt="Wine and Grapes" />
             </div>
           </div>
           <p>Sweet</p>
@@ -81,7 +91,7 @@ function Home() {
         <div className="category-item">
           <div className="outer-circle">
             <div className="inner-circle">
-              <img src="CataAccessories.png" alt="Wine and Grapes" />
+              <img src={acces} alt="Wine and Grapes" />
             </div>
           </div>
           <p>Accessories</p>
@@ -92,7 +102,7 @@ function Home() {
       <div className="promotion">
         <div className="section">
           <div className="image">
-            <img src="mainoffer1.png" alt="Wine Glasses and Table Setting" />
+            <img src={moffer1} alt="Wine Glasses and Table Setting" />
           </div>
           <div className="text-content">
             <h2>
@@ -121,7 +131,7 @@ function Home() {
             <button className="order-btn">Proceed to Order &gt;</button>
           </div>
           <div className="image">
-            <img src="mainoffer2.png" alt="Wine Bottles and Grapes" />
+            <img src={moffer2} alt="Wine Bottles and Grapes" />
           </div>
         </div>
       </div>
@@ -135,7 +145,7 @@ function Home() {
           <div className="product-card">
             <div className="product-image">
               <img
-                src="BestFratelli(1).png"
+                src={frat}
                 alt="Fratelli Cabernet Sauvignon"
               />
             </div>
@@ -152,7 +162,7 @@ function Home() {
 
           <div className="product-card">
             <div className="product-image">
-              <img src="BestSpade(2).png" alt="Spade & Spar Rows Rose" />
+              <img src={best2} alt="Spade & Spar Rows Rose" />
             </div>
             <div className="product-info">
               <h3>Spade & Spar Rows Rose</h3>
@@ -168,7 +178,7 @@ function Home() {
           <div className="product-card">
             <div className="product-image">
               <img
-                src="BestChardonney(3).png"
+                src={best3}
                 alt="Chardonnay Kendall-Jackson"
               />
             </div>
@@ -185,7 +195,7 @@ function Home() {
 
           <div className="product-card">
             <div className="product-image">
-              <img src="BestZampa(4).png" alt="Zampa Soiree Brut" />
+              <img src={best4} alt="Zampa Soiree Brut" />
             </div>
             <div className="product-info">
               <h3>Zampa Soiree Brut</h3>
