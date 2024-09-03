@@ -8,6 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import config from "../../config/config";
 import axios from "axios";
+import { formatDate } from './helper'
 
 
 
@@ -44,7 +45,22 @@ function Admin() {
           stock: item.stock_quantity
       }));
   };
+
   
+
+  const convertedOrders = (orders, users) => {
+    return orders.map(order => ({
+        id: order.order_id,
+        user_id: users[order.user_id],  // Map user_id to the corresponding user name
+        order_date: formatDate(order.order_date),
+        order_status: order.order_status,
+        total_products: 1, // Assuming each order has 1 product, adjust if necessary
+        expected_delivery: formatDate(order.updated_at), // Placeholder for actual expected delivery date
+        total_amount: order.total_amount
+    }));
+};
+
+
     
     useEffect(()=>{
         console.log('menu',menu)
@@ -64,10 +80,25 @@ function Admin() {
             console.log(error)
 
           })
-          setRows(productRows)
-          setColumns(productColumns)
+         
         }
         if(menu==='Orders'){
+          const users = {
+            6: "John Doe",
+            7: "Jane Smith"
+          };
+          axios.get(config.getOrdersApi)
+          .then((response) => {
+            console.log(response.data)
+            const orders=convertedOrders(response.data,users)
+            console.log(orders)
+            setRows(orders)
+            setColumns(orderColumns)
+          })
+          .catch((error)=>{
+            console.log(error)
+
+          })
           setRows(orderRows)
           setColumns(orderColumns)
         }

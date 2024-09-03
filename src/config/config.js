@@ -9,6 +9,7 @@ const config = {
     updateProductApi: process.env.REACT_APP_EDIT_PRODUCT_API ,
     productDetailsApi: process.env.REACT_APP_PRODUCT_DETAILS_API ,
     getCategoryApi:process.env.REACT_APP_GET_CATEGORY_API,
+    getOrdersApi:process.env.REACT_APP_GET_ORDERS_API,
   };
    
   export default config;
