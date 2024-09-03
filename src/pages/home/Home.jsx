@@ -16,7 +16,11 @@ import frat from '../../assets/BestFratelli(1).png';
 import best2 from '../../assets/BestSpade(2).png';
 import best3 from '../../assets/BestChardonney(3).png';
 import best4 from '../../assets/BestZampa(4).png';
-// import from '../../assets/';
+import arriv1 from '../../assets/ArriBigBanyan(1).png';
+import arriv2 from '../../assets/ArriRuinat(2).png';
+import arriv3 from '../../assets/ArriTrefethen(3).png';
+import arriv4 from '../../assets/ArriStella(4).png';
+
 
 function Home() {
   return (
@@ -219,13 +223,13 @@ function Home() {
           <div className="product-card">
             <div className="product-image">
               <img
-                src="ArriBigBanyan(1).png"
-                alt="Fratelli Cabernet Sauvignon"
+                src={arriv1}
+                alt="Big Benyan Merot"
               />
             </div>
             <div className="product-info">
-              <h3>Fratelli Cabernet Sauvignon</h3>
-              <p>₹ 1300</p>
+              <h3>Big Benyan Merot</h3>
+              <p>₹ 800</p>
               <div className="product-meta">
                 <span className="badge red">Red</span>
                 <button className="favorite">&#9825;</button>
@@ -236,13 +240,13 @@ function Home() {
 
           <div className="product-card">
             <div className="product-image">
-              <img src="ArriRuinat(2).png" alt="Spade & Spar Rows Rose" />
+              <img src={arriv2} alt="Spade & Spar Rows Rose" />
             </div>
             <div className="product-info">
-              <h3>Spade & Spar Rows Rose</h3>
-              <p>₹ 2000</p>
+              <h3>Ruinat Rose Champage Brut</h3>
+              <p>₹ 2500</p>
               <div className="product-meta">
-                <span className="badge rose">Rose</span>
+                <span className="badge sparkling">Sparkling</span>
                 <button className="favorite">&#9825;</button>
               </div>
               <button className="buy-now">Buy Now</button>
@@ -252,13 +256,13 @@ function Home() {
           <div className="product-card">
             <div className="product-image">
               <img
-                src="ArriTrefethen(3).png"
+                src={arriv3}
                 alt="Chardonnay Kendall-Jackson"
               />
             </div>
             <div className="product-info">
-              <h3>Chardonnay Kendall-Jackson</h3>
-              <p>₹ 900</p>
+              <h3>Riesling Trafethan</h3>
+              <p>₹ 1500</p>
               <div className="product-meta">
                 <span className="badge white">White</span>
                 <button className="favorite">&#9825;</button>
@@ -269,13 +273,13 @@ function Home() {
 
           <div className="product-card">
             <div className="product-image">
-              <img src="ArriStella(4).png" alt="Zampa Soiree Brut" />
+              <img src={arriv4} alt="Zampa Soiree Brut" />
             </div>
             <div className="product-info">
-              <h3>Zampa Soiree Brut</h3>
-              <p>₹ 1800</p>
+              <h3>Stella Rose Splash</h3>
+              <p>₹ 1500</p>
               <div className="product-meta">
-                <span className="badge sparkling">Sparkling</span>
+                <span className="badge rose">Rose</span>
                 <button className="favorite">&#9825;</button>
               </div>
               <button className="buy-now">Buy Now</button>
