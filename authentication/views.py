@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
@@ -56,7 +57,7 @@ def user_login(request):
                 return Response({
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'user': UserSerializer(user).data['id']
+                    'user': UserSerializer(user).data
                 }, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "Account is disabled."}, status=status.HTTP_403_FORBIDDEN)
@@ -136,9 +137,9 @@ def google_sign_in(request):
 
     google_data = google_response.json()
     email = google_data.get('email')
-    first_name = google_data.get('given_name')
-    last_name = google_data.get('family_name')
-    google_user_id = google_data.get('id')
+    # first_name = google_data.get('given_name')
+    # last_name = google_data.get('family_name')
+    # google_user_id = google_data.get('id')
 
     # Use the google_user_id to identify the user
     try:
@@ -146,9 +147,9 @@ def google_sign_in(request):
     except User.DoesNotExist:
         user = User.objects.create(
             email=email,
-            first_name=first_name,
-            last_name=last_name,
-            username=email  # or any other unique identifier
+            # first_name=first_name,
+            # last_name=last_name,
+            # username=email  # or any other unique identifier
         )
         user.save()
 
@@ -162,7 +163,13 @@ def google_sign_in(request):
         'user': {
             'id': user.id,
             'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
+            # 'first_name': user.first_name,
+            # 'last_name': user.last_name,
         }
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_all_users(request):
+    users = User.objects.all().values('id', 'email')  # Select only 'id' and 'email' fields
+    return Response(users, status=status.HTTP_200_OK)

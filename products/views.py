@@ -49,11 +49,12 @@ def product_update(request, pk):
 def product_delete(request, pk):
     try:
         product = Product.objects.get(pk=pk)
+        product.delete()
+        return Response({'message':'Product deleted'},status=status.HTTP_200_OK)
+
     except Product.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error':'Product not found for this id'},status=status.HTTP_204_NO_CONTENT)
     
-    product.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # category function based views
@@ -99,12 +100,14 @@ def category_update(request, pk):
 def category_delete(request, pk):
     try:
         category = Category.objects.get(pk=pk)
+        category.delete()
+        return Response({'message':'category deleted'},status=status.HTTP_200_OK)
     except Category.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    category.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'error':"Item with this id does not exist"},status=status.HTTP_204_NO_CONTENT)
 
+    
+   
+    
 
 # madeOf function based views
 
@@ -170,11 +173,13 @@ def madeof_update(request, madeof_id):
 def madeof_delete(request, madeof_id):
     try:
         madeof = MadeOf.objects.get(pk=madeof_id)
+        madeof.delete()
+        return Response({'message':"Item deleted"},status=status.HTTP_200_OK)
     except MadeOf.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error':"Item with this id does not exist"},status=status.HTTP_204_NO_CONTENT)
 
-    madeof.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
 
 
 # country function based views
@@ -244,11 +249,11 @@ def country_update(request, pk):
 def country_delete(request, pk):
     try:
         country = Country.objects.get(pk=pk)
+        country.delete()
+        return Response({'message':"Country deleted"},status=status.HTTP_200_OK)
     except Country.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error':"Item with this id does not exist"},status=status.HTTP_204_NO_CONTENT)
 
-    country.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Brands function based views   
@@ -319,9 +324,9 @@ def brand_update(request, pk):
 def brand_delete(request, pk):
     try:
         brand = Brand.objects.get(pk=pk)
-    except Brand.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'DELETE':
         brand.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'message':"Brand deleted"},status=status.HTTP_200_OK)
+    except Brand.DoesNotExist:
+        return Response({'error':"Item with this id does not exist"},status=status.HTTP_204_NO_CONTENT)
+
+ 
