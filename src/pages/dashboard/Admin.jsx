@@ -1,277 +1,594 @@
-import React, { useEffect, useState } from 'react'
-import './Admin.css'
-import Navbar from '../../components/Navbar'
-import Menubox from '../../components/Menubox'
-import BasicTable from '../../components/Basictable'
-import { IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useEffect, useState } from "react";
+import "./Admin.css";
+import Navbar from "../../components/Navbar";
+import Menubox from "../../components/Menubox";
+import BasicTable from "../../components/Basictable";
+import { IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import config from "../../config/config";
 import axios from "axios";
-import { formatDate } from './helper'
-
-
+import { formatDate } from "./helper";
+import BasicModal from "../../components/BasicModal";
+import { useNavigate } from "react-router-dom";
 
 function Admin() {
+  const navigate = useNavigate();
+  const [menu, setMenu] = useState("Products");
+  const [parentMenu, setParentMenu] = useState("Products");
+  const [rows, setRows] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState();
+  const [countries, setCountries] = useState();
+  const [madeOf, setMadeOf] = useState();
+  const [users, setUsers] = useState();
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState();
+  const [addButtonLabel, setAddButtonLabel] = useState();
 
-    const [menu,setMenu]=useState('Products')
-    const [rows,setRows]=useState([])
-    const [columns,setColumns]=useState([])
-    const [categories, setCategories] = useState([])
+  useEffect(() => {
+    axios
+      .get(config.getCategoryApi)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
 
-    useEffect(() => {
-      // Fetch categories when the component mounts
-      axios.get(config.getCategoryApi)
-          .then((response) => {
-              setCategories(response.data);
-          })
-          .catch((error) => {
-              console.error("Error fetching categories:", error);
-          });
-  }, []);
+    axios
+      .get(config.getAllUsers)
+      .then((response) => {
+        console.log("response", response.data);
+        if (response.status === 200) {
+          setUsers(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log("err", error);
+      });
+
+    axios
+      .get(config.getBrandsApi)
+      .then((response) => {
+        setBrands(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching brands:", error);
+      });
+
+    axios
+      .get(config.getCountriesApi)
+      .then((response) => {
+        setCountries(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching countries:", error);
+      });
+
+    axios
+      .get(config.getMadeofApis)
+      .then((response) => {
+        setMadeOf(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching made of:", error);
+      });
+  }, [menu]);
+
+  
+
+  const handleDeleteModalClose = () => {
+    setOpen(false);
+  };
 
   const getCategoryNameById = (categoryId) => {
-      const category = categories.find(cat => cat.id === categoryId);
-      return category ? category.name : 'Unknown';
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category ? category.name : "Unknown";
   };
 
-
-    const restructureProductData = (data) => {
-      return data.map(item => ({
-          id: item.product_id,
-          name: item.name,
-          category: getCategoryNameById(item.category), // Assuming you have a function to get category name by id
-          price: item.price,
-          stock: item.stock_quantity
-      }));
+  const restructureProductData = (data) => {
+    return data.map((item) => ({
+      id: item.product_id,
+      name: item.name,
+      price: ` Rs: ${item.price}`,
+      category: getCategoryNameById(item.category),
+      stock: item.stock_quantity,
+    }));
   };
-
-  
 
   const convertedOrders = (orders, users) => {
-    return orders.map(order => ({
-        id: order.order_id,
-        user_id: users[order.user_id],  // Map user_id to the corresponding user name
-        order_date: formatDate(order.order_date),
-        order_status: order.order_status,
-        total_products: 1, // Assuming each order has 1 product, adjust if necessary
-        expected_delivery: formatDate(order.updated_at), // Placeholder for actual expected delivery date
-        total_amount: order.total_amount
+    const userLookup = users.reduce((acc, user) => {
+      acc[user.id] = user.email;
+      return acc;
+    }, {});
+
+    return orders.map((order) => ({
+      id: order.order_id,
+      user_id: userLookup[order.user_id],
+      order_date: formatDate(order.order_date),
+      order_status: order.order_status,
+      total_products: 1,
+      expected_delivery: formatDate(order.updated_at),
+      total_amount: order.total_amount,
     }));
-};
+  };
 
+  const restructureCategoryData = (data) => {
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      added: new Date(item.created_at).toLocaleDateString(),
+      updated: new Date(item.updated_at).toLocaleDateString(),
+    }));
+  };
 
-    
-    useEffect(()=>{
-        console.log('menu',menu)
-        
-          console.log('API URL:', config.getProductsApi);
-        if (menu==='Products'){
-          console.log("Calling APIs")
-          axios.get(config.getProductApi)
-          .then((response) => {
-            console.log(response.data)
-            const products=restructureProductData(response.data)
-            console.log(products)
-            setRows(products)
-            setColumns(productColumns)
-          })
-          .catch((error)=>{
-            console.log(error)
+  const restructureBrandData = (data) => {
+    return data.map((item) => ({
+      id: item.brand_id,
+      name: item.name,
+      description: item.description,
+      added: new Date(item.created_at).toLocaleDateString(),
+      updated: new Date(item.updated_at).toLocaleDateString(),
+    }));
+  };
 
-          })
-         
-        }
-        if(menu==='Orders'){
-          const users = {
-            6: "John Doe",
-            7: "Jane Smith"
-          };
-          axios.get(config.getOrdersApi)
-          .then((response) => {
-            console.log(response.data)
-            const orders=convertedOrders(response.data,users)
-            console.log(orders)
-            setRows(orders)
-            setColumns(orderColumns)
-          })
-          .catch((error)=>{
-            console.log(error)
+  const restructureCountryData = (data) => {
+    return data.map((item) => ({
+      id: item.country_id,
+      name: item.name,
+      added: new Date(item.created_at).toLocaleDateString(),
+      updated: new Date(item.updated_at).toLocaleDateString(),
+    }));
+  };
 
-          })
-          setRows(orderRows)
-          setColumns(orderColumns)
-        }
-        if(menu==='Staffs'){
-          setRows(staffRows)
-          setColumns(staffColumns)
-        }
-        if(menu==='Users'){
-          setRows(usersRows)
-          setColumns(usersColumns)
-        }
+  const restructureMadeofData = (data) => {
+    return data.map((item) => ({
+      id: item.madeof_id,
+      name: item.name,
+      description: item.description,
+      added: new Date(item.created_at).toLocaleDateString(),
+      updated: new Date(item.updated_at).toLocaleDateString(),
+    }));
+  };
 
+  const getOnConfirmHandler = (menu) => {
+    switch (menu) {
+      case "Products":
+        return confirmDeleteProduct;
+      case "Categories":
+        return confirmDeleteCategory;
+      case "Brands":
+        return confirmDeleteBrand;
+      case "Country":
+        return confirmDeleteCountry;
+      case "Made of":
+        return confirmDeleteMadeof;
 
-    },[menu])
+      default:
+        return () => {};
+    }
+  };
 
+  useEffect(() => {
+    console.log("menu", menu);
 
-    
+    console.log("API URL:", config.getProductsApi);
+    if (menu === "Products") {
+      setParentMenu("Products");
+      setAddButtonLabel("Add Product");
+      axios
+        .get(config.getProductApi)
+        .then((response) => {
+          console.log(response.data);
+          const products = restructureProductData(response.data);
+          console.log(products);
+          setRows(products);
+          setColumns(productColumns);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    if (menu === "Orders") {
+      setParentMenu("Orders");
+      setAddButtonLabel("Add new Order");
+      axios
+        .get(config.getOrdersApi)
+        .then((response) => {
+          console.log(response.data);
+          const orders = convertedOrders(response.data, users);
+          console.log("orders", orders);
+          setRows(orders);
+          setColumns(orderColumns);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setRows(orderRows);
+      setColumns(orderColumns);
+    }
+    if (menu === "Staffs") {
+      setParentMenu("Staffs");
+      setAddButtonLabel("Add Staff");
+      setRows(staffRows);
+      setColumns(staffColumns);
+    }
+    if (menu === "Users") {
+      setParentMenu("Users");
+      setAddButtonLabel("Add User");
+      setRows(usersRows);
+      setColumns(usersColumns);
+    }
 
-    const productColumns = [
-      { field: 'id', headerName: 'ID', flex:1 },
-      { field: 'name', headerName: 'Name',flex:1  },
-      { field: 'category', headerName: 'Category', flex:1  },
-      { field: 'price',headerName: 'Price',type: 'number',flex:1 ,},
-      {field: 'stock',headerName: ' Stock Quantity',flex:1 },
-      {field: 'actions',headerName: 'Actions',
-        renderCell: (params) => (
-          <div>
-            <IconButton onClick={() => handleEdit(params.row.id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDelete(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        ),
-        flex:1 },
-    ];
-    
+    if (menu === "Categories") {
+      setAddButtonLabel("Add Category");
+      setRows(restructureCategoryData(categories));
+      setColumns(categoryColumns);
+    }
 
+    if (menu === "Brands") {
+      setAddButtonLabel("Add Brand");
+      setRows(restructureBrandData(brands));
+      setColumns(categoryColumns);
+    }
+    if (menu === "Country") {
+      setAddButtonLabel("Add Country");
+      setRows(restructureCountryData(countries));
+      setColumns(countryColumns);
+    }
+    if (menu === "Made of") {
+      setAddButtonLabel("Add Made of");
+      setRows(restructureMadeofData(madeOf));
+      setColumns(categoryColumns);
+    }
+  }, [menu,open,selectedId,getOnConfirmHandler]);
 
-    const productRows = [
-      { id: 1, name: 'Chateau Margaux', category: 'Red', price: 600 ,stock:50 },
-      { id: 2, name: 'Dom Pérignon', category: 'Champaigne', price: 200,stock:100 },
-      { id: 3, name: 'Screaming Eagle Cabernet Sauvignon', category: 'Red', price: 3500,stock:10 },
-      { id: 4, name: 'Cloudy Bay Sauvignon Blanc', category: 'White', price: 300,stock:15 },
-      
-    ];
-
-    const orderRows=[]
-    const orderColumns=[
-      { field: 'id', headerName: 'ID', flex:1 },
-      { field: 'user_id', headerName: 'User',flex:1  },
-      { field: 'order_date', headerName: 'Ordered On', flex:1  },
-      { field: 'order_status', headerName: 'Order Status', flex:1  },
-      { field: 'total_products', headerName: ' Total Products', flex:1  },
-      { field: 'expected_delivery', headerName: 'Expected Delivery On', flex:1  },
-      { field: 'total_amount', headerName: 'Total Amount', flex:1  },
-      {field: 'actions',headerName: 'Actions',
-        renderCell: (params) => (
-          <div>
-            <IconButton onClick={() => handleEditOrder(params.row.id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDeleteOrder(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        ),
-        flex:1 },
-
-    ]
-
-    const staffRows=[]
-    const staffColumns=[
-      { field: 'staff_id', headerName: 'Staff ID', flex:1 },
-      { field: 'user_id', headerName: 'User Id',flex:1  },
-      { field: 'name', headerName: 'Name',flex:1  },
-      { field: 'email', headerName: 'Email',flex:1  },
-      { field: 'status', headerName: 'Status',flex:1  },
-      {field: 'actions',headerName: 'Actions',
-        renderCell: (params) => (
-          <div>
-            <IconButton onClick={() => handleEditStaff(params.row.id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDeleteStaff(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        ),
-        flex:1 },
-    ]
-
-
-    const usersRows=[]
-    const usersColumns=[
-      { field: 'user_id', headerName: 'User Id',flex:1  },
-      { field: 'name', headerName: 'Name',flex:1  },
-      { field: 'email', headerName: 'Email',flex:1  },
-      { field: 'joined_on', headerName: 'Joined On', flex:1 },
-      { field: 'status', headerName: 'Status',flex:1  },
-      {field: 'actions',headerName: 'Actions',
-        renderCell: (params) => (
-          <div>
-            <IconButton onClick={() => handleEditUsers(params.row.id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDeleteUsers(params.row.id)}>
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        ),
-        flex:1 },
-    ]
-
-
-    const handleEdit = (id) => {
-      console.log('Edit ID:', id);
-      // Add your edit logic here
-    };
   
-    const handleDelete = (id) => {
-      console.log('Delete ID:', id);
-      // Add your delete logic here
-    };
 
-    const handleEditOrder = (id) => {
-      console.log('Edit ID:', id);
-      // Add your edit logic here
-    };
-  
-    const handleDeleteOrder = (id) => {
-      console.log('Delete ID:', id);
-      // Add your delete logic here
-    };
+  const productColumns = [
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "category", headerName: "Category", flex: 1 },
+    { field: "price", headerName: "Price", type: "number", flex: 1 },
+    { field: "stock", headerName: " Stock Quantity", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEdit(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
 
-    const handleEditStaff = (id) => {
-      console.log('Edit ID:', id);
-      // Add your edit logic here
-    };
-  
-    const handleDeleteStaff = (id) => {
-      console.log('Delete ID:', id);
-      // Add your delete logic here
-    };
+  const orderRows = [];
+  const orderColumns = [
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "user_id", headerName: "User", flex: 1 },
+    { field: "order_date", headerName: "Ordered On", flex: 1 },
+    { field: "order_status", headerName: "Order Status", flex: 1 },
+    { field: "total_products", headerName: " Total Products", flex: 1 },
+    { field: "expected_delivery", headerName: "Expected Delivery On", flex: 1 },
+    { field: "total_amount", headerName: "Total Amount", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditOrder(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteOrder(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
 
-    const handleEditUsers = (id) => {
-      console.log('Edit ID:', id);
-      // Add your edit logic here
-    };
-  
-    const handleDeleteUsers = (id) => {
-      console.log('Delete ID:', id);
-      // Add your delete logic here
-    };
+  const staffRows = [];
+  const staffColumns = [
+    { field: "staff_id", headerName: "Staff ID", flex: 1 },
+    { field: "user_id", headerName: "User Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "status", headerName: "Status", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditStaff(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteStaff(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+  const usersRows = [];
+  const usersColumns = [
+    { field: "user_id", headerName: "User Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "joined_on", headerName: "Joined On", flex: 1 },
+    { field: "status", headerName: "Status", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditUsers(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteUsers(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+  const categoryColumns = [
+    { field: "id", headerName: "Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "description", headerName: "Descrption", flex: 1 },
+    { field: "added", headerName: "Added On", flex: 1 },
+    { field: "updated", headerName: "Updated On", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditCategory(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+  const countryColumns = [
+    { field: "id", headerName: "Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "added", headerName: "Added On", flex: 1 },
+    { field: "updated", headerName: "Updated On", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditCategory(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+  const handleAddButton = () => {
+    if (addButtonLabel === "Add Product") {
+      console.log("Adding new product");
+      navigate("/add-product");
+    }
+  };
+
+  const handleEdit = (id) => {
+    console.log("Edit ID:", id);
+    // Add your edit logic here
+  };
+
+  const handleDelete = (id) => {
+    setOpen(true);
+    setSelectedId(id);
+  };
+
+  const confirmDeleteProduct = () => {
+    axios
+      .delete(`${config.deleteProductApi}${selectedId}/`)
+      .then((response) => {
+        console.log("delete res", response);
+        if (response.status === 200) {
+          setOpen(false);
+          alert("Product deleted !");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const confirmDeleteCategory = () => {
+    axios
+      .delete(`${config.deleteCategoryApi}${selectedId}/`)
+      .then((response) => {
+        console.log("delete res", response);
+        setOpen(false);
+        setRows(prevRows => prevRows.filter(row => row.id !== selectedId));
+        if (response.status === 200) {
+          
+          alert("Category deleted !");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const confirmDeleteBrand = () => {
+    axios
+      .delete(`${config.deleteBrandApi}${selectedId}/`)
+      .then((response) => {
+        setOpen(false);
+        setRows(prevRows => prevRows.filter(row => row.id !== selectedId));
+        console.log("delete res", response);
+        if (response.status === 200) {
+          alert("Brand deleted !");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const confirmDeleteCountry = () => {
+    axios
+      .delete(`${config.deleteCountryApi}${selectedId}/`)
+      .then((response) => {
+        console.log("delete res", response);
+        setOpen(false);
+        setRows(prevRows => prevRows.filter(row => row.id !== selectedId));
+        if (response.status === 200) {
+          alert("Brand deleted !");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const confirmDeleteMadeof = () => {
+    axios
+      .delete(`${config.deleteMadeOfApi}${selectedId}/`)
+      .then((response) => {
+        console.log("delete res", response);
+        setOpen(false);
+        setRows(prevRows => prevRows.filter(row => row.id !== selectedId));
+        if (response.status === 200) {
+          alert("Brand deleted !");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleEditOrder = (id) => {
+    console.log("Edit ID:", id);
+    // Add your edit logic here
+  };
+
+  const handleDeleteOrder = (id) => {
+    console.log("Delete ID:", id);
+    // Add your delete logic here
+  };
+
+  const handleEditStaff = (id) => {
+    console.log("Edit ID:", id);
+    // Add your edit logic here
+  };
+
+  const handleDeleteStaff = (id) => {
+    console.log("Delete ID:", id);
+    // Add your delete logic here
+  };
+
+  const handleEditUsers = (id) => {
+    console.log("Edit ID:", id);
+    // Add your edit logic here
+  };
+
+  const handleDeleteUsers = (id) => {
+    console.log("Delete ID:", id);
+    // Add your delete logic here
+  };
+
+  const handleEditCategory = (id) => {
+    console.log("Edit ID:", id);
+    // Add your edit logic here
+  };
+
+  const handleDeleteCategory = (id) => {
+    console.log("Delete ID:", id);
+    // Add your delete logic here
+  };
 
   return (
-    <div className='container'>
-        <Navbar></Navbar>
-        <div className='menu-container'>
-          
-        <div className='menus'>
-          <Menubox text={'Products'} action={setMenu} menu={menu}/> 
-          <Menubox text={'Orders'} action={setMenu} menu={menu}/> 
-          <Menubox text={'Staffs'} action={setMenu} menu={menu}/>
-          <Menubox text={'Users'} action={setMenu} menu={menu}/>  
-        </div>    
+    <div className="container">
+      <Navbar></Navbar>
+      <div className="menu-container">
+        <div className="menus">
+          <Menubox
+            text={"Products"}
+            action={setMenu}
+            menu={menu}
+            parentMenu={parentMenu}
+          />
+          <Menubox
+            text={"Orders"}
+            action={setMenu}
+            menu={menu}
+            parentMenu={parentMenu}
+          />
+          <Menubox
+            text={"Staffs"}
+            action={setMenu}
+            menu={menu}
+            parentMenu={parentMenu}
+          />
+          <Menubox
+            text={"Users"}
+            action={setMenu}
+            menu={menu}
+            parentMenu={parentMenu}
+          />
         </div>
-      <div className='table-container'>
+        <div className="submenu">
+          {parentMenu === "Products" ? (
+            <>
+              <Menubox text={"Categories"} action={setMenu} menu={menu} />
+              <Menubox text={"Brands"} action={setMenu} menu={menu} />
+              <Menubox text={"Country"} action={setMenu} menu={menu} />
+              <Menubox text={"Made of"} action={setMenu} menu={menu} />
+            </>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
+      <div className="add-button-container">
+        <button className="add-button" onClick={handleAddButton}>
+          {" "}
+          + {addButtonLabel}
+        </button>
+      </div>
+      <div className="table-container">
         <BasicTable rows={rows} columns={columns}></BasicTable>
       </div>
+
+      <BasicModal
+        open={open}
+        setOpen={handleDeleteModalClose}
+        onConfirm={getOnConfirmHandler(menu)}
+        heading={`Delete ${menu}`}
+        content={"Are you sure you want to delete this item?"}
+      />
     </div>
-  )
+  );
 }
 
-export default Admin
+export default Admin;
