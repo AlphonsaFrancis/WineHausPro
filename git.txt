@@ -1,0 +1,35 @@
+* e29c1ebf8d8294c794c9b0ccfadd7aaea0d0d147 (HEAD -> admin-dashboard-frontend, origin/admin-dashboard-frontend) Sub menu for Products - view & delete operations
+* 97fb6cdfe052389d67c012e1f3d7335b97798b68 update on orders
+| * 14153bc0d12ec858042ee9077d833f00c58af092 (origin/homepage-frontend, homepage-frontend) update
+| * a4e4cf964f254c16d03a653d88e5efc5730423d1 update
+| * b443c03b48ee7b1be00666814fc0e72930d30fb7 update
+| * 4aead00075c3ebc2628bc10322f316f2a37678a3 jsx code &img for home
+|/  
+* 41043d4a16810780f6b1f7e9cba3ea03eabdfe5b admin dashbord api integration
+* 22d482f6cb14a9f911b58373687811ad1fb8a5e8 update
+* 3dc10c185ee68b8bd659a87b9dba1d29c608f286 update
+* 52c22ca8e7f18e66b3af2c346bbacd29f9f124a9 (origin/authentication, authentication) update
+* 458193a20736cd145fa2988e8a04e193f29d7a74 google Signin
+* ea742cfa8d964ac32801be30e1c540bbe63d75ff forget password api
+* df847d5bb14d89577c8d0173d0b391b0ee961caa updated
+| * be34ab4461f0d0778c530fbfe1031a8352014ddb (origin/main, origin/HEAD, main) updated
+| | * 920da57013ccb78e6398416e7a5f5bda103170f6 (refs/stash) On authentication: !!GitHub_Desktop<authentication>
+| |/| 
+|/| | 
+| | * 90170c5f5ce330dfe661cc30f32daca303d7345b index on authentication: 693d9d88 implemented login & registration API
+| |/  
+|/|   
+* | 693d9d88cc3e11a6eed622d70d401d0e7a5349a5 implemented login & registration API
+* | 582b42544cadec0215ddfb9efc2319619d95eaba justassetimgs
+* | 26d1601f489f5c71cb2c7967451ed9ae673a6bf6 google signing
+* | fccf6144b61b52304cbd430df771ba7bf091a8c8 authentication
+|/  
+| * a7e8b3874597547dc168a8f9e74b60c462994284 (origin/authentication-backend, authentication-backend) cors update
+| * c6eec7f6bd11c7d8b81a7e7bc750f924a48c9be8 updated
+| * 90680d6038ada8fce51485b4b6a861a926e044d9 Completed login & registration
+| * 29b796c23a9df7e99be4601885d1d177e4a276eb implemented login
+| * 6de14758688c4f69aa6ec45d88c887dec658febb basicsetup
+| * e37de2eca55b916a2fc0822f59df3ee329e53f32 (origin/backend, backend) nothing
+| * f76c500cf3964365b84d2798a7059b7660547d0b backend created
+|/  
+* bbc0ac40244855a7837c40f590ea721dddc2dd85 Initial commit

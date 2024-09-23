@@ -11,6 +11,10 @@ import axios from "axios";
 import { formatDate } from "./helper";
 import BasicModal from "../../components/BasicModal";
 import { useNavigate } from "react-router-dom";
+import ProductForm from "../../components/Forms/ProductForm";
+import AddCategoryForm from "../../components/Forms/CategoryFrom";
+import AddOrderForm from "../../components/Forms/OrderForm";
+import AddStaffForm from "../../components/Forms/StaffsForm";
 
 function Admin() {
   const navigate = useNavigate();
@@ -26,6 +30,8 @@ function Admin() {
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState();
   const [addButtonLabel, setAddButtonLabel] = useState();
+  const [form,setForm] = useState();
+  const [isShowForm,setIsShowForm]=useState(false)
 
   useEffect(() => {
     axios
@@ -74,6 +80,19 @@ function Admin() {
       })
       .catch((error) => {
         console.error("Error fetching made of:", error);
+      });
+
+      axios
+      .get(config.getProductApi)
+      .then((response) => {
+        console.log(response.data);
+        const products = restructureProductData(response.data);
+        console.log(products);
+        setRows(products);
+        setColumns(productColumns);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [menu]);
 
@@ -179,6 +198,7 @@ function Admin() {
     if (menu === "Products") {
       setParentMenu("Products");
       setAddButtonLabel("Add Product");
+      setForm(<ProductForm onCancel={handleCloseForm}/>)
       axios
         .get(config.getProductApi)
         .then((response) => {
@@ -195,6 +215,8 @@ function Admin() {
     if (menu === "Orders") {
       setParentMenu("Orders");
       setAddButtonLabel("Add new Order");
+      setForm(<AddOrderForm onCancel={handleCloseForm}/>)
+
       axios
         .get(config.getOrdersApi)
         .then((response) => {
@@ -213,6 +235,8 @@ function Admin() {
     if (menu === "Staffs") {
       setParentMenu("Staffs");
       setAddButtonLabel("Add Staff");
+      setForm(<AddStaffForm onCancel={handleCloseForm}/>)
+
       setRows(staffRows);
       setColumns(staffColumns);
     }
@@ -227,11 +251,21 @@ function Admin() {
       setAddButtonLabel("Add Category");
       setRows(restructureCategoryData(categories));
       setColumns(categoryColumns);
+      setForm(<AddCategoryForm  onCancel={handleCloseForm}/>)
+
     }
 
     if (menu === "Brands") {
       setAddButtonLabel("Add Brand");
       setRows(restructureBrandData(brands));
+      axios
+      .get(config.getBrandsApi)
+      .then((response) => {
+        setBrands(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching brands:", error);
+      });
       setColumns(categoryColumns);
     }
     if (menu === "Country") {
@@ -244,7 +278,7 @@ function Admin() {
       setRows(restructureMadeofData(madeOf));
       setColumns(categoryColumns);
     }
-  }, [menu,open,selectedId,getOnConfirmHandler]);
+  }, [menu,open,countries]);
 
   
 
@@ -391,11 +425,12 @@ function Admin() {
   ];
 
   const handleAddButton = () => {
-    if (addButtonLabel === "Add Product") {
-      console.log("Adding new product");
-      navigate("/add-product");
-    }
+    setIsShowForm(true)
   };
+
+  const handleCloseForm=()=>{
+    setIsShowForm(false)
+  }
 
   const handleEdit = (id) => {
     console.log("Edit ID:", id);
@@ -411,10 +446,10 @@ function Admin() {
     axios
       .delete(`${config.deleteProductApi}${selectedId}/`)
       .then((response) => {
-        console.log("delete res", response);
         if (response.status === 200) {
           setOpen(false);
           alert("Product deleted !");
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -426,12 +461,12 @@ function Admin() {
     axios
       .delete(`${config.deleteCategoryApi}${selectedId}/`)
       .then((response) => {
-        console.log("delete res", response);
         setOpen(false);
         setRows(prevRows => prevRows.filter(row => row.id !== selectedId));
         if (response.status === 200) {
           
           alert("Category deleted !");
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -582,12 +617,23 @@ function Admin() {
 
       <BasicModal
         open={open}
+        isConfirmModal={true}
         setOpen={handleDeleteModalClose}
         onConfirm={getOnConfirmHandler(menu)}
         heading={`Delete ${menu}`}
         content={"Are you sure you want to delete this item?"}
       />
+
+      {isShowForm && 
+        <BasicModal
+        open={isShowForm}
+        setOpen={handleCloseForm}
+        content={form}
+        customStyle={{height:'87vh',overflowY:'scroll', marginTop:'0px'}}
+        />
+      }
     </div>
+
   );
 }
 
