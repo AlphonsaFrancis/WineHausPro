@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import google from "../../assets/googleicon.png";
 import config from "../../config/config";
 import axios from "axios";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = ({ setIslogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
   const [isforgetpassword, setisforgetpassword] = useState(false);
-  const [user, setUser] = useState();
-  const [profile, setProfile] = useState([]);
+  const [ user, setUser ] = useState([]);
+  const [ profile, setProfile ] = useState([]);
+  const navigate = useNavigate();
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
@@ -98,7 +101,15 @@ const Login = ({ setIslogin }) => {
           console.log(response.data);
           if (response.status === 200) {
             console.log("Login Succesfull");
-            alert("Login Successfull");
+            if (response.data.user.is_superuser){
+              navigate('/admin')
+            }
+            else if (response.data.user.is_staff){
+              navigate('/staff')
+            }
+            else{
+              navigate('/home')
+            }
           }
           // setIslogin(true)
         })

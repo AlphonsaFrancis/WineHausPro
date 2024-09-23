@@ -63,7 +63,8 @@ yarn-error.log*
 .eslintcache
 
 # Optional REACT_APP environment variables
-.env.*
+.env*
+.env
 
 # Ignore public directory contents except public/index.html
 public/*
