@@ -16,8 +16,20 @@ urlpatterns = [
     path('cart-items-detail/<int:pk>/', views.cart_items_detail, name='cart-items-detail'),
     path('payment-list-create/', views.payment_list_create, name='payment-list-create'),
     path('payment-detail/<int:pk>/', views.payment_detail, name='payment-detail'),
+    path('payments/create/', views.payment_create, name='payment-create'),
+    path('payments/<int:pk>/update/', views.payment_update, name='payment-update'),
+    path('payments/<int:pk>/delete/', views.payment_delete, name='payment-delete'),
     path('address-list/', views.address_list, name='address-list'),
     path('address-detail/<int:pk>/', views.address_detail, name='address-detail'),
-
-
+    path('addresses/create/', views.create_address, name='address-create'),
+    path('addresses/<int:pk>/update/', views.update_address, name='address-update'),
+    path('addresses/<int:pk>/delete/', views.delete_address, name='address-delete'),
+    path('shipping-list/', views.shipping_list, name='shipping-list'),
+    path('shippings-details/<int:pk>/', views.shipping_detail, name='shipping-detail'),
+    path('shippings-create/', views.shipping_create, name='shipping-create'),
+    path('shippings-update/<int:pk>/update/', views.shipping_update, name='shipping-update'),
+    path('shippings-delete/<int:pk>/delete/', views.shipping_delete, name='shipping-delete'),
 ]
+
+
+

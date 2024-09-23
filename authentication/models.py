@@ -26,7 +26,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     date_joined=models.DateTimeField(auto_now_add=True)
     is_staff=models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
-    is_profile_completed=models.BooleanField(default=False)
+    is_profile_completed=models.BooleanField(default=False) 
     last_login=models.DateTimeField(null=True)
     updated_at=models.DateTimeField(auto_now=True)
     created_at=models.DateTimeField(auto_now_add=True)
