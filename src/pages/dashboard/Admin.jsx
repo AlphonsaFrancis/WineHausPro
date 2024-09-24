@@ -11,6 +11,7 @@ import axios from "axios";
 import { formatDate } from "./helper";
 import BasicModal from "../../components/BasicModal";
 import { useNavigate } from "react-router-dom";
+import AddUserForm from "../../components/Forms/UserForm";
 import ProductForm from "../../components/Forms/ProductForm";
 import AddCategoryForm from "../../components/Forms/CategoryFrom";
 import AddOrderForm from "../../components/Forms/OrderForm";
@@ -245,6 +246,7 @@ function Admin() {
       setAddButtonLabel("Add User");
       setRows(usersRows);
       setColumns(usersColumns);
+      setForm(<AddUserForm onCancel={handleCloseForm}/>)
     }
 
     if (menu === "Categories") {

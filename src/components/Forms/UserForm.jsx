@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './forms.css';
 
-const AddUserForm = () => {
+const AddUserForm = ({onCancel}) => {
   const [userData, setUserData] = useState({
     email: '',
     password: '',
@@ -154,7 +154,7 @@ const AddUserForm = () => {
 
         <div className="form-actions">
           <button type="submit" className="save-btn">Save User</button>
-          <button type="reset" className="cancel-btn">Cancel</button>
+          <button type="reset" className="cancel-btn" onClick={onCancel}>Cancel</button>
         </div>
       </form>
     </div>
