@@ -185,6 +185,8 @@ function Staff() {
         return confirmDeleteCountry;
       case "Made of":
         return confirmDeleteMadeof;
+      case "Orders":
+        return confirmDeleteOrder;  
 
       default:
         return () => {};
@@ -393,6 +395,21 @@ function Staff() {
       });
   };
 
+  const confirmDeleteOrder = () => {
+    axios
+      .delete(`http://127.0.0.1:8000/api/v1/orders/delete/${selectedId}/`)
+      .then((response) => {
+        if (response.status === 200) {
+          setOpen(false);
+          alert("Order deleted !");
+          window.location.reload();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const confirmDeleteCategory = () => {
     axios
       .delete(`${config.deleteCategoryApi}${selectedId}/`)
@@ -465,6 +482,8 @@ function Staff() {
 
   const handleDeleteOrder = (id) => {
     console.log("Delete ID:", id);
+    setOpen(true);
+    setSelectedId(id);
     // Add your delete logic here
   };
 

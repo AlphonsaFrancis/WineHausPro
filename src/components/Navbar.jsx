@@ -10,6 +10,7 @@ function Navbar() {
         <div className='left-section'>
             <div className="logo">
                 <img src={logo} alt="logo" />
+                <h2>WineHaus</h2>
             </div>
         </div>
 

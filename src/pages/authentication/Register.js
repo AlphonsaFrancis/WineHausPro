@@ -64,7 +64,7 @@ const Register = ({setIslogin}) => {
           
           <button type="submit">Sign Up</button>
           
-           <div className="or-section">
+           {/* <div className="or-section">
             <span>or</span>
           </div>
           
@@ -72,7 +72,7 @@ const Register = ({setIslogin}) => {
             <img src={google} alt="Google Icon" />
             Sign in with Google
           </button> 
-          
+           */}
           <div className="create-account">
             <a href="#" onClick={()=>setIslogin(true)}>Already registered? Sign In</a>
           </div>

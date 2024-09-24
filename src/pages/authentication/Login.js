@@ -35,6 +35,7 @@ const Login = ({ setIslogin }) => {
           console.log('Google User signed in',response.data);
           if(response.status===200){
             alert('Login successfull !')
+            navigate('/home')
           }
           // Store the JWT tokens in your app
         })
