@@ -45,6 +45,29 @@ def order_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
        
 
+@api_view(['DELETE'])
+def delete_order(request, pk):
+    try:
+        order = Order.objects.get(pk=pk)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        order.delete()
+        return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+def delete_order_item(request, pk):
+    try:
+        order_item = OrderItems.objects.get(pk=pk)
+    except OrderItems.DoesNotExist:
+        return Response({'error': 'Order Item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        order_item.delete()
+        return Response({'message': 'Order Item deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['GET', 'POST'])
 def order_items_list(request):
