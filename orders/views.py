@@ -51,9 +51,15 @@ def delete_order(request, pk):
         order = Order.objects.get(pk=pk)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        order_item = OrderItems.objects.filter(order_id=pk)
+    except OrderItems.DoesNotExist:
+        order_item=None
 
     if request.method == 'DELETE':
         order.delete()
+        if order_item:
+            order_item.delete()
         return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
