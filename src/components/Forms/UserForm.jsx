@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './forms.css';
+import axios from "axios";
 
 const AddUserForm = ({onCancel}) => {
   const [userData, setUserData] = useState({
@@ -19,8 +20,20 @@ const AddUserForm = ({onCancel}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log('User data:', userData);
+    const formData = new FormData();
+    Object.keys(userData).forEach((key) => {
+      formData.append(key, userData[key]);
+    });
+    axios.post("http://127.0.0.1:8000/api/v1/auth/users/",formData)
+    .then((res)=>{
+      alert("User Added !")
+      window.location.reload()
+
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
   };
 
   return (

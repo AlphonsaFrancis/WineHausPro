@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './forms.css';
+import axios from "axios";
 
 const AddCountryForm = ({onCancel}) => {
   const [countryData, setCountryData] = useState({
@@ -14,17 +15,29 @@ const AddCountryForm = ({onCancel}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Category data:', countryData);
+    console.log('Country data:', countryData);
+    const formData = new FormData();
+    Object.keys(countryData).forEach((key) => {
+      formData.append(key, countryData[key]);
+    });
+    axios.post("http://127.0.0.1:8000/api/v1/products/country-create/",formData)
+    .then((res)=>{
+      alert("Country Added !")
+      window.location.reload()
+
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
   };
 
   return (
     <div className="form-container">
-      <h3>Add New Category</h3>
+      <h3>Add New Country</h3>
       <form onSubmit={handleSubmit}>
         <fieldset>
           <div className="head">
-            <span>Category Details</span>
+            <span>Country Details</span>
           </div>
           
           <label htmlFor="name">Name</label>

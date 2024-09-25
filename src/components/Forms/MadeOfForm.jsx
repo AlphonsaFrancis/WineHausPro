@@ -15,8 +15,20 @@ const AddMadeofForm = ({onCancel}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Category data:', madeOfData);
+    console.log('Made of data:', madeOfData);
+    const formData = new FormData();
+    Object.keys(madeOfData).forEach((key) => {
+      formData.append(key, madeOfData[key]);
+    });
+    axios.post("http://127.0.0.1:8000/api/v1/products/madeof-create/",formData)
+    .then((res)=>{
+      alert("Made Of Added !")
+      window.location.reload()
+
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
   };
 
   return (
