@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './forms.css';
+import axios from "axios";
 
-const AddMadeofForm = () => {
+const AddMadeofForm = ({onCancel}) => {
   const [madeOfData, setMadeOfData] = useState({
     name: '',
     description: '',
@@ -20,7 +21,7 @@ const AddMadeofForm = () => {
 
   return (
     <div className="form-container">
-      <h3>Add New Category</h3>
+      <h3>Add New Made Of</h3>
       <form onSubmit={handleSubmit}>
         <fieldset>
           <div className="head">
@@ -48,8 +49,8 @@ const AddMadeofForm = () => {
           />
 
           <div className="form-actions">
-            <button type="submit" className="save-btn">Save Category</button>
-            <button type="reset" className="cancel-btn">Cancel</button>
+            <button type="submit" className="save-btn">Save </button>
+            <button type="reset" className="cancel-btn" onClick={onCancel}>Cancel</button>
           </div>
         </fieldset>
       </form>

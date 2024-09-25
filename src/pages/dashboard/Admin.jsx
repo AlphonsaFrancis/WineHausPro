@@ -16,6 +16,9 @@ import ProductForm from "../../components/Forms/ProductForm";
 import AddCategoryForm from "../../components/Forms/CategoryFrom";
 import AddOrderForm from "../../components/Forms/OrderForm";
 import AddStaffForm from "../../components/Forms/StaffsForm";
+import AddMadeofForm from "../../components/Forms/MadeOfForm";
+import AddBrandForm from "../../components/Forms/BrandForm";
+import AddCountryForm from "../../components/Forms/CountryForm";
 
 function Admin() {
   const navigate = useNavigate();
@@ -260,6 +263,8 @@ function Admin() {
     if (menu === "Brands") {
       setAddButtonLabel("Add Brand");
       setRows(restructureBrandData(brands));
+      setForm(<AddBrandForm  onCancel={handleCloseForm}/>)
+
       axios
       .get(config.getBrandsApi)
       .then((response) => {
@@ -273,12 +278,16 @@ function Admin() {
     if (menu === "Country") {
       setAddButtonLabel("Add Country");
       setRows(restructureCountryData(countries));
+      setForm(<AddCountryForm  onCancel={handleCloseForm}/>)
+
       setColumns(countryColumns);
     }
     if (menu === "Made of") {
       setAddButtonLabel("Add Made of");
       setRows(restructureMadeofData(madeOf));
       setColumns(categoryColumns);
+      setForm(<AddMadeofForm  onCancel={handleCloseForm}/>)
+
     }
   }, [menu,open,countries]);
 

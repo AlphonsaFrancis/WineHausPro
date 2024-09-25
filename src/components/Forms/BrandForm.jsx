@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './forms.css';
+import axios from 'axios';
 
-const AddBrandForm = () => {
+const AddBrandForm = ({onCancel}) => {
   const [brandData, setBrandData] = useState({
     name: '',
     description: '',
@@ -14,9 +15,22 @@ const AddBrandForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Category data:', brandData);
+    console.log('Brand data:', brandData);
+    const formData = new FormData();
+    Object.keys(brandData).forEach((key) => {
+      formData.append(key, brandData[key]);
+    });
+    axios.post("http://127.0.0.1:8000/api/v1/products/brand-create/",formData)
+    .then((res)=>{
+      alert("Brand Added !")
+      window.location.reload()
+
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
   };
+
 
   return (
     <div className="form-container">
@@ -48,8 +62,8 @@ const AddBrandForm = () => {
           />
 
           <div className="form-actions">
-            <button type="submit" className="save-btn">Save Category</button>
-            <button type="reset" className="cancel-btn">Cancel</button>
+            <button type="submit" className="save-btn">Save </button>
+            <button type="reset" className="cancel-btn" onClick={onCancel}>Cancel</button>
           </div>
         </fieldset>
       </form>

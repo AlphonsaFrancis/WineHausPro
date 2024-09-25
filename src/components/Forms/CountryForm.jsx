@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './forms.css';
 
-const AddCountryForm = () => {
+const AddCountryForm = ({onCancel}) => {
   const [countryData, setCountryData] = useState({
     name: '',
     description: '',
@@ -48,8 +48,8 @@ const AddCountryForm = () => {
           />
 
           <div className="form-actions">
-            <button type="submit" className="save-btn">Save Category</button>
-            <button type="reset" className="cancel-btn">Cancel</button>
+            <button type="submit" className="save-btn">Save</button>
+            <button type="reset" className="cancel-btn" onClick={onCancel}>Cancel</button>
           </div>
         </fieldset>
       </form>
