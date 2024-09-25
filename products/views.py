@@ -125,6 +125,7 @@ def madeof_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
 def madeof_create(request):
     serializer = MadeOfSerializer(data=request.data)
     if serializer.is_valid():
