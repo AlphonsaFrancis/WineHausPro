@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 
-
-export default function DataTable({rows,columns}) {
+export default function DataTable({ rows, columns }) {
   return (
-    <div style={{ height: 400, width: '76.5%',background: '#abe2bd' }}>
+    <div style={{ height: '45vh', width: '100%', marginTop: '20px' ,background: '#abe2bd'}}> {/* Adjust height and width */}
       <DataGrid
         rows={rows}
         columns={columns}
@@ -15,7 +14,10 @@ export default function DataTable({rows,columns}) {
         }}
         sx={{
           '& .MuiDataGrid-row': {
-            borderBottom: '1px solid #ffff',  // Change border color here
+            borderBottom: '1px solid #ffff',  // Softer border for a cleaner look
+          },
+          '& .MuiDataGrid-cell': {
+            padding: '10px',
           },
         }}
         pageSizeOptions={[5, 10]}
@@ -24,3 +26,4 @@ export default function DataTable({rows,columns}) {
     </div>
   );
 }
+

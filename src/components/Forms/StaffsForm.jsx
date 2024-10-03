@@ -8,7 +8,7 @@ const AddStaffForm = ({onCancel}) => {
     first_name: '',
     last_name: '',
     phone: '',
-    designation: '1',
+    designation: '',
     hire_date: '',
     salary: '',
 

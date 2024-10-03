@@ -1,0 +1,121 @@
+.best-sellers {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    margin-bottom: 40px; 
+}
+
+.head-seller{
+    font-size: 10rem;
+    margin-bottom: 20px;   /* I think spasce btn different css */
+} 
+
+.product-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.product-card {
+    /* background-color: #fff; */
+    border-radius: 15px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    width: 290px;
+    padding: 0px;
+    padding: 0px;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-image {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.product-image img {
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.4);
+}
+
+.product-info h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.product-info p {
+    font-size: 1.1em;
+    color: #555;
+    margin: 5px 0;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.red {
+    background-color: #f47a84;
+}
+
+.rose {
+    background-color: #f374b4;
+}
+
+.white {
+    background-color: #8dcaed;
+    /* color: #333; */
+}
+
+.sparkling {
+    background-color: rgb(253, 143, 47);
+    /* color: #333; */
+}
+
+.buy-now {
+    background-color: rgb(79, 222, 120);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0px;
+}
+
+.buy-now:hover {
+    background-color: rgb(24, 170, 80);
+}
+
+.favorite {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #555;
+    cursor: pointer;
+}
+
+.favorite:hover {
+    color: #e63946;
+}

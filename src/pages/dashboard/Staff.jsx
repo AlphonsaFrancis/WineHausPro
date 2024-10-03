@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Admin.css";
 import Navbar from "../../components/Navbar";
 import Menubox from "../../components/Menubox";
-import BasicTable from "../../components/Basictable";
+import DataTable from "../../components/Basictable";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/Forms/ProductForm";
 import AddCategoryForm from "../../components/Forms/CategoryFrom";
 import AddOrderForm from "../../components/Forms/OrderForm";
+import AddBrandForm from "../../components/Forms/BrandForm";
+import AddCountryForm from "../../components/Forms/CountryForm";
+import AddMadeofForm from "../../components/Forms/MadeOfForm";
 
 function Staff() {
     const navigate = useNavigate();
@@ -244,6 +247,8 @@ function Staff() {
     if (menu === "Brands") {
       setAddButtonLabel("Add Brand");
       setRows(restructureBrandData(brands));
+      setForm(<AddBrandForm onCancel={handleCloseForm}/>)
+
       axios
       .get(config.getBrandsApi)
       .then((response) => {
@@ -258,11 +263,13 @@ function Staff() {
       setAddButtonLabel("Add Country");
       setRows(restructureCountryData(countries));
       setColumns(countryColumns);
+      setForm(<AddCountryForm onCancel={handleCloseForm}/>)
     }
     if (menu === "Made of") {
       setAddButtonLabel("Add Made of");
       setRows(restructureMadeofData(madeOf));
       setColumns(categoryColumns);
+      setForm(<AddMadeofForm onCancel={handleCloseForm}/>)
     }
   }, [menu,open,countries]);
 
@@ -554,7 +561,7 @@ function Staff() {
       </button>
     </div>
     <div className="table-container">
-      <BasicTable rows={rows} columns={columns}></BasicTable>
+      <DataTable rows={rows} columns={columns}></DataTable>
     </div>
 
     <BasicModal

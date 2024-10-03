@@ -156,8 +156,7 @@ const ProductForm = ({ onCancel }) => {
 
           <label>Price</label>
           <input
-            type="number"
-            step="0.01"
+            type="text"
             id="price"
             name="price"
             value={productData.price}
@@ -165,7 +164,7 @@ const ProductForm = ({ onCancel }) => {
             required
           />
 
-          <label>Stock Quantity (liter)</label>
+          <label>Stock Quantity </label>
           <input
             type="number"
             id="quantity"
