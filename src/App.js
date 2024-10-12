@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
 import Home from './pages/home/Home';
 import Staff from  './pages/dashboard/Staff';
+import ProductPage from './pages/home/productPage';
+import Navbar from './components/Navbar';
 
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
         <Route path="/home" element={<Home/>} />
         <Route path="*" element={<NotFound />} />
         <Route path="/staff" element={<Staff/>} />
+        <Route path="/products" element={<ProductPage/>} />
       </Routes>
     </Router>
     </div>

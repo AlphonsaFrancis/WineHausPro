@@ -3,7 +3,7 @@ import config from "../../config/config";
 import axios from "axios";
 import "./forms.css";
 
-const ProductForm = ({ onCancel }) => {
+const ProductForm = ({ onCancel,initialProductData,isEdit}) => {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -21,6 +21,29 @@ const ProductForm = ({ onCancel }) => {
     image: null,
   });
 
+
+  const handleOnCancel = ()=>{
+    setProductData(null)
+    onCancel()
+  }
+
+  useEffect(() => {
+    if (initialProductData) {
+      setProductData({
+        name: initialProductData.name ,
+        description: initialProductData.description ,
+        price: initialProductData.price ,
+        quantity: initialProductData.quantity || 1,
+        category: initialProductData.category || null,
+        brand: initialProductData.brand || null,
+        country: initialProductData.country || null,
+        made_of: initialProductData.made_of || null,
+        stock_quantity: initialProductData.stock_quantity || 1,
+        image: initialProductData.image || null, // Handle this for preview if needed
+      });
+    }
+  }, [initialProductData]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProductData({ ...productData, [name]: value });
@@ -30,6 +53,32 @@ const ProductForm = ({ onCancel }) => {
     setProductData({ ...productData, image: e.target.files[0] });
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   const formData = new FormData();
+  //   Object.keys(productData).forEach((key) => {
+  //     formData.append(key, productData[key]);
+  //   });
+
+
+  
+  //   axios
+  //     .post("http://127.0.0.1:8000/api/v1/products/create/", formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     })
+  //     .then((response) => {
+  //       alert("Product created successfully!")
+  //       console.log("Product created successfully:", response.data);
+  //       window.location.reload();
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error creating product:", error.response.data);
+  //     });
+  // };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -38,21 +87,39 @@ const ProductForm = ({ onCancel }) => {
       formData.append(key, productData[key]);
     });
 
-  
-    axios
-      .post("http://127.0.0.1:8000/api/v1/products/create/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        alert("Product created successfully!")
-        console.log("Product created successfully:", response.data);
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.error("Error creating product:", error.response.data);
-      });
+    if (isEdit) {
+      // Update existing product
+      axios
+        .put(`http://127.0.0.1:8000/api/v1/products/update/${initialProductData.product_id}/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          alert("Product updated successfully!");
+          console.log("Product updated successfully:", response.data);
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error updating product:", error.response.data);
+        });
+    } else {
+      // Create a new product
+      axios
+        .post(`http://127.0.0.1:8000/api/v1/products/create/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          alert("Product created successfully!");
+          console.log("Product created successfully:", response.data);
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error creating product:", error.response.data);
+        });
+    }
   };
 
   useEffect(() => {
@@ -223,14 +290,13 @@ const ProductForm = ({ onCancel }) => {
             name="image"
             accept="image/*"
             onChange={handleFileChange}
-            required
           />
 
           <div className="form-actions">
             <button type="submit" className="save-btn">
-              Save Product
+            {isEdit ? "Update Product" : "Save Product"}
             </button>
-            <button type="reset" className="cancel-btn" onClick={onCancel}>
+            <button type="reset" className="cancel-btn" onClick={handleOnCancel} >
               Cancel
             </button>
           </div>

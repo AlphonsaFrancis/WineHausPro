@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Admin.css";
 import Navbar from "../../components/Navbar";
 import Menubox from "../../components/Menubox";
-import DataTable from "../../components/Basictable";
+import BasicTable from "../../components/Basictable";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,8 +20,8 @@ import AddMadeofForm from "../../components/Forms/MadeOfForm";
 
 function Staff() {
     const navigate = useNavigate();
-    const [menu, setMenu] = useState("Products");
-    const [parentMenu, setParentMenu] = useState("Products");
+    const [menu, setMenu] = useState("");
+    const [parentMenu, setParentMenu] = useState("");
     const [rows, setRows] = useState([]);
     const [columns, setColumns] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -561,7 +561,7 @@ function Staff() {
       </button>
     </div>
     <div className="table-container">
-      <DataTable rows={rows} columns={columns}></DataTable>
+      <BasicTable rows={rows} columns={columns}></BasicTable>
     </div>
 
     <BasicModal

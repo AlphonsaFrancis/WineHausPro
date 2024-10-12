@@ -6,4 +6,28 @@ export const formatDate = (dateString) => {
     return `${day}/${month}/${year}`;
 };
 
+export  const getItemById = (id, data) => {
+    return data.find((item) => item.product_id === id);
+  };
 
+
+export  const orderItemById = (id, data) => {
+    return data.find((item) => item.order_id === id);
+  };
+
+// export  const getBrandById = (id, data) => {
+//     return data.find((item) => item.brand_id === id);
+//   };
+
+
+// export  const getCountryById = (id, data) => {
+//     return data.find((item) => item.country_id === id);
+//   };
+
+
+// export  const getMadeofById = (id, data) => {
+//     return data.find((item) => item.country_id === id);
+//   };
+
+
+  
