@@ -1,12 +1,22 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
-    path('list/', views.product_list, name='product-list'),         
-    path('create/', views.product_create, name='product-create'),
-    path('details/<int:pk>/', views.product_detail, name='product-detail'),
-    path('update/<int:pk>/', views.product_update, name='product-update'),
-    path('delete/<int:pk>/', views.product_delete, name='product-delete'),
+    path('list/', views.list_products, name='list_products'),  # List all products
+    path('details/<int:pk>/', views.product_details, name='product_details'),  # Retrieve product details
+    path('delete/<int:pk>/', views.delete_product, name='delete_product'),  # Delete product
+    path('create/', views.create_product, name='create_product'),  # Create product
+    path('update/<int:pk>/', views.update_product, name='update_product'),  # Update product
+
+    # path('list/', views.product_list, name='product-list'),         
+    # path('create/', views.product_create, name='product-create'),
+    # path('details/<int:pk>/', views.product_detail, name='product-detail'),
+    # path('update/<int:pk>/', views.product_update, name='product-update'),
+    # path('delete/<int:pk>/', views.product_delete, name='product-delete'),
+
     path('category-list/', views.category_list, name='category-list'),
     path('category-create/', views.category_create, name='category-create'),
     path('category-details/<int:pk>/', views.category_detail, name='category-detail'),
@@ -28,3 +38,6 @@ urlpatterns = [
     path('brand-update/<int:pk>/', views.brand_update, name='brand-update'),
     path('brand-delete/<int:pk>/', views.brand_delete, name='brand-delete'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -213,3 +213,8 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'alphonsafranc@gmail.com'
 EMAIL_HOST_PASSWORD = 'mpycvsochvwnuswt'
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
