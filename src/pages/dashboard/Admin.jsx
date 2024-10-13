@@ -19,7 +19,7 @@ import AddStaffForm from "../../components/Forms/StaffsForm";
 import AddMadeofForm from "../../components/Forms/MadeOfForm";
 import AddBrandForm from "../../components/Forms/BrandForm";
 import AddCountryForm from "../../components/Forms/CountryForm";
-import { getItemById } from "./helper";
+import { getItemById ,categoryItemById,getBrandById,getCountryById,getMadeofById} from "./helper";
 import { orderItemById } from "./helper";
 // import { getBrandById } from "./helper";
 // import { orderCountryById } from "./helper";
@@ -44,6 +44,7 @@ function Admin() {
   const [isFormEdit,setIsFormEdit] = useState(false)
   const [allProducts, setAllProducts] = useState()
   const [allOrders, setAllOrders] = useState()
+  // const [allCategories,setAllCategories] = useState()
   // const [allBrands, setAllBrands] = useState()
   // const [allCountrys, setAllCountrys] = useState()
   // const [allMadeofs, setAllMadeofs] = useState()
@@ -139,11 +140,19 @@ function Admin() {
       return acc;
     }, {});
 
+    const order_status_map={
+      1:'Order placed',
+      2:"Pending",
+      3:"Dispatched",
+      4:"Delivered",
+      5:"Cancelled"
+    }
+
     return orders.map((order) => ({
       id: order.order_id,
       user_id: userLookup[order.user_id],
       order_date: formatDate(order.order_date),
-      order_status: order.order_status,
+      order_status:order_status_map[order.order_status],
       total_products: 1,
       expected_delivery: formatDate(order.updated_at),
       total_amount: order.total_amount,
@@ -319,7 +328,7 @@ function Admin() {
       .catch((error) => {
         console.error("Error fetching brands:", error);
       });
-      setColumns(categoryColumns);
+      setColumns(brandColumns);
     }
     if (menu === "Country") {
       setAddButtonLabel("Add Country");
@@ -331,7 +340,7 @@ function Admin() {
     if (menu === "Made of") {
       setAddButtonLabel("Add Made of");
       setRows(restructureMadeofData(madeOf));
-      setColumns(categoryColumns);
+      setColumns(madeOfColumns);
       setForm(<AddMadeofForm  onCancel={handleCloseForm}/>)
 
     }
@@ -485,7 +494,54 @@ function Admin() {
       headerName: "Actions",
       renderCell: (params) => (
         <div>
-          <IconButton onClick={() => handleEditCategory(params.row.id)}>
+          <IconButton onClick={() => handleEditCountry(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+  const brandColumns = [
+    // { field: "id", headerName: "Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "description", headerName: "Descrption", flex: 1 },
+    { field: "added", headerName: "Added On", flex: 1 },
+    { field: "updated", headerName: "Updated On", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditBrand(params.row.id)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      flex: 1,
+    },
+  ];
+
+
+  const madeOfColumns = [
+    // { field: "id", headerName: "Id", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "description", headerName: "Descrption", flex: 1 },
+    { field: "added", headerName: "Added On", flex: 1 },
+    { field: "updated", headerName: "Updated On", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: (params) => (
+        <div>
+          <IconButton onClick={() => handleEditMadeof(params.row.id)}>
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
@@ -664,7 +720,7 @@ function Admin() {
     console.log("Edit ID:", id);
     setIsFormEdit(true)
     setIsShowForm(true)
-    const orderData = getItemById(id,allOrders)
+    const orderData = orderItemById(id,allOrders)
     console.log("orders",orderData)
     console.log("rows",rows)
     console.log("allOrders",allOrders)
@@ -702,15 +758,50 @@ function Admin() {
     // Add your delete logic here
   };
 
-  const handleEditCategory = (id) => {
+  const handleEditCategory = async (id) => {
     console.log("Edit ID:", id);
-    // Add your edit logic here
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const category = categoryItemById(id,categories)
+    console.log("category",category)
+    console.log("rows",rows)
+    setForm(<AddCategoryForm onCancel={handleCloseForm} initialCategoryData={category} isEdit={true}/>)
   };
 
-  const handleDeleteCategory = (id) => {
-    console.log("Delete ID:", id);
-    // Add your delete logic here
+  const handleEditBrand = async (id) => {
+    console.log("Edit ID:", id);
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const brand = getBrandById(id,brands)
+    console.log("brand",brand)
+    setForm(<AddBrandForm onCancel={handleCloseForm} initialBrandData={brand} isEdit={true}/>)
   };
+
+  const handleEditCountry = async (id) => {
+    console.log("Edit ID:", id);
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const country = getCountryById(id,countries)
+    console.log("country",country)
+    setForm(<AddCountryForm onCancel={handleCloseForm} initialCountryData={country} isEdit={true}/>)
+  };
+
+  const handleEditMadeof = async (id) => {
+    console.log("Edit ID:", id);
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const country = getMadeofById(id,madeOf)
+    console.log("country",country)
+    setForm(<AddMadeofForm onCancel={handleCloseForm} initialMadeOfData={country} isEdit={true}/>)
+  };
+
+  
+
+
+  // const handleDeleteCategory = (id) => {
+  //   console.log("Delete ID:", id);
+  //   // Add your delete logic here
+  // };
 
   return (
     <div className="container">

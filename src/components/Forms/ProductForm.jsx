@@ -82,18 +82,25 @@ const ProductForm = ({ onCancel,initialProductData,isEdit}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // const formData = new FormData();
+    // Object.keys(productData).forEach((key) => {
+    //   formData.append(key, productData[key]);
+    // });
+
     const formData = new FormData();
     Object.keys(productData).forEach((key) => {
-      formData.append(key, productData[key]);
+      if (key === 'image' && productData[key] instanceof File) {
+        formData.append(key, productData[key]); // Only append if the image is a valid file
+      } else if (key !== 'image') {
+        formData.append(key, productData[key]);
+      }
     });
 
     if (isEdit) {
       // Update existing product
       axios
         .put(`http://127.0.0.1:8000/api/v1/products/update/${initialProductData.product_id}/`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+        
         })
         .then((response) => {
           alert("Product updated successfully!");
