@@ -24,6 +24,7 @@ class MadeOf(models.Model):
 class Country(models.Model):
     country_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255,null=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -70,7 +71,7 @@ class Product(models.Model):
     made_of = models.ForeignKey('MadeOf', on_delete=models.CASCADE)
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     stock_quantity = models.IntegerField()
-    image = models.ImageField(upload_to='product_images/', null=True, blank=True)  # New image field
+    image = models.ImageField(upload_to='product_images/', null=True, blank=True)  
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
