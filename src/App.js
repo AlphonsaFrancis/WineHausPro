@@ -9,7 +9,7 @@ import Home from './pages/home/Home';
 import Staff from  './pages/dashboard/Staff';
 import ProductPage from './pages/home/productPage';
 import Navbar from './components/Navbar';
-
+import ProductDetail from './pages/home/productDetails'
 
 function App() {
 
@@ -24,6 +24,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/staff" element={<Staff/>} />
         <Route path="/products" element={<ProductPage/>} />
+        <Route path="/products/:id" element={<ProductDetail/>} />
       </Routes>
     </Router>
     </div>

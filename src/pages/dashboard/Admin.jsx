@@ -20,7 +20,7 @@ import AddMadeofForm from "../../components/Forms/MadeOfForm";
 import AddBrandForm from "../../components/Forms/BrandForm";
 import AddCountryForm from "../../components/Forms/CountryForm";
 import { getItemById ,categoryItemById,getBrandById,getCountryById,getMadeofById} from "./helper";
-import { orderItemById } from "./helper";
+import { orderItemById ,getStaffById,getIUserById} from "./helper";
 // import { getBrandById } from "./helper";
 // import { orderCountryById } from "./helper";
 // import { getMadeofById } from "./helper";
@@ -44,6 +44,7 @@ function Admin() {
   const [isFormEdit,setIsFormEdit] = useState(false)
   const [allProducts, setAllProducts] = useState()
   const [allOrders, setAllOrders] = useState()
+  const [allStaffs, setAllStaffs] = useState()
   // const [allCategories,setAllCategories] = useState()
   // const [allBrands, setAllBrands] = useState()
   // const [allCountrys, setAllCountrys] = useState()
@@ -276,6 +277,7 @@ function Admin() {
         .get('http://localhost:8000/api/v1/staffs/list/')
         .then((response) => {
           console.log("staffs",response.data);
+          setAllStaffs(response.data)
           const transformedStaffData = transformStaffData(response.data)
           console.log("transformedStaffData",transformedStaffData)
           setRows(transformedStaffData)
@@ -734,9 +736,15 @@ function Admin() {
     // Add your delete logic here
   };
 
-  const handleEditStaff = (id) => {
+  const handleEditStaff = async(id) => {
     console.log("Edit ID:", id);
-    // Add your edit logic here
+    console.log("Edit ID:", id);
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const staff = getStaffById(id,allStaffs)
+    console.log("staff",staff)
+    setForm(<AddStaffForm onCancel={handleCloseForm} initialStaffData={staff} isEdit={true}/>)
+
   };
 
   const handleDeleteStaff = (id) => {
@@ -746,9 +754,14 @@ function Admin() {
     // Add your delete logic here
   };
 
-  const handleEditUsers = (id) => {
+  const handleEditUsers = async(id) => {
     console.log("Edit ID:", id);
-    // Add your edit logic here
+    console.log("Edit ID:", id);
+    await setIsFormEdit(true)
+    setIsShowForm(true)
+    const user = getIUserById(id,users)
+    console.log("user",user)
+    setForm(<AddUserForm onCancel={handleCloseForm} initialUserData={user} isEdit={true}/>)
   };
 
   const handleDeleteUsers = (id) => {

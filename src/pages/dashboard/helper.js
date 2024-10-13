@@ -6,6 +6,15 @@ export const formatDate = (dateString) => {
     return `${day}/${month}/${year}`;
 };
 
+export function formatDateForInput(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 export  const getItemById = (id, data) => {
     return data.find((item) => item.product_id === id);
   };
@@ -33,6 +42,25 @@ export  const getCountryById = (id, data) => {
 export  const getMadeofById = (id, data) => {
     return data.find((item) => item.madeof_id === id);
   };
+
+  export  const getStaffById = (id, data) => {
+    return data.find((item) => item.staff_id === id);
+  };
+
+  export  const getIUserById = (id, data) => {
+    return data.find((item) => item.id === id);
+  };
+
+// export function formatDate(dateString) {
+//   const date = new Date(dateString);
+//   const day = String(date.getDate()).padStart(2, '0');
+//   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+//   const year = date.getFullYear();
+
+//   return `${day}/${month}/${year}`;
+// }
+
+  
 
 
   

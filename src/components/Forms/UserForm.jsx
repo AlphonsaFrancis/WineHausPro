@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import './forms.css';
 import axios from "axios";
+import {formatDateForInput} from '../../pages/dashboard/helper'
 
-const AddUserForm = ({onCancel}) => {
+const AddUserForm = ({onCancel,initialUserData,isEdit}) => {
   const [userData, setUserData] = useState({
     email: '',
     password: '',
@@ -12,6 +13,23 @@ const AddUserForm = ({onCancel}) => {
     isProfileCompleted: 'no',
     lastLogin: '',
   });
+
+  useEffect(() => {
+    if (initialUserData) {
+      setUserData({
+        email: initialUserData?.email,
+        password: "*****",
+        dateJoined: formatDateForInput(initialUserData?.date_joined),
+        isStaff: initialUserData?.is_staff,
+        isActive: initialUserData?.is_active,
+        isProfileCompleted: initialUserData?.is_profile_completed,
+        lastLogin: initialUserData?.last_login,
+      });
+    }
+  }, [initialUserData]);
+
+
+  console.log("----uer--",userData)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +43,7 @@ const AddUserForm = ({onCancel}) => {
     Object.keys(userData).forEach((key) => {
       formData.append(key, userData[key]);
     });
-    axios.post("http://127.0.0.1:8000/api/v1/auth/users/",formData)
+    axios.post("http://127.0.0.1:8000/api/v1/auth/add-new-user/",formData)
     .then((res)=>{
       alert("User Added !")
       window.location.reload()
@@ -38,7 +56,7 @@ const AddUserForm = ({onCancel}) => {
 
   return (
     <div className="form-container">
-      <h3>Add New User</h3>
+      <h3> {isEdit?'Edit User':'Add New User'} </h3>
       <form onSubmit={handleSubmit}>
         <div className="head">
           <span>User Details</span>
@@ -82,7 +100,7 @@ const AddUserForm = ({onCancel}) => {
               id="staff_yes"
               name="isStaff"
               value="yes"
-              checked={userData.isStaff === 'yes'}
+              checked={userData.isStaff === 'true'}
               onChange={handleInputChange}
               required
             />
@@ -93,7 +111,7 @@ const AddUserForm = ({onCancel}) => {
               id="staff_no"
               name="isStaff"
               value="no"
-              checked={userData.isStaff === 'no'}
+              checked={userData.isStaff === 'false'}
               onChange={handleInputChange}
               required
             />
@@ -109,7 +127,7 @@ const AddUserForm = ({onCancel}) => {
               id="active_yes"
               name="isActive"
               value="yes"
-              checked={userData.isActive === 'yes'}
+              checked={userData.isActive === 'true'}
               onChange={handleInputChange}
               required
             />
@@ -120,7 +138,7 @@ const AddUserForm = ({onCancel}) => {
               id="active_no"
               name="isActive"
               value="no"
-              checked={userData.isActive === 'no'}
+              checked={userData.isActive === 'true'}
               onChange={handleInputChange}
               required
             />
@@ -166,7 +184,7 @@ const AddUserForm = ({onCancel}) => {
         />
 
         <div className="form-actions">
-          <button type="submit" className="save-btn">Save User</button>
+          <button type="submit" className="save-btn">{isEdit?'Update User':'Save User'}</button>
           <button type="reset" className="cancel-btn" onClick={onCancel}>Cancel</button>
         </div>
       </form>
