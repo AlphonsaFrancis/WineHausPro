@@ -27,7 +27,7 @@ import { orderItemById ,getStaffById,getIUserById} from "./helper";
 
 function Admin() {
   const navigate = useNavigate();
-  const [menu, setMenu] = useState("");
+  const [menu, setMenu] = useState("Products");
   const [parentMenu, setParentMenu] = useState("");
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -809,8 +809,6 @@ function Admin() {
   };
 
   
-
-
   // const handleDeleteCategory = (id) => {
   //   console.log("Delete ID:", id);
   //   // Add your delete logic here
@@ -818,7 +816,7 @@ function Admin() {
 
   return (
     <div className="container">
-      <Navbar></Navbar>
+      <Navbar/>
       <div className="menu-container">
         <div className="menus">
           <Menubox

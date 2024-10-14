@@ -135,9 +135,15 @@ const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const token = localStorage.getItem('authToken');
+
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/v1/products/list/')
+    axios.get('http://127.0.0.1:8000/api/v1/products/list/',{
+      headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
       .then(response => {
         setProducts(response.data);
         setLoading(false);

@@ -13,10 +13,17 @@ const ProductDetail = () => {
   const [brands, setBrands] = useState({});
   const [countries, setCountries] = useState({});
   const [materials, setMaterials] = useState({});
+  const token = localStorage.getItem('authToken');
+
 
   useEffect(() => {
     // Fetch product details
-    axios.get(`http://127.0.0.1:8000/api/v1/products/details/${id}/`)
+    axios.get(`http://127.0.0.1:8000/api/v1/products/details/${id}/`,{
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+      )
       .then(response => {
         setProduct(response.data);
         setLoading(false);
@@ -27,7 +34,11 @@ const ProductDetail = () => {
       });
 
     // Fetch category data
-    axios.get('http://127.0.0.1:8000/api/v1/products/category-list/')
+    axios.get('http://127.0.0.1:8000/api/v1/products/category-list/',{
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         const categoryMap = response.data.reduce((acc, category) => {
           acc[category.id] = category.name;
@@ -37,7 +48,11 @@ const ProductDetail = () => {
       });
 
     // Fetch brand data
-    axios.get('http://127.0.0.1:8000/api/v1/products/brand-list/')
+    axios.get('http://127.0.0.1:8000/api/v1/products/brand-list/',{
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         const brandMap = response.data.reduce((acc, brand) => {
           acc[brand.brand_id] = brand.name;
@@ -47,7 +62,11 @@ const ProductDetail = () => {
       });
 
     // Fetch country data
-    axios.get('http://127.0.0.1:8000/api/v1/products/country-list/')
+    axios.get('http://127.0.0.1:8000/api/v1/products/country-list/',{
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         const countryMap = response.data.reduce((acc, country) => {
           acc[country.country_id] = country.name;
@@ -57,7 +76,11 @@ const ProductDetail = () => {
       });
 
     // Fetch material data
-    axios.get('http://127.0.0.1:8000/api/v1/products/madeof-list/')
+    axios.get('http://127.0.0.1:8000/api/v1/products/madeof-list/',{
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         const materialMap = response.data.reduce((acc, material) => {
           acc[material.madeof_id] = material.name;

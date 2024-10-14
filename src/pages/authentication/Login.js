@@ -5,14 +5,13 @@
 // import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 // import { useNavigate } from 'react-router-dom';
 
-
 // const Login = ({ setIslogin }) => {
 //   const [username, setUsername] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [error, setError] = useState();
 //   const [isforgetpassword, setisforgetpassword] = useState(false);
-//   const [ user, setUser ] = useState([]);
-//   const [ profile, setProfile ] = useState([]);
+//   const [user, setUser] = useState([]);
+//   const [profile, setProfile] = useState([]);
 //   const navigate = useNavigate();
 
 //   const login = useGoogleLogin({
@@ -32,12 +31,10 @@
 //           }
 //         )
 //         .then((response) => {
-//           console.log('Google User signed in',response.data);
-//           if(response.status===200){
-//             // alert('Login successfull !')
-//             navigate('/home')
+//           console.log('Google User signed in', response.data);
+//           if (response.status === 200) {
+//             navigate('/home');
 //           }
-//           // Store the JWT tokens in your app
 //         })
 //         .catch((error) => {
 //           console.error(error);
@@ -63,36 +60,23 @@
 //           console.log(res.data);
 //         })
 //         .catch((err) => console.log(err));
-//       // axios
-//       //   .post(
-//       //     config.googleAuthLoginApi,
-//       //     {
-//       //       token: user.access_tokenId,
-//       //     },
-//       //     {
-//       //       headers: {
-//       //         "Content-Type": "application/json",
-//       //       },
-//       //     }
-//       //   )
-//       //   .then((response) => {
-//       //     console.log(response.data);
-//       //     // Store the JWT tokens in your app
-//       //   })
-//       //   .catch((error) => {
-//       //     console.error(error);
-//       //   });
 //     }
 //   }, [user]);
 
+//   // Function to validate if the email is a valid Gmail address
+//   const isValidGmail = (email) => {
+//     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+//     return gmailRegex.test(email);
+//   };
 
-  
-//   console.log("user", user, profile);
 //   const formSubmit = (e) => {
 //     e.preventDefault();
 //     console.log({ username, password });
+
 //     if (username === "" || password === "") {
 //       setError("All fields are required !");
+//     } else if (!isValidGmail(username)) {
+//       setError("Please enter a valid Gmail address.");
 //     } else {
 //       setError("");
 //       const formData = new FormData();
@@ -103,18 +87,15 @@
 //         .then((response) => {
 //           console.log(response.data);
 //           if (response.status === 200) {
-//             console.log("Login Succesfull");
-//             if (response.data.user.is_superuser){
-//               navigate('/admin')
-//             }
-//             else if (response.data.user.is_staff){
-//               navigate('/staff')
-//             }
-//             else{
-//               navigate('/home')
+//             console.log("Login Successful");
+//             if (response.data.user.is_superuser) {
+//               navigate('/admin');
+//             } else if (response.data.user.is_staff) {
+//               navigate('/staff');
+//             } else {
+//               navigate('/home');
 //             }
 //           }
-//           // setIslogin(true)
 //         })
 //         .catch((error) => {
 //           console.log(error);
@@ -127,6 +108,7 @@
 //     console.log("reset password");
 //     setisforgetpassword(true);
 //   };
+
 //   const requestresetpassword = () => {
 //     const formData = new FormData();
 //     formData.append("email", username);
@@ -142,6 +124,7 @@
 //         setError(error.response.data.error);
 //       });
 //   };
+
 //   return (
 //     <div className="right-panel">
 //       <h1>WineHaus</h1>
@@ -225,7 +208,6 @@
 
 // export default Login;
 
-
 import React, { useState, useEffect } from "react";
 import google from "../../assets/googleicon.png";
 import config from "../../config/config";
@@ -260,6 +242,10 @@ const Login = ({ setIslogin }) => {
         )
         .then((response) => {
           console.log('Google User signed in', response.data);
+          // Store access token and user info in localStorage
+          localStorage.setItem('authToken', codeResponse.access_token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+
           if (response.status === 200) {
             navigate('/home');
           }
@@ -314,6 +300,10 @@ const Login = ({ setIslogin }) => {
         .post(`${config.loginApi}`, formData)
         .then((response) => {
           console.log(response.data);
+          // Store access token and user info in localStorage
+          localStorage.setItem('authToken', response.data.access); // Adjust this line if your response structure is different
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+
           if (response.status === 200) {
             console.log("Login Successful");
             if (response.data.user.is_superuser) {
