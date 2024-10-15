@@ -21,13 +21,10 @@ import AddBrandForm from "../../components/Forms/BrandForm";
 import AddCountryForm from "../../components/Forms/CountryForm";
 import { getItemById ,categoryItemById,getBrandById,getCountryById,getMadeofById} from "./helper";
 import { orderItemById ,getStaffById,getIUserById} from "./helper";
-// import { getBrandById } from "./helper";
-// import { orderCountryById } from "./helper";
-// import { getMadeofById } from "./helper";
 
 function Admin() {
   const navigate = useNavigate();
-  const [menu, setMenu] = useState("Products");
+  const [menu, setMenu] = useState("");
   const [parentMenu, setParentMenu] = useState("");
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -45,11 +42,7 @@ function Admin() {
   const [allProducts, setAllProducts] = useState()
   const [allOrders, setAllOrders] = useState()
   const [allStaffs, setAllStaffs] = useState()
-  // const [allCategories,setAllCategories] = useState()
-  // const [allBrands, setAllBrands] = useState()
-  // const [allCountrys, setAllCountrys] = useState()
-  // const [allMadeofs, setAllMadeofs] = useState()
-
+  
   useEffect(() => {
     axios
       .get(config.getCategoryApi)
@@ -130,6 +123,7 @@ function Admin() {
       id: item.product_id,
       name: item.name,
       price: ` Rs: ${item.price}`,
+      quantity:item.quantity,
       category: getCategoryNameById(item.category),
       stock: item.stock_quantity,
     }));
@@ -351,11 +345,13 @@ function Admin() {
   
 
   const productColumns = [
-    // { field: "id", headerName: "ID", flex: 1 },
+    { field: "id", headerName: "ID", flex: 1 },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "category", headerName: "Category", flex: 1 },
+    { field: "quantity", headerName: "quantity", flex: 1 },
     { field: "price", headerName: "Price", type: "number", flex: 1 },
     { field: "stock", headerName: " Stock Quantity", flex: 1 },
+
     {
       field: "actions",
       headerName: "Actions",
@@ -815,8 +811,10 @@ function Admin() {
   // };
 
   return (
-    <div className="container">
+    <div>
       <Navbar/>
+    <div className="container">
+      
       <div className="menu-container">
         <div className="menus">
           <Menubox
@@ -884,6 +882,7 @@ function Admin() {
         customStyle={{height:'87vh',overflowY:'scroll', marginTop:'0px'}}
         />
       }
+    </div>
     </div>
 
   );

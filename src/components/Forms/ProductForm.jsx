@@ -99,7 +99,7 @@ const ProductForm = ({ onCancel,initialProductData,isEdit}) => {
     if (isEdit) {
       // Update existing product
       axios
-        .put(`http://127.0.0.1:8000/api/v1/products/update/${initialProductData.product_id}/`, formData, {
+        .put(`http://127.0.0.1:8000/api/v1/products/update/${initialProductData?.product_id}/`, formData, {
         
         })
         .then((response) => {
@@ -238,9 +238,9 @@ const ProductForm = ({ onCancel,initialProductData,isEdit}) => {
             required
           />
 
-          <label>Stock Quantity </label>
+          <label> Quantity </label>
           <input
-            type="number"
+            type="text"
             id="quantity"
             name="quantity"
             value={productData.quantity}

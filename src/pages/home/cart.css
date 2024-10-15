@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Poppins:wght@300;400&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Poppins:wght@300;400&display=swap');
 
 * {
   margin: 0;
@@ -6,23 +6,22 @@
   box-sizing: border-box;
 }
 
-
+body {
+  background: url('path-to-your-background-image.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Poppins', sans-serif;
+}
 
 .product-detail-page {
-  
-  font-family: 'Poppins', sans-serif;
   padding: 20px;
   max-width: 1000px;
-  margin-top: 50px;
-  margin: 40px 230px;
+  margin: 0 auto;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  
 }
 
 .product-detail-container {
-  padding-top: 50px;
   display: flex;
   gap: 20px;
   align-items: center;
@@ -32,7 +31,7 @@
 
 .product-detail-image-container {
   flex: 1;
-  max-width: 250px;
+  max-width: 400px;
 }
 
 .product-detail-image {
@@ -55,7 +54,7 @@
 
 .product-detail-price {
   font-size: 24px;
-  color: rgb(243, 173, 11);
+  color: rgb(8, 128, 198);
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -81,7 +80,7 @@
 }
 
 .add-to-cart-button, .wishlist-button {
-  background-color: rgb(49, 197, 142);
+  background-color: #f34a66;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -92,11 +91,11 @@
 }
 
 .add-to-cart-button:hover, .wishlist-button:hover {
-  background-color: rgb(32, 148, 109);
+  background-color: rgb(219, 58, 88);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .product-detail-container {
     flex-direction: column;
     align-items: center;
@@ -106,4 +105,4 @@
   .product-detail-info {
     max-width: 100%;
   }
-}
+} */ */

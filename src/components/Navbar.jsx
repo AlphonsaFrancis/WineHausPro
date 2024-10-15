@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Navbar.css';
 import logo from '../assets/logomain.png';
 import cart from '../assets/cart.png';
+import whishlist from '../assets/wishlist.png'
 import { Link } from 'react-router-dom';
 import Dropdown from './Dropdown'; // Import the Dropdown component
 import user from '../assets/user.png';
@@ -21,7 +22,7 @@ function Navbar() {
 
   const handleLogout = () => {
     // Add logout functionality here
-    localStorage.removeItem('authToken');
+    // localStorage.removeItem('authToken');
     navigate('/');
     console.log('Logged out');
   };
@@ -52,8 +53,12 @@ function Navbar() {
   </div>
 )}
         <div className="icon-links">
+        
           <div className="icon">
             <img src={cart} alt="cart" />
+          </div>
+          <div className="icon">
+            <img src={whishlist} alt="whishlist" />
           </div>
           {/* Combined user icon and dropdown into one component */}
           <div className="icon">
