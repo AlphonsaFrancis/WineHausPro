@@ -3,7 +3,7 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserRegistrationSerializer, UserSerializer, UserUpdateSerializer
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 from django.contrib.auth import authenticate
@@ -15,6 +15,7 @@ from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from .serializers import PasswordResetRequestSerializer,PasswordResetConfirmSerializer
 from allauth.socialaccount.models import SocialAccount
+from django.http import JsonResponse
 
 @api_view(['POST'])
 def user_registration(request):
@@ -184,3 +185,33 @@ def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+def add_new_user(request):
+    serializer = UserRegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'User registered successfully!'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def update_user(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'User updated successfully!'}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def check_email_exists(request):
+    email = request.GET.get('email')
+    exists = User.objects.filter(email=email).exists()
+    return JsonResponse({'exists': exists})
+
