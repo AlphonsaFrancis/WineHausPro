@@ -194,3 +194,33 @@
 .hard-product-link .hard-price {
   text-decoration: none; /* Remove underline from the product name and price */
 }
+
+
+
+
+
+
+
+
+
+.hard-product-card.out-of-stock {
+  opacity: 0.6; /* Dims the product card when it's out of stock */
+  pointer-events: none; /* Disables interaction */
+}
+
+
+
+.hard-product-actions button:disabled {
+  background-color: #ccc; /* Style for disabled buttons */
+  cursor: not-allowed;
+}
+
+
+/* product.css */
+.hard-out-of-stock-label {
+  color: red;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}

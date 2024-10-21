@@ -98,7 +98,7 @@ function Admin() {
         console.log(response.data);
         setAllProducts(response.data)
         const products = restructureProductData(response.data);
-        console.log(products);
+        console.log("products",response.data);
         setRows(products);
         setColumns(productColumns);
       })
@@ -126,6 +126,7 @@ function Admin() {
       quantity:item.quantity,
       category: getCategoryNameById(item.category),
       stock: item.stock_quantity,
+      is_active:item.is_active
     }));
   };
 
@@ -233,7 +234,7 @@ function Admin() {
         .then((response) => {
           console.log(response.data);
           const products = restructureProductData(response.data);
-          console.log(products);
+          console.log("restructureProductData",products);
           setRows(products);
           setColumns(productColumns);
         })
@@ -345,13 +346,12 @@ function Admin() {
   
 
   const productColumns = [
-    { field: "id", headerName: "ID", flex: 1 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "category", headerName: "Category", flex: 1 },
-    { field: "quantity", headerName: "quantity", flex: 1 },
-    { field: "price", headerName: "Price", type: "number", flex: 1 },
-    { field: "stock", headerName: " Stock Quantity", flex: 1 },
-
+    { field: "id", headerName: "ID" ,flex:1},
+    { field: "name", headerName: "Name",flex:1},
+    { field: "category", headerName: "Category",flex:1 },
+    { field: "quantity", headerName: "quantity" ,flex:1},
+    { field: "price", headerName: "Price", type: "number" ,flex:1},
+    { field: "stock", headerName: " Stock Quantity",flex:1 },
     {
       field: "actions",
       headerName: "Actions",
@@ -365,8 +365,44 @@ function Admin() {
           </IconButton>
         </div>
       ),
-      flex: 1,
+      flex:1
     },
+    // {
+    //   field: "disable_or_enable",
+    //   headerName: "Disable/Enable",
+    //   renderCell: (params) => (
+    //     <div
+    //       onClick={() => handleDisableProduct(params.row.id)}
+    //       style={{ cursor: 'pointer', color: params.row.is_active ? 'green' : 'red' }} 
+    //     >
+    //       {params.row.is_active === false ? 'Disable' : 'Enable'} 
+    //       {console.log("params.row.is_active", params.row)}
+    //     </div>
+    //   ),
+    //   flex: 1
+    // }
+    {
+      field: "disable_or_enable",
+      headerName: "Disable/Enable",
+      renderCell: (params) => (
+        <button
+          onClick={() => handleDisableProduct(params.row.id)}
+          style={{
+            cursor: 'pointer',
+            backgroundColor: params.row.is_active ? 'green' : 'red',
+            color: '#fff',
+            border: 'none',
+            padding: '8px 12px',
+            borderRadius: '4px'
+          }}
+        >
+          {params.row.is_active ? 'Enabled' : 'Disabled'}
+        </button>
+      ),
+      flex: 1
+    }
+    
+    
   ];
 
   const orderColumns = [
@@ -561,15 +597,15 @@ function Admin() {
   }
 
    // Add your edit logic here
-  const handleEdit = (id) => {
+  const handleEdit = async (id) => {
     console.log("Edit ID:", id);
     setIsFormEdit(true)
     setIsShowForm(true)
-    const productData = getItemById(id,allProducts)
+    const productData = await getItemById(id,allProducts)
     console.log("products",productData)
     console.log("rows",rows)
     console.log("allProducts",allProducts)
-    setForm(<ProductForm onCancel={handleCloseForm} initialProductData={productData} isEdit={isFormEdit}/>)
+    await setForm(<ProductForm onCancel={handleCloseForm} initialProductData={productData} isEdit={isFormEdit}/>)
   };
 
   const handleDelete = (id) => {
@@ -577,6 +613,20 @@ function Admin() {
     setSelectedId(id);
     console.log("selected id for delete",id)
   };
+
+  const handleDisableProduct = (id)=>{
+    console.log("Disable product id",id)
+
+    axios.post(`http://localhost:8000/api/v1/products/disable-or-enable/${id}/`)
+    .then((response)=>{
+      console.log("response-dis",response)
+      window.location.reload()
+    })
+    .catch((error)=>{
+      console.log("ERROR: ",error)
+    })
+
+  }
 
   const confirmDeleteProduct = () => {
     axios
@@ -879,7 +929,6 @@ function Admin() {
         open={isShowForm}
         setOpen={handleCloseForm}
         content={form}
-        customStyle={{height:'87vh',overflowY:'scroll', marginTop:'0px'}}
         />
       }
     </div>

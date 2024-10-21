@@ -89,6 +89,7 @@
   cursor: pointer;
   border-radius: 4px;
   margin-right: 15px;
+  transition: background-color 0.3s ease;
 }
 
 .add-to-cart-button:hover, .wishlist-button:hover {
@@ -106,4 +107,21 @@
   .product-detail-info {
     max-width: 100%;
   }
+}
+
+
+.blur-button {
+  filter: blur(2px);
+  cursor: not-allowed;
+}
+
+.product-unavailable-message{
+  color: red;
+}
+
+
+
+.product-detail-actions button:disabled {
+  background-color: #ccc; /* Style for disabled buttons */
+  cursor: not-allowed;
 }

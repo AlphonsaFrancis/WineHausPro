@@ -11,7 +11,7 @@ import axios from "axios";
 import { formatDate } from "./helper";
 import BasicModal from "../../components/BasicModal";
 import { useNavigate } from "react-router-dom";
-import ProductForm from "../../components/Forms/ProductForm";
+// import ProductForm from "../../components/Forms/ProductForm";
 import AddCategoryForm from "../../components/Forms/CategoryFrom";
 import AddOrderForm from "../../components/Forms/OrderForm";
 import AddBrandForm from "../../components/Forms/BrandForm";
@@ -203,7 +203,7 @@ function Staff() {
     if (menu === "Products") {
       setParentMenu("Products");
       setAddButtonLabel("Add Product");
-      setForm(<ProductForm onCancel={handleCloseForm}/>)
+      // setForm(<ProductForm onCancel={handleCloseForm}/>)
       axios
         .get(config.getProductApi)
         .then((response) => {
@@ -581,7 +581,6 @@ function Staff() {
       open={isShowForm}
       setOpen={handleCloseForm}
       content={form}
-      customStyle={{height:'87vh',overflowY:'scroll', marginTop:'0px'}}
       />
     }
   </div>

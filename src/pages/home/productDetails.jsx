@@ -1,6 +1,5 @@
 
 
-
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
 // import { useParams } from 'react-router-dom';
@@ -8,7 +7,7 @@
 // import Navbar from '../../components/Navbar';
 
 // const ProductDetail = () => {
-//   const { id } = useParams(); // Get the product ID from the URL
+//   const { id } = useParams();
 //   const [product, setProduct] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
@@ -21,12 +20,7 @@
 //   const BASE_URL = 'http://127.0.0.1:8000';
 
 //   useEffect(() => {
-//     // Fetch product details
-//     axios.get(`http://127.0.0.1:8000/api/v1/products/details/${id}/`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
+//     axios.get(`http://127.0.0.1:8000/api/v1/products/details/${id}/`)
 //       .then(response => {
 //         setProduct(response.data);
 //         setLoading(false);
@@ -36,12 +30,7 @@
 //         setLoading(false);
 //       });
 
-//     // Fetch category data
-//     axios.get('http://127.0.0.1:8000/api/v1/products/category-list/', {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
+//     axios.get('http://127.0.0.1:8000/api/v1/products/category-list/')
 //       .then(response => {
 //         const categoryMap = response.data.reduce((acc, category) => {
 //           acc[category.id] = category.name;
@@ -50,12 +39,7 @@
 //         setCategories(categoryMap);
 //       });
 
-//     // Fetch brand data
-//     axios.get('http://127.0.0.1:8000/api/v1/products/brand-list/', {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
+//     axios.get('http://127.0.0.1:8000/api/v1/products/brand-list/')
 //       .then(response => {
 //         const brandMap = response.data.reduce((acc, brand) => {
 //           acc[brand.brand_id] = brand.name;
@@ -64,12 +48,7 @@
 //         setBrands(brandMap);
 //       });
 
-//     // Fetch country data
-//     axios.get('http://127.0.0.1:8000/api/v1/products/country-list/', {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
+//     axios.get('http://127.0.0.1:8000/api/v1/products/country-list/')
 //       .then(response => {
 //         const countryMap = response.data.reduce((acc, country) => {
 //           acc[country.country_id] = country.name;
@@ -78,12 +57,7 @@
 //         setCountries(countryMap);
 //       });
 
-//     // Fetch material data
-//     axios.get('http://127.0.0.1:8000/api/v1/products/madeof-list/', {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
+//     axios.get('http://127.0.0.1:8000/api/v1/products/madeof-list/')
 //       .then(response => {
 //         const materialMap = response.data.reduce((acc, material) => {
 //           acc[material.madeof_id] = material.name;
@@ -108,14 +82,15 @@
 
 //   return (
 //     <div>
-//       <Navbar />
+//       <Navbar/>
+     
 //       <div className="product-detail-page">
 //         {product && (
 //           <>
 //             <nav className="product-detail-breadcrumb">
 //               <a href="/products">Home</a> / {categories[product.category]} / {product.name}
 //             </nav>
-
+  
 //             <div className="product-detail-container">
 //               <div className="product-detail-image-container">
 //                 <img
@@ -133,6 +108,18 @@
 //                 <p className="product-detail-material"><strong>Made Of:</strong> {materials[product.made_of]}</p>
 //                 <p className="product-detail-country"><strong>Country:</strong> {countries[product.country]}</p>
 //                 <p className="product-detail-stock"><strong>In Stock:</strong> {product.stock_quantity}</p>
+//                 <div className="product-detail-actions">
+//                   <button 
+//                     className="add-to-cart-button" 
+//                     disabled={!product.is_active}  // Disable button if is_active is false
+//                     >
+//                     Add to Cart
+//                   </button>
+//                   <button className="wishlist-button">Wishlist</button>
+//                 </div>
+//                 {!product.is_active && (
+//                   <p className="product-unavailable-message">This product is currently unavailable.</p>
+//                 )}
 //               </div>
 //             </div>
 //           </>
@@ -143,8 +130,6 @@
 // };
 
 // export default ProductDetail;
-
-
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -161,12 +146,10 @@ const ProductDetail = () => {
   const [brands, setBrands] = useState({});
   const [countries, setCountries] = useState({});
   const [materials, setMaterials] = useState({});
-  const token = localStorage.getItem('authToken');
-
   const BASE_URL = 'http://127.0.0.1:8000';
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/api/v1/products/details/${id}/`)
+    axios.get(`${BASE_URL}/api/v1/products/details/${id}/`)
       .then(response => {
         setProduct(response.data);
         setLoading(false);
@@ -176,7 +159,7 @@ const ProductDetail = () => {
         setLoading(false);
       });
 
-    axios.get('http://127.0.0.1:8000/api/v1/products/category-list/')
+    axios.get(`${BASE_URL}/api/v1/products/category-list/`)
       .then(response => {
         const categoryMap = response.data.reduce((acc, category) => {
           acc[category.id] = category.name;
@@ -185,7 +168,7 @@ const ProductDetail = () => {
         setCategories(categoryMap);
       });
 
-    axios.get('http://127.0.0.1:8000/api/v1/products/brand-list/')
+    axios.get(`${BASE_URL}/api/v1/products/brand-list/`)
       .then(response => {
         const brandMap = response.data.reduce((acc, brand) => {
           acc[brand.brand_id] = brand.name;
@@ -194,7 +177,7 @@ const ProductDetail = () => {
         setBrands(brandMap);
       });
 
-    axios.get('http://127.0.0.1:8000/api/v1/products/country-list/')
+    axios.get(`${BASE_URL}/api/v1/products/country-list/`)
       .then(response => {
         const countryMap = response.data.reduce((acc, country) => {
           acc[country.country_id] = country.name;
@@ -203,7 +186,7 @@ const ProductDetail = () => {
         setCountries(countryMap);
       });
 
-    axios.get('http://127.0.0.1:8000/api/v1/products/madeof-list/')
+    axios.get(`${BASE_URL}/api/v1/products/madeof-list/`)
       .then(response => {
         const materialMap = response.data.reduce((acc, material) => {
           acc[material.madeof_id] = material.name;
@@ -225,17 +208,19 @@ const ProductDetail = () => {
   if (!product) {
     return <div>Product not found</div>;
   }
+
+  const isOutOfStock = product.stock_quantity === 0;
+  const isUnavailable = !product.is_active || isOutOfStock;
+
   return (
     <div>
       <Navbar/>
-     
       <div className="product-detail-page">
         {product && (
           <>
             <nav className="product-detail-breadcrumb">
               <a href="/products">Home</a> / {categories[product.category]} / {product.name}
             </nav>
-  
             <div className="product-detail-container">
               <div className="product-detail-image-container">
                 <img
@@ -252,19 +237,28 @@ const ProductDetail = () => {
                 <p className="product-detail-category"><strong>Category:</strong> {categories[product.category]}</p>
                 <p className="product-detail-material"><strong>Made Of:</strong> {materials[product.made_of]}</p>
                 <p className="product-detail-country"><strong>Country:</strong> {countries[product.country]}</p>
-                <p className="product-detail-stock"><strong>In Stock:</strong> {product.stock_quantity}</p>
+                <p className="product-detail-stock"><strong>In Stock:</strong> {isOutOfStock ? 'Out of Stock' : product.stock_quantity}</p>
                 <div className="product-detail-actions">
-                  <button className="add-to-cart-button">Add to Cart</button>
+                  <button 
+                    className="add-to-cart-button" 
+                    disabled={isUnavailable}
+                  >
+                    Add to Cart
+                  </button>
                   <button className="wishlist-button">Wishlist</button>
                 </div>
+                {isUnavailable && (
+                  <p className="product-unavailable-message">
+                    {isOutOfStock ? 'This product is out of stock.' : 'This product is currently unavailable.'}
+                  </p>
+                )}
               </div>
             </div>
           </>
         )}
       </div>
     </div>
-    
   );
-}  
+};
 
 export default ProductDetail;

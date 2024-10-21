@@ -129,3 +129,11 @@ select{
     display: inline-block;
     margin-left: 10px;
 }
+
+.error {
+    color: red;
+    font-size: 0.875em;
+    margin-top: -6px;
+    margin-bottom: 4px;
+    display: block;
+  }

@@ -92,7 +92,7 @@ const Login = ({ setIslogin }) => {
           console.log(response.data);
           // Store access token and user info in localStorage
           // localStorage.setItem('authToken', response.data.access); // Adjust this line if your response structure is different
-          // localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem('user', JSON.stringify(response.data.user));
 
           if (response.status === 200) {
             console.log("Login Successful");
