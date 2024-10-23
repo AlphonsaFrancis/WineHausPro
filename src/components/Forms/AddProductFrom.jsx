@@ -77,7 +77,7 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       newErrors.price = "Price must be a positive number.";
     }
     if (!productData.quantity || /^[0-9]+$/.test(productData.quantity)) {
-      newErrors.quantity = "Quantity must be a in exact unit.";
+      newErrors.quantity = "Quantity must be with exact unit.";
     }
     if (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0) {
       newErrors.stock_quantity = "Stock quantity must be a non-negative number.";

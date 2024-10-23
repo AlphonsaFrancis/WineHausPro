@@ -129,10 +129,12 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     }
 
     // Quantity validation
-    if (!productData.quantity || isNaN(productData.quantity) || Number(productData.quantity) <= 0) {
-      validationErrors.quantity = "Quantity must be a positive number.";
+    // if (!productData.quantity || isNaN(productData.quantity) || Number(productData.quantity) <= 0) {
+    //   validationErrors.quantity = "Quantity must be a positive number.";
+    // }
+    if (!productData.quantity || /^[0-9]+$/.test(productData.quantity)) {
+      validationErrors.quantity = "Quantity must be  exact unit.";
     }
-
     // Stock Quantity validation
     if (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0) {
       validationErrors.stock_quantity = "Stock Quantity must be a non-negative number.";

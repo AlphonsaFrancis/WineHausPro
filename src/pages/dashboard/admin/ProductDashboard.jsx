@@ -141,7 +141,7 @@ function ProductDashboard() {
 
   const columns = React.useMemo(
     () => [
-      { Header: "ID", accessor: "id" },
+     
       {
         Header: "Product",
         accessor: "name",

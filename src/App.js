@@ -6,12 +6,11 @@ import AdminDashboard from './pages/dashboard/AdminDashboard';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
 import Home from './pages/home/Home';
-import Staff from  './pages/dashboard/Staff';
 import ProductPage from './pages/home/productPage';
 import Navbar from './components/Navbar';
 import ProductDetail from './pages/home/productDetails'
 import StaffDashboard from './pages/dashboard/StaffDashboard';
-// import CartPage from './pages/home/cartPage';
+import CartPage from './pages/home/cartPage';
 
 function App() {
 
@@ -27,7 +26,7 @@ function App() {
         <Route path="/staff" element={<StaffDashboard/>} />
         <Route path="/products" element={<ProductPage/>} />
         <Route path="/products/:id" element={<ProductDetail/>} />
-        {/* <Route path="/cart" element={<CartPage/>} /> */}
+        <Route path="/cart" element={<CartPage/>} />
       </Routes>
     </Router>
     </div>

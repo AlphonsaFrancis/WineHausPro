@@ -136,7 +136,7 @@ function AllUsersDashboard() {
       { Header: "Staff privilege", accessor: "isStaff" ,Cell: ({ value }) => (value ? "Yes" : "No")},
       { Header: "Is Admin", accessor: "isSuperuser" ,Cell: ({ value }) => (value ? "Yes" : "No")},
       { Header: "Updated On", accessor: "updatedAt" },
-      { Header: "Last login", accessor: "lastLogin" },
+      // { Header: "Last login", accessor: "lastLogin" },
 
       
     //   {

@@ -72,6 +72,7 @@ const Login = ({ setIslogin }) => {
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return gmailRegex.test(email);
   };
+  
 
   const formSubmit = (e) => {
     e.preventDefault();
@@ -91,8 +92,13 @@ const Login = ({ setIslogin }) => {
         .then((response) => {
           console.log(response.data);
           // Store access token and user info in localStorage
-          // localStorage.setItem('authToken', response.data.access); // Adjust this line if your response structure is different
+          const { access, user_id } = response.data;
+
+          localStorage.setItem('authToken', response.data.access); // Adjust this line if your response structure is different
           localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem('userId', user_id);
+
+          console.log(user_id);
 
           if (response.status === 200) {
             console.log("Login Successful");

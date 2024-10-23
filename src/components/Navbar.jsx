@@ -23,6 +23,9 @@ function Navbar() {
     navigate('/');
     console.log('Logged out');
   };
+  const gotoCart=()=>{
+    navigate('/cart')
+  }
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -71,7 +74,7 @@ function Navbar() {
 
         <div className="icon-links">
           <div className="icon">
-            <img src={cart} alt="cart" />
+            <img src={cart} alt="cart"  onClick={gotoCart}/>
           </div>
           <div className="icon">
             <img src={whishlist} alt="whishlist" />
