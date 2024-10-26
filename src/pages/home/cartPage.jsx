@@ -209,7 +209,7 @@ const CartPage = () => {
   };
   
   const handleCheckout = () => {
-    navigate('/address-list'); // Navigate to the address page
+    navigate('/address'); // Navigate to the address page
   };
 
   return (
