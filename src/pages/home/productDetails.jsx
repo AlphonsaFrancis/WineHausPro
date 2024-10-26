@@ -15,6 +15,7 @@ const ProductDetail = () => {
   const [materials, setMaterials] = useState({});
   const BASE_URL = 'http://127.0.0.1:8000';
   const [quantity, setQuantity] = useState(1);
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/v1/products/details/${id}/`)
@@ -105,6 +106,44 @@ const ProductDetail = () => {
         alert('Error adding the product to the cart!');
       });
   };
+  const addToWishlist = (productId) => {
+    if (!userId) {
+      alert("Please log in first to add items to the wishlist.");
+      return;
+    }
+
+    axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-list/?user_id=${userId}`)
+      .then(response => {
+        let wishlistId;
+
+        if (response.data.length > 0) {
+          wishlistId = response.data[0].wishlist_id;
+        } else {
+          return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-list/', { user_id: userId })
+            .then(response => {
+              wishlistId = response.data.wishlist_id;
+            });
+        }
+
+        return wishlistId;
+      })
+      .then(wishlistId => {
+        return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-items-create/', {
+          wishlist_id: wishlistId,
+          product_id: productId
+        });
+      })
+      .then(() => {
+        alert('Product added to wishlist!');
+      })
+      .catch(error => {
+        if (error.response && error.response.data && error.response.data.error === "Product is already in the wishlist") {
+          alert('Product is already in the wishlist.');
+        } else {
+          alert('Error adding product to wishlist!');
+        }
+      });
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -152,7 +191,7 @@ const ProductDetail = () => {
                     <button onClick={() => addToCart(product.product_id, 1)} className="add-to-cart-button" disabled={isUnavailable}>
                     <i className="fas fa-shopping-cart"></i> Add to Cart
                   </button>
-                  <button className="wishlist-button">Wishlist</button>
+                  <button className="wishlist-button" onClick={() => addToWishlist(product.product_id)} >Wishlist</button>
                 </div>
                 {isUnavailable && (
                   <p className="product-unavailable-message">

@@ -11,6 +11,8 @@ import Navbar from './components/Navbar';
 import ProductDetail from './pages/home/productDetails'
 import StaffDashboard from './pages/dashboard/StaffDashboard';
 import CartPage from './pages/home/cartPage';
+import WishlistPage from './pages/home/wishlistPage';
+import AddressSelection from './pages/home/addressPage';
 
 function App() {
 
@@ -27,6 +29,9 @@ function App() {
         <Route path="/products" element={<ProductPage/>} />
         <Route path="/products/:id" element={<ProductDetail/>} />
         <Route path="/cart" element={<CartPage/>} />
+        <Route path="/wishlist" element={<WishlistPage/>} />
+        <Route path="/address" element={<AddressSelection/>} />
+
       </Routes>
     </Router>
     </div>

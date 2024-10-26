@@ -27,14 +27,17 @@ function Navbar() {
     navigate('/cart')
   }
 
+  const gotoWishlist=()=>{
+    navigate('/wishlist')
+  }
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    console.log('Search query:', searchQuery);
-    // Implement search functionality here
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    navigate(`/products?search=${searchQuery}`);
   };
 
   const user = JSON.parse(localStorage.getItem('user'));
@@ -64,12 +67,15 @@ function Navbar() {
 
         {/* Search bar  */}
          <form className="search-bar" onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
+         <input
+                type="text"
+                id="search-input"
+                className="search-input"
+                placeholder="Search products, brands"
+                aria-label="Search products, brands"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
         </form> 
 
         <div className="icon-links">
@@ -77,7 +83,7 @@ function Navbar() {
             <img src={cart} alt="cart"  onClick={gotoCart}/>
           </div>
           <div className="icon">
-            <img src={whishlist} alt="whishlist" />
+            <img src={whishlist} alt="whishlist" onClick={gotoWishlist} />
           </div>
           <div className="icon">
             <UserDropdown 
