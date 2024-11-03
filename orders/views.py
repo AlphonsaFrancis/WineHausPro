@@ -887,3 +887,21 @@ def cart_items_detail(request, pk):
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+@api_view(['POST'])
+def disable_enable_order(request,pk):
+    try:
+        order = Order.objects.get(pk=pk)
+        if order.is_active == True:
+            order.is_active  = False
+        else:
+            order.is_active = True
+        order.save()
+        return Response({'message':f"order active status changed to : {order.is_active} "},status=status.HTTP_200_OK)
+    except Product.DoesNotExist:
+        print(f"ERROR: order for this id doesnot exist!")
+        return Response({'message': f"No order found for the given id {pk}"},status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return Response({'message': f"An error occurred while processing your request"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

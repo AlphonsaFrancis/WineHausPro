@@ -7,6 +7,7 @@ urlpatterns = [
     path('details/<int:pk>/', views.order_detail, name='order_detail'),
     path('delete/<int:pk>/', views.delete_order, name='delete_order'),
     path('update/<int:pk>/', views.update_order, name='update_order'),
+    path('disable-enable-order/<int:pk>/',views.disable_enable_order,name='disable_enable_order'),
     path('order-items/delete/<int:pk>/', views.delete_order_item, name='delete_order_item'),
     path('items-list/<int:order_id>/', views.order_items_list, name='order_items_list'),
     path('items-detail/<int:pk>/', views.order_item_detail, name='order_item_detail'),

@@ -11,6 +11,7 @@ class Order(models.Model):
     total_amount = models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Order {self.order_id} - {self.order_status}"
@@ -24,6 +25,8 @@ class OrderItems(models.Model):
     price = models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
 
     def __str__(self):
         return f"Order Item {self.order_item_id} for Order {self.order_id}"
