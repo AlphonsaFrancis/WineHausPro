@@ -93,6 +93,7 @@ function AllOrdersDashboard() {
         total_amount: data?.total_amount,
         tax_amount: data?.tax_amount,
         updatedAt: new Date(data?.updated_at).toLocaleDateString("en-US"),
+        isActive:data?.is_active
       };
     });
   };
@@ -143,7 +144,7 @@ function AllOrdersDashboard() {
       });
   };
 
-  const handleDisableStaff = (row) => {
+  const handleDisableOrder = (row) => {
     axios
       .post(
         `http://127.0.0.1:8000/api/v1/orders/disable-enable-order/${row?.order_id}/`
@@ -208,9 +209,11 @@ function AllOrdersDashboard() {
           data={filteredOrders ?? []}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onToggleStatus={handleDisableStaff}
-          hideActiveButton={true}
+          onToggleStatus={handleDisableOrder}
+          hideActiveButton={false}
           showViewMoreIcon={true}
+          showDeleteIcon={false}
+          showEditIcon={false}
           onShowMoreDetails={showMoreDetails}
         />
       </div>

@@ -93,3 +93,13 @@
   .deliver-btn:hover {
     background-color: #0056b3;
   }
+  .confirm-delivery-btn{
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+  }
+  .submit-btn{
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+  }

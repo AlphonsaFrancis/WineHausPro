@@ -55,7 +55,7 @@ function Navbar() {
       <div className='right-section'>
         <div className="nav-links">
           <div className="nav-link">
-            <Link to="/home"><b>Home</b></Link>
+            <Link to="/"><b>Home</b></Link>
           </div>
           <div className="nav-link">
             <Link to="/about"><b>About</b></Link>

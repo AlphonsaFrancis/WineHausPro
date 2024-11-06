@@ -74,45 +74,181 @@ const ProductPage = () => {
   }, [category, brand, country, madeOf, sortOrder]);
 
   // Function to add a product to the cart
-  const addToCart = async (productId, quantity = 1) => {
-    if (!userId) {
-      alert('Please log in first to add items to the cart.');
-      return;
-    }
+  // const addToCart = async (productId, quantity = 1) => {
+  //   if (!userId) {
+  //     alert('Please log in first to add items to the cart.');
+  //     return;
+  //   }
 
-    try {
-      const cartResponse = await axios.get(
-        `${BASE_URL}/api/v1/orders/cart-list/`,
-        { params: { user_id: userId } }
-      );
+  //   try {
+  //     const cartResponse = await axios.get(
+  //       `${BASE_URL}/api/v1/orders/cart-list/`,
+  //       { params: { user_id: userId } }
+  //     );
 
-      let cartId = cartResponse.data.length
-        ? cartResponse.data[0].cart_id
-        : null;
+  //     let cartId = cartResponse.data.length
+  //       ? cartResponse.data[0].cart_id
+  //       : null;
 
-      // Create a new cart if one doesn't exist
-      if (!cartId) {
-        const newCartResponse = await axios.post(
-          `${BASE_URL}/api/v1/orders/cart-list/`,
-          { user_id: userId }
-        );
-        cartId = newCartResponse.data.cart_id;
+  //     // Create a new cart if one doesn't exist
+  //     if (!cartId) {
+  //       const newCartResponse = await axios.post(
+  //         `${BASE_URL}/api/v1/orders/cart-list/`,
+  //         { user_id: userId }
+  //       );
+  //       cartId = newCartResponse.data.cart_id;
+  //     }
+
+  //     // Add the product to the cart
+  //     await axios.post(`${BASE_URL}/api/v1/orders/cart-items-create/`, {
+  //       cart_id: cartId,
+  //       user_id: userId,
+  //       product_id: productId,
+  //       quantity: quantity,
+  //     });
+
+  //     alert('Product added to cart!');
+  //   } catch (error) {
+  //     console.error('Error adding product to cart:', error);
+  //     alert('Error adding the product to the cart.');
+  //   }
+  // };
+//   const addToCart = async (productId, quantity = 1) => {
+//   if (!userId) {
+//     alert('Please log in first to add items to the cart.');
+//     return;
+//   }
+
+//   try {
+//     // Fetch product details to check stock quantity
+//     const productResponse = await axios.get(`${BASE_URL}/api/v1/products/details/${productId}/`);
+//     const productStockQuantity = productResponse.data.stock_quantity;
+
+//     // Fetch existing cart and cart item quantity
+//     const cartResponse = await axios.get(
+//       `${BASE_URL}/api/v1/orders/cart-list/`,
+//       { params: { user_id: userId } }
+//     );
+
+//     let cartId = cartResponse.data.length ? cartResponse.data[0].cart_id : null;
+
+//     // Create a new cart if one doesn't exist
+//     if (!cartId) {
+//       const newCartResponse = await axios.post(
+//         `${BASE_URL}/api/v1/orders/cart-list/`,
+//         { user_id: userId }
+//       );
+//       cartId = newCartResponse.data.cart_id;
+//     }
+
+//     // Check if the product is already in the cart and get the current quantity
+//     const cartItemsResponse = await axios.get(`${BASE_URL}/api/v1/orders/cart-items/`, {
+//       params: { cart_id: cartId, product_id: productId },
+//     });
+
+//     const currentCartQuantity = cartItemsResponse.data.length
+//       ? cartItemsResponse.data[0].quantity
+//       : 0;
+
+//     // Check if adding the product exceeds stock quantity
+//     if (currentCartQuantity + quantity > productStockQuantity) {
+//       alert('Cannot add more of this product to the cart. Stock limit exceeded.');
+//       return;
+//     }
+
+//     // Add the product to the cart
+//     await axios.post(`${BASE_URL}/api/v1/orders/cart-items-create/`, {
+//       cart_id: cartId,
+//       user_id: userId,
+//       product_id: productId,
+//       quantity: quantity,
+//     });
+
+//     alert('Product added to cart!');
+//   } catch (error) {
+//     console.error('Error adding product to cart:', error);
+//     alert('Error adding the product to the cart.');
+//   }
+// };
+const addToCart = (productId, quantity = 1) => {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    alert("Please log in first to add items to the cart.");
+    return;
+  }
+  console.log(userId)
+
+  axios.get(`http://127.0.0.1:8000/api/v1/orders/cart-list/?user_id=${userId}`)
+    .then(response => {
+      let cartId;
+
+      if (response.data.length > 0) {
+        cartId = response.data[0].cart_id; // Assuming first cart for the user
+      } else {
+        return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-list/', { user_id: userId })
+          .then(response => {
+            cartId = response.data.cart_id;
+            return cartId;
+          });
       }
 
-      // Add the product to the cart
-      await axios.post(`${BASE_URL}/api/v1/orders/cart-items-create/`, {
-        cart_id: cartId,
+      return cartId;
+    })
+    .then(cartId => {
+      const dataToSend = {
         user_id: userId,
         product_id: productId,
-        quantity: quantity,
-      });
+        quantity: quantity
+      };
 
+      return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-items-create/', dataToSend);
+    })
+    .then(() => {
       alert('Product added to cart!');
-    } catch (error) {
-      console.error('Error adding product to cart:', error);
-      alert('Error adding the product to the cart.');
-    }
-  };
+    })
+    .catch(error => {
+      alert('Error adding the product to the cart!');
+    });
+};
+const addToWishlist = (productId) => {
+  if (!userId) {
+    alert("Please log in first to add items to the wishlist.");
+    return;
+  }
+
+  axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-list/?user_id=${userId}`)
+    .then(response => {
+      let wishlistId;
+
+      if (response.data.length > 0) {
+        wishlistId = response.data[0].wishlist_id;
+      } else {
+        return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-list/', { user_id: userId })
+          .then(response => {
+            wishlistId = response.data.wishlist_id;
+          });
+      }
+
+      return wishlistId;
+    })
+    .then(wishlistId => {
+      return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-items-create/', {
+        wishlist_id: wishlistId,
+        product_id: productId
+      });
+    })
+    .then(() => {
+      alert('Product added to wishlist!');
+    })
+    .catch(error => {
+      if (error.response && error.response.data && error.response.data.error === "Product is already in the wishlist") {
+        alert('Product is already in the wishlist.');
+      } else {
+        alert('Error adding product to wishlist!');
+      }
+    });
+};
+
 
   if (loading) {
     return <div>Loading products...</div>;
@@ -171,7 +307,7 @@ const ProductPage = () => {
                       )}
                     </a>
                     <div className="hard-product-actions">
-                      <button className="hard-wishlist-btn">
+                      <button className="hard-wishlist-btn" onClick={() => addToWishlist(product.product_id)}>
                         <i className="fas fa-heart"></i> Wishlist
                       </button>
                       <button

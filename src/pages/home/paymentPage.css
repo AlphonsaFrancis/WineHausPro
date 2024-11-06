@@ -1,0 +1,81 @@
+/* Basic page styling */
+.payment-page {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    text-align: center;
+  }
+  
+  .payment-page h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Payment methods section */
+  .payment-methods {
+    margin: 20px 0;
+    text-align: left;
+  }
+  
+  .payment-methods label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  /* Radio button styling */
+  .payment-methods input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  /* Payment button styling */
+  .payment-btn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .payment-btn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Error message styling */
+  .payment-page p {
+    font-size: 16px;
+    color: #d9534f;
+  }
+  
+  /* Toast container styling */
+  .Toastify__toast-container {
+    font-size: 14px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .payment-page {
+      width: 90%;
+      padding: 15px;
+    }
+  
+    .payment-page h2 {
+      font-size: 20px;
+    }
+  
+    .payment-btn {
+      width: 100%;
+    }
+  }
+  

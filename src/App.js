@@ -13,7 +13,8 @@ import StaffDashboard from './pages/dashboard/StaffDashboard';
 import CartPage from './pages/home/cartPage';
 import WishlistPage from './pages/home/wishlistPage';
 import AddressSelection from './pages/home/addressPage';
-
+import PaymentPage from './pages/home/paymentPage';
+import UserOrder from './pages/home/userOrder';
 function App() {
 
   return (
@@ -21,9 +22,9 @@ function App() {
     <div>
       <Router>
       <Routes>
-        <Route path="/" element={<RegLogin/>} />
+        <Route path="/login" element={<RegLogin/>} />
         <Route path="/admin" element={<AdminDashboard/>} />
-        <Route path="/home" element={<Home/>} />
+        <Route path="/" element={<Home/>} />
         <Route path="*" element={<NotFound />} />
         <Route path="/staff" element={<StaffDashboard/>} />
         <Route path="/products" element={<ProductPage/>} />
@@ -31,6 +32,8 @@ function App() {
         <Route path="/cart" element={<CartPage/>} />
         <Route path="/wishlist" element={<WishlistPage/>} />
         <Route path="/address" element={<AddressSelection/>} />
+        <Route path="/payment" element={<PaymentPage/>} />
+        <Route path="/userorder" element={<UserOrder/>} />
 
       </Routes>
     </Router>

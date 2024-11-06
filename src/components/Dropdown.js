@@ -43,12 +43,21 @@ const Dropdown = ({ toggleDropdown, username }) => {
     localStorage.removeItem('userId');
     navigate('/');
   };
+  const handleLogin=()=>{
+    navigate('/login');
+  }
+  const handleorders=()=>{
+    navigate('/userorder');
+  }
 
   return (
     <div className="dropdown-container">
       <div className="dropdown-content">
+      <button onClick={handleLogin} className="logout-btn">Login</button>
         <Link to="/profile" onClick={toggleDropdown}>Edit Profile</Link>
         <button onClick={handleLogout} className="logout-btn">Logout</button>
+        <button onClick={handleorders} className="logout-btn">Orders</button>
+        
       </div>
     </div>
   );

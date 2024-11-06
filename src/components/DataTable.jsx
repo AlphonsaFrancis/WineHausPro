@@ -50,7 +50,7 @@ import { FaEdit, FaTrashAlt, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { IoMdEye } from "react-icons/io";
 import "./DataTable.css";
 
-const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActiveButton,showViewMoreIcon,onShowMoreDetails}) => {
+const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActiveButton,showViewMoreIcon,onShowMoreDetails,showDeleteIcon=true,showEditIcon=true}) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -94,18 +94,22 @@ const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActive
                   <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                 ))}
                 <td>
+                  {showEditIcon && 
                   <button
                     className="admin-action-btn admin-edit-btn"
                     onClick={() => onEdit(row.original)}
                   >
                     <FaEdit  style={{fontSize:'24px'}}/>
                   </button>
+                  }
+                  {showDeleteIcon && 
                   <button
                     className="admin-action-btn admin-delete-btn"
                     onClick={() => onDelete(row.original)}
                   >
                     <FaTrashAlt  style={{fontSize:'20px'}}/>
                   </button>
+                  }
                   {!hideActiveButton &&
                   <button
                     className="admin-action-btn admin-toggle-btn"

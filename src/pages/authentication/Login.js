@@ -37,7 +37,7 @@ const Login = ({ setIslogin }) => {
           localStorage.setItem('user', JSON.stringify(response.data.user));
 
           if (response.status === 200) {
-            navigate('/home');
+            navigate('/');
           }
         })
         .catch((error) => {
@@ -107,7 +107,7 @@ const Login = ({ setIslogin }) => {
             } else if (response.data.user.is_staff) {
               navigate('/staff');
             } else {
-              navigate('/home');
+              navigate('/');
             }
           }
         })
@@ -180,6 +180,7 @@ const Login = ({ setIslogin }) => {
           </div>
 
           <button
+          id='login'
             type="button"
             className="google-signin"
             onClick={() => login()}
