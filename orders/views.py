@@ -8,6 +8,35 @@ from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,A
 from products.models import Product
 # order && order_item function based view
 
+@api_view(['GET'])
+def user_orders(request, user_id):
+    try:
+        orders = Order.objects.filter(user_id=user_id)
+        serialized_orders = []
+
+        for order in orders:
+            order_serializer = OrderSerializer(order)
+            order_items = OrderItems.objects.filter(order_id=order.order_id)
+            order_items_serializer = OrderItemsSerializer(order_items, many=True)
+            
+            serialized_orders.append({
+                'order': order_serializer.data,
+                'order_items': order_items_serializer.data
+            })
+
+        return Response(serialized_orders, status=status.HTTP_200_OK)
+
+    except Order.DoesNotExist:
+        return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def order_items(request, order_id):
+    try:
+        items = OrderItems.objects.filter(order_id=order_id)
+        serializer = OrderItemsSerializer(items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 @api_view(['GET', 'POST'])
 def order_list(request):
     if request.method == 'GET':

@@ -4,6 +4,7 @@ from .models import Payment,Address,Shipping
 from products.serializers import ProductSerializer
 
 class OrderItemsSerializer(serializers.ModelSerializer):
+    product_id = ProductSerializer(read_only=True) 
     class Meta:
         model = OrderItems
         fields = '__all__'
@@ -14,7 +15,6 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
-
 
 # class WishlistItemsSerializer(serializers.ModelSerializer):
 #     class Meta:
