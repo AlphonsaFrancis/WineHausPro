@@ -1,0 +1,385 @@
+
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: rgb(245, 245, 245);
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* Hero Section Styles */
+.wine-banner {
+    font-family: Arial, sans-serif;
+    background-image: url('../../assets/main.png'); /* Add your background image here */
+    background-repeat: no-repeat;
+    background-size: 1450px 550px;
+    background-attachment: fixed;
+    height: 2000px;
+    position: relative;
+    padding: 120px;
+    position: relative;
+    height: 750px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: px;
+
+   
+}
+
+.main-container {
+    position: relative;
+    width: 70%;
+    height: auto;
+    
+}
+
+.image-item {
+    width: 300px;
+    height: 200px;
+    overflow: visible;
+    border: 20px solid #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    gap: 50%;
+}
+
+.image-item img {
+    
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.image1 {
+    top: -250px;
+    left: 0%;
+    z-index: 3;
+    position: absolute;
+}
+
+.image2 {
+    top: -100px;
+    left: 140px;
+    z-index: 4;
+    position: absolute;
+}
+
+.image3 {
+    top: 50px;
+    left: 0%;
+    z-index: 5;
+}
+
+.text-container {
+    color: #fff;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 40px;
+    padding-bottom: 230px;
+}
+
+.text-container h1 {
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+/* Categories Section Styles */
+
+.category-section {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 90px;
+}
+
+.category-item {
+    text-align: center;
+    margin: 5px;
+}
+
+.category-image {
+    width: 150px; /* Adjust the size as needed */
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid black; /* Border around the circular image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the entire circle */
+}
+
+.category-item p {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+} 
+
+
+.outer-circle {
+    width: 160px; /* Adjust size as needed */
+    height: 160px; /* Adjust size as needed */
+    border: 2px solid black; /* Outer circle border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white; /* Background color of the outer circle */
+}
+
+.inner-circle {
+    width: 140px; /* Adjust size as needed */
+    height: 140px; /* Adjust size as needed */
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inner-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the entire inner circle */
+    border-radius: 50%;
+}
+
+
+/* Promotions Section Styles */
+
+
+.promotion {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0;
+}
+
+.section {
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff; /* Background color similar to the screenshot */
+    margin-bottom: 70px;
+    padding: 0px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    overflow: hidden;
+    flex-wrap: wrap;
+    
+}
+
+
+.image img {
+    display: block;/* Prevents default inline spacing */
+    margin: 0; /* Removes any default margins */
+    padding: 0; /* Removes any default padding */
+    width: 100%;
+    height: 380px;
+    align-items: center;
+    max-width: 900px; /* Adjust this value based on your preference */
+    border-radius: 0px;
+}
+
+.text-content {
+    max-width: 28%;
+    padding: 30px;
+}
+
+h2 {
+    font-size: 24px;
+    margin: 0 0 15px;
+    line-height: 1.2;
+}
+
+.highlight {
+    color: #ff7b3e; /* Highlight color for text */
+}
+
+p {
+    font-size: 16px;
+    margin: 0 0 15px;
+    color: #333;
+}
+
+.order-btn {
+    background-color: #ffc739;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.order-btn:hover {
+    background-color: #ff9933;
+    color: #fff;
+    
+}
+
+
+/* Best Seller && New Arrivals */
+
+.best-sellers {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    margin-bottom: 40px; 
+}
+
+.head-seller{
+    font-size: 10rem;
+    margin-bottom: 20px;   /* I think spasce btn different css */
+} 
+
+.product-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.product-card {
+    /* background-color: #fff; */
+    border-radius: 15px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    width: 290px;
+    padding: 0px;
+    padding: 0px;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+.product-image {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.product-image img {
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.4);
+}
+
+.product-info h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.product-info p {
+    font-size: 1.1em;
+    color: #555;
+    margin: 5px 0;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.red {
+    background-color: #f47a84;
+}
+
+.rose {
+    background-color: #f374b4;
+}
+
+.white {
+    background-color: #8dcaed;
+    /* color: #333; */
+}
+
+.sparkling {
+    background-color: rgb(253, 143, 47);
+    /* color: #333; */
+}
+
+.buy-now {
+    background-color: rgb(79, 222, 120);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0px;
+}
+
+.buy-now:hover {
+    background-color: rgb(24, 170, 80);
+}
+
+.favorite {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #555;
+    cursor: pointer;
+}
+
+.favorite:hover {
+    color: #e63946;
+}
+
+
+/* Footer Styles */
+
+

@@ -1,0 +1,25 @@
+/* welcome.css */
+
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    background-color: #f0f4f8;
+  }
+  
+  .welcome-message {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.5em;
+    color: #333;
+    text-align: center;
+  }
+  
+  .welcome-message span {
+    font-weight: bold;
+    color: #4caf50;
+  }
+  
