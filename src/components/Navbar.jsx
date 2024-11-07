@@ -52,31 +52,30 @@ function Navbar() {
         </div>
       </div>
 
+        {/* Search bar  */}
+        <form className="search-bar" onSubmit={handleSearchSubmit}>
+         <input
+                type="text"
+                id="search-input"
+                className="search-input"
+                placeholder="Search products..."
+                aria-label="Search products, brands"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+        </form> 
+
       <div className='right-section'>
         <div className="nav-links">
           <div className="nav-link">
             <Link to="/"><b>Home</b></Link>
           </div>
           <div className="nav-link">
-            <Link to="/about"><b>About</b></Link>
-          </div>
-          <div className="nav-link">
             <Link to="/products"><b>Products</b></Link>
           </div>
         </div>
 
-        {/* Search bar  */}
-         <form className="search-bar" onSubmit={handleSearchSubmit}>
-         <input
-                type="text"
-                id="search-input"
-                className="search-input"
-                placeholder="Search products, brands"
-                aria-label="Search products, brands"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-        </form> 
+        
 
         <div className="icon-links">
           <div className="icon">

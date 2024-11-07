@@ -32,9 +32,11 @@ const Login = ({ setIslogin }) => {
         )
         .then((response) => {
           console.log('Google User signed in', response.data);
+          const { access, user_id } = response.data;
           // Store access token and user info in localStorage
           localStorage.setItem('authToken', codeResponse.access_token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
+          localStorage.setItem('userId', user_id);
 
           if (response.status === 200) {
             navigate('/');

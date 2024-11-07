@@ -86,6 +86,7 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
     if (!productData.brand) newErrors.brand = "Brand is required.";
     if (!productData.country) newErrors.country = "Country is required.";
     if (!productData.made_of) newErrors.made_of = "Material is required.";
+    if (!productData.image) newErrors.image = "Product image is required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -279,6 +280,7 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
             accept="image/*"
             onChange={handleFileChange}
           />
+          {errors.image && <span className="error">{errors.image}</span>}
 
           <div className="form-actions">
             <button type="submit" className="save-btn">
