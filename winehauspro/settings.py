@@ -15,6 +15,8 @@ from pathlib import Path
 import ssl
 
 import pymysql
+import dj_database_url
+from decouple import config
 
 pymysql.install_as_MySQLdb()
 
@@ -163,15 +165,19 @@ WSGI_APPLICATION = 'winehauspro.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'winehaus_powdersave',
+#         'USER': 'winehaus_powdersave',
+#         'PASSWORD': '6dae6db8c36f4fe7c10724a0319eb19b485d0314',
+#         'HOST': '6hmey.h.filess.io',  
+#         'PORT': '3307',  
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'winehaus_powdersave',
-        'USER': 'winehaus_powdersave',
-        'PASSWORD': '6dae6db8c36f4fe7c10724a0319eb19b485d0314',
-        'HOST': '6hmey.h.filess.io',  
-        'PORT': '3307',  
-    }
+    "default": dj_database_url.parse(config("DATABASE_URL"))
 }
 
 
