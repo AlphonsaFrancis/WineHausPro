@@ -1,8 +1,10 @@
+# 
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import User
+from .models import OtpRecord, TempUser, User
 from .serializers import UserRegistrationSerializer, UserSerializer, UserUpdateSerializer
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
@@ -16,9 +18,55 @@ from django.template.loader import render_to_string
 from .serializers import PasswordResetRequestSerializer,PasswordResetConfirmSerializer
 from allauth.socialaccount.models import SocialAccount
 from django.http import JsonResponse
+import random
+
+def generate_otp(email):
+    try:
+        otp =  str(random.randint(100000, 999999))
+        print('OTP::',otp)
+        if OtpRecord.objects.filter(email=email).exists():
+            otp_record = OtpRecord.objects.get(email=email)
+            otp_record.otp = otp
+            otp_record.save()
+            print("record updated")
+        else:
+            OtpRecord.objects.create(email=email, otp=otp)
+            print("New record created")
+        return otp
+    except Exception as e:
+        print("ERROR:: ", str(e))
+        return str(e)
+
+
+def validate_otp(email,otp):
+    try:
+        otp_record = OtpRecord.objects.get(email=email)
+        if otp_record.otp == otp:
+            otp_record.delete()
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("ERROR:: ", str(e))
+        return False
+    
+
+def send_otp_email(recipient_email, otp):
+    print("Sending OTP as email...")
+    subject = "Your OTP Code"
+    message = f"Dear user,\n\nYour OTP code is: {otp}\n\nPlease use this code to complete your registration to Winehaus"
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [recipient_email]
+
+    try:
+        send_mail(subject, message, email_from, recipient_list)
+        return {"success": True, "message": "OTP sent successfully"}
+    except Exception as e:
+        return {"success": False, "message": f"Failed to send OTP: {str(e)}"}
+
 
 @api_view(['POST'])
-def user_registration(request):
+def initiate_registration(request):
     if request.method == 'POST':
         data = request.data
         email = data.get('email')
@@ -30,15 +78,53 @@ def user_registration(request):
         if User.objects.filter(email=email).exists():
             return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create(
-            email=email,
-            password=make_password(password),
-            is_active=True
-        )
+        # user = User.objects.create(
+        #     email=email,
+        #     password=make_password(password),
+        #     is_active=True
+        # )
         
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # serializer = UserSerializer(user)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        otp = generate_otp(email)
+        hashed_password = make_password(password)
+        if otp:
+            temp_user = TempUser.objects.create(email=email, password=hashed_password)
+        send_otp_email(email, otp)
+        return Response({"message": "OTP sent to your email."}, status=status.HTTP_201_CREATED)
     return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['POST'])
+def validate_otp_and_register(request):
+    if request.method == 'POST':
+        data = request.data
+        email = data.get('email')
+        otp = data.get('otp')
+
+        if not email or not otp:
+            return Response({"error": "Email and OTP are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            temp_user = TempUser.objects.get(email=email)
+            if validate_otp(email,otp):
+                user = User.objects.create(
+                    email=temp_user.email,
+                    password=temp_user.password,
+                    is_active=True
+                )
+                temp_user.delete()  
+                otp_record = OtpRecord.objects.filter(email=email).delete()
+                serializer = UserSerializer(user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except TempUser.DoesNotExist:
+            return Response({"error": "Temporary user not found."}, status=status.HTTP_404_NOT_FOUND)
+    return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 @api_view(['POST'])
 def user_login(request):
@@ -265,4 +351,3 @@ def check_email_exists(request):
     email = request.GET.get('email')
     exists = User.objects.filter(email=email).exists()
     return JsonResponse({'exists': exists})
-
