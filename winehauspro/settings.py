@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-m787wmo#61d-+3-n7e30t!%rex=qd=x)i9fcfub3ilwairai32
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -71,6 +71,7 @@ DJ_REST_AUTH = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -151,14 +152,25 @@ WSGI_APPLICATION = 'winehauspro.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'winehause',
+#         'USER': 'root',
+#         'PASSWORD': 'root1234',
+#         'HOST': 'localhost',  
+#         'PORT': '3306',  
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'winehause',
-        'USER': 'root',
-        'PASSWORD': 'root1234',
-        'HOST': 'localhost',  
-        'PORT': '3306',  
+        'NAME': 'winehaus_powdersave',
+        'USER': 'winehaus_powdersave',
+        'PASSWORD': '6dae6db8c36f4fe7c10724a0319eb19b485d0314',
+        'HOST': '6hmey.h.filess.io',  
+        'PORT': '3307',  
     }
 }
 
