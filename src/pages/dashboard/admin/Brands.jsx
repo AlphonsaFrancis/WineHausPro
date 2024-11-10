@@ -8,6 +8,7 @@ import {
   getBrandById,
   findInactiveItems,
 } from "../helper";
+import config from "../../../config/config";
 import AddBrandForm from "../../../components/Forms/AddBrandForm";
 import EditBrandForm from "../../../components/Forms/EditBrandForm";
 
@@ -44,7 +45,7 @@ function BrandsDashboard() {
 
   const getAllBrands = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/brand-list/")
+      .get(`${config.BASE_URL}api/v1/products/brand-list/`)
       .then((response) => {
         setBrandResponse(response.data);
         const transformedData = transformBrandData(response.data);
@@ -89,7 +90,7 @@ function BrandsDashboard() {
   const deleteBrand = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/products/brand-delete/${selectedBrand?.brand_id}/`
+        `${config.BASE_URL}api/v1/products/brand-delete/${selectedBrand?.brand_id}/`
       )
       .then((response) => {
         alert("Brand deleted");
@@ -109,7 +110,7 @@ function BrandsDashboard() {
   const handleDisableBrand = (row) => {
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/products/disable-enable-brand/${row?.brand_id}/`
+        `${config.BASE_URL}api/v1/products/disable-enable-brand/${row?.brand_id}/`
       )
       .then((response) => {
         getAllBrands();

@@ -5,6 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import './paymentPage.css';
+import config from '../../config/config';
 
 const BASE_URL = 'http://127.0.0.1:8000';
 
@@ -32,7 +33,7 @@ const PaymentPage = () => {
         return;
       }
 
-      const response = await axios.get(`${BASE_URL}/api/v1/orders/cart-list/?user_id=${userId}`);
+      const response = await axios.get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`);
       if (response.data && response.data.length > 0) {
         const userCart = response.data[0];
         setCartId(userCart.cart_id);
@@ -69,7 +70,7 @@ const PaymentPage = () => {
   };
 
   const handleCODPayment = () => {
-    axios.post(`${BASE_URL}/api/v1/orders/payments/create/`, {
+    axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
       payment_method: 'cod',
       amount: total,
       cart_id: cartId,
@@ -89,7 +90,7 @@ const PaymentPage = () => {
   // Handle online payment with Razorpay
   const handleOnlinePayment = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/v1/orders/payments/create/`, {
+      const response = await axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
         payment_method: 'online',
         amount: total,
         cart_id: cartId,
@@ -132,7 +133,7 @@ const PaymentPage = () => {
 
 const verifyPayment = async (paymentId, orderId) => {
   try {
-    const response = await axios.post(`${BASE_URL}/api/v1/orders/payments/verify/`, {
+    const response = await axios.post(`${config.BASE_URL}api/v1/orders/payments/verify/`, {
       payment_id: paymentId,
       order_id: orderId,
     });
@@ -152,7 +153,7 @@ const verifyPayment = async (paymentId, orderId) => {
 const clearCartItems = async () => {
   try {
     const userId = localStorage.getItem('userId');
-    await axios.delete(`${BASE_URL}/api/v1/orders/cart-items/clear/?user_id=${userId}`);
+    await axios.delete(`${config.BASE_URL}api/v1/orders/cart-items/clear/?user_id=${userId}`);
     navigate('/userorder');
     toast.success('Cart cleared successfully!');
   } catch (error) {

@@ -4,6 +4,7 @@ import DataTable from "../../../components/DataTable";
 import BasicModal from "../../../components/BasicModal";
 import axios from "axios";
 import { orderItemById, findInactiveItems,getIUserById } from "../helper";
+import config from "../../../config/config";
 
 import AddStaffForm from "../../../components/Forms/AddStaffForm";
 import EditOrderForm from "../../../components/Forms/EditOrders";
@@ -47,11 +48,11 @@ function AllOrdersDashboard() {
   const getAllOrders = async () => {
     try {
       // Fetch users first
-      const usersResponse = await axios.get("http://127.0.0.1:8000/api/v1/auth/users/");
+      const usersResponse = await axios.get(`${config.BASE_URL}api/v1/auth/users/`);
       setAllUsers(usersResponse.data);
 
       // Fetch orders
-      const ordersResponse = await axios.get("http://127.0.0.1:8000/api/v1/orders/list/");
+      const ordersResponse = await axios.get(`${config.BASE_URL}api/v1/orders/list/`);
       setOrdersResponse(ordersResponse.data);
       console.log("Orders response:", ordersResponse.data);
 
@@ -127,7 +128,7 @@ function AllOrdersDashboard() {
   const deleteUser = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/orders/delete/${selectedOrders?.order_id}/`
+        `${config.BASE_URL}api/v1/orders/delete/${selectedOrders?.order_id}/`
       )
       .then((response) => {
         alert("order deleted");
@@ -147,7 +148,7 @@ function AllOrdersDashboard() {
   const handleDisableOrder = (row) => {
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/orders/disable-enable-order/${row?.order_id}/`
+        `${config.BASE_URL}api/v1/orders/disable-enable-order/${row?.order_id}/`
       )
       .then((response) => {
         getAllOrders();

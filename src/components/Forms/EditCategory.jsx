@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./forms.css";
+import config from "../../config/config";
 
 const EditCategoryForm = ({ onCancel, onConfirm, initialCategoryData }) => {
   const [categoryData, setCategoryData] = useState({
@@ -64,7 +65,7 @@ const EditCategoryForm = ({ onCancel, onConfirm, initialCategoryData }) => {
     });
 
     axios
-      .put(`http://127.0.0.1:8000/api/v1/products/category-update/${initialCategoryData.id}/`, formData)
+      .put(`${config.BASE_URL}api/v1/products/category-update/${initialCategoryData.id}/`, formData)
       .then((response) => {
         alert("Category updated successfully!");
         onCancel()

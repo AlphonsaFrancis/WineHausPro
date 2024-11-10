@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./forms.css";
+import config from "../../config/config";
 
 const AddStaffForm = ({ onCancel,onConfirm }) => {
   const [staffData, setStaffData] = useState({
@@ -26,7 +27,7 @@ const AddStaffForm = ({ onCancel,onConfirm }) => {
   useEffect(() => {
     const fetchExistingUsers = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/v1/auth/users/");
+        const response = await axios.get(`${config.BASE_URL}api/v1/auth/users/`);
         setExistingUsers(response.data);
       } catch (error) {
         console.error("Error fetching existing users:", error);
@@ -72,7 +73,7 @@ const AddStaffForm = ({ onCancel,onConfirm }) => {
       const newFormData = new FormData()
       newFormData.append("email", newUserData.email);
       newFormData.append("password", newUserData.password);
-      await axios.post("http://127.0.0.1:8000/api/v1/auth/add-new-user/", newFormData)
+      await axios.post(`${config.BASE_URL}api/v1/auth/add-new-user/`, newFormData)
       .then((res) => {
         console.log("user---",res.data)
         console.log("res.data.id",res.data.id)
@@ -86,7 +87,7 @@ const AddStaffForm = ({ onCancel,onConfirm }) => {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/v1/staffs/create/", formData);
+      await axios.post(`${config.BASE_URL}api/v1/staffs/create/`, formData);
       alert("Staff added successfully!");
       onCancel()
       onConfirm()

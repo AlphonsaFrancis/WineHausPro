@@ -18,7 +18,10 @@ const config = {
     deleteCategoryApi:process.env.REACT_APP_DELETE_CATEGORY_API,
     deleteMadeOfApi:process.env.REACT_APP_DELETE_MADEOF_API,
     deleteCountryApi:process.env.REACT_APP_DELETE_COUNTRIES_API,
-    deleteBrandApi:process.env.REACT_APP_DELETE_BRANDS_API
+    deleteBrandApi:process.env.REACT_APP_DELETE_BRANDS_API,
+
+    BASE_URL: 'https://alphonsa.pythonanywhere.com/'
+    // BASE_URL: 'http://localhost:8000/'
 
   };
    

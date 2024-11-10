@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
+import config from '../../config/config';
 
 const AddressSelection = () => {
   const [addresses, setAddresses] = useState([]);
@@ -24,7 +25,7 @@ const AddressSelection = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [cartSummaryVisible, setCartSummaryVisible] = useState(false); // State for cart summary visibility
   const [errors, setErrors] = useState({});
-  const BASE_URL = 'http://127.0.0.1:8000';
+  // const BASE_URL = 'http://127.0.0.1:8000';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,12 +33,12 @@ const AddressSelection = () => {
 
     if (userId) {
         // Fetch user profile details
-        axios.get(`${BASE_URL}/api/v1/auth/user_profiles/${userId}/`)
+        axios.get(`${config.BASE_URL}api/v1/auth/user_profiles/${userId}/`)
             .then(response => setUserProfile(response.data))
             .catch(error => console.error('Error fetching user profile:', error));
 
         // Fetch user addresses
-        axios.get(`${BASE_URL}/api/v1/orders/address-list/?user_id=${userId}`)
+        axios.get(`${config.BASE_URL}api/v1/orders/address-list/?user_id=${userId}`)
             .then(response => {
                 // Ensure addresses belong to the logged-in user
                 const userAddresses = response.data.filter(address => address.user_id === parseInt(userId));
@@ -53,7 +54,7 @@ const AddressSelection = () => {
   // Function to fetch cart items
   const fetchCartItems = () => {
     const userId = localStorage.getItem('userId');
-    axios.get(`${BASE_URL}/api/v1/orders/cart-items/?user_id=${userId}`)
+    axios.get(`${config.BASE_URL}api/v1/orders/cart-items/?user_id=${userId}`)
       .then(response => {
         setCartItems(response.data);
         calculateTotal(response.data);
@@ -95,7 +96,7 @@ const AddressSelection = () => {
     const userId = localStorage.getItem('userId');
     if (editingAddressId) {
       // Update existing address
-      axios.put(`${BASE_URL}/api/v1/orders/addresses/${editingAddressId}/update/`, { ...newAddress, user_id: userId })
+      axios.put(`${config.BASE_URL}api/v1/orders/addresses/${editingAddressId}/update/`, { ...newAddress, user_id: userId })
         .then(response => {
           const updatedAddresses = addresses.map(address =>
             address.address_id === editingAddressId ? response.data : address
@@ -110,7 +111,7 @@ const AddressSelection = () => {
         });
     } else {
       // Add new address
-      axios.post(`${BASE_URL}/api/v1/orders/addresses/create/`, { ...newAddress, user_id: userId })
+      axios.post(`${config.BASE_URL}api/v1/orders/addresses/create/`, { ...newAddress, user_id: userId })
         .then(response => {
           setAddresses([...addresses, response.data]);
           toast.success('Address added successfully!');
@@ -139,7 +140,7 @@ const AddressSelection = () => {
   };
 
   const handleDeleteAddress = (id) => {
-    axios.delete(`${BASE_URL}/api/v1/orders/addresses/${id}/delete/`)
+    axios.delete(`${config.BASE_URL}api/v1/orders/addresses/${id}/delete/`)
       .then(() => {
         const updatedAddresses = addresses.filter(address => address.address_id !== id);
         setAddresses(updatedAddresses);
@@ -291,7 +292,7 @@ const AddressSelection = () => {
               {cartItems.map(item => (
                 <div className="cart-item" key={item.cart_item_id}>
                   <img
-                    src={item.product.image ? `${BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
+                    src={item.product.image ? `${config.BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
                     alt={item.product.name}
                     className="product-image"
                   />

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./forms.css";
+import config from "../../config/config";
 
 const AddCountryForm = ({ onCancel, onConfirm }) => {
   const [countryData, setCountryData] = useState({
@@ -53,7 +54,7 @@ const AddCountryForm = ({ onCancel, onConfirm }) => {
     });
 
     axios
-      .post("http://127.0.0.1:8000/api/v1/products/country-create/", formData)
+      .post(`${config.BASE_URL}api/v1/products/country-create/`, formData)
       .then((res) => {
         alert("Country Added!");
         onConfirm();

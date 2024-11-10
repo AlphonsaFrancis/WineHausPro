@@ -11,6 +11,7 @@ import {
   getItemById,
   findInactiveItems,
 } from "../helper";
+import config from "../../../config/config";
 import AddCategoryForm from "../../../components/Forms/AddCategoryFrom";
 import EditCategoryForm from "../../../components/Forms/EditCategory";
 
@@ -48,7 +49,7 @@ function CategoryDashboard() {
 
   const getAllcategories = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/category-list/")
+      .get(`${config.BASE_URL}api/v1/products/category-list/`)
       .then((response) => {
         setCategoryResponse(response.data);
         console.log("response.data", response.data);
@@ -95,7 +96,7 @@ function CategoryDashboard() {
   const deleteBrand = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/products/category-delete/${selectedCategory?.id}/`
+        `${config.BASE_URL}api/v1/products/category-delete/${selectedCategory?.id}/`
       )
       .then((response) => {
         alert("Category deleted");
@@ -116,7 +117,7 @@ function CategoryDashboard() {
     console.log("row--", row);
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/products/disable-enable-category/${row?.id}/`
+        `${config.BASE_URL}api/v1/products/disable-enable-category/${row?.id}/`
       )
       .then((response) => {
         getAllcategories();

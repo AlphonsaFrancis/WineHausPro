@@ -6,6 +6,7 @@ import { faTrash, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { toast, ToastContainer } from 'react-toastify'; // Import ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import Header from '../../components/Navbar';
+import config from '../../config/config';
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -15,12 +16,12 @@ const Wishlist = () => {
   useEffect(() => {
     if (userId) {
       // Step 1: Fetch the wishlist for the logged-in user
-      axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-list/?user_id=${userId}`)
+      axios.get(`${config.BASE_URL}api/v1/orders/wishlist-list/?user_id=${userId}`)
         .then(response => {
           const wishlist = response.data[0]; // Assuming only one wishlist per user
           if (wishlist) {
             // Step 2: Fetch wishlist items by wishlist_id
-            axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-items-create/?wishlist_id=${wishlist.wishlist_id}`)
+            axios.get(`${config.BASE_URL}api/v1/orders/wishlist-items-create/?wishlist_id=${wishlist.wishlist_id}`)
               .then(itemsResponse => {
                 setWishlistItems(itemsResponse.data);
               })
@@ -37,14 +38,14 @@ const Wishlist = () => {
 
   const addToCart = (productId) => {
     const quantity = 1; // Default quantity for adding to cart
-    axios.get(`http://127.0.0.1:8000/api/v1/orders/cart-list/?user_id=${userId}`)
+    axios.get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`)
       .then(response => {
         let cartId;
 
         if (response.data.length > 0) {
           cartId = response.data[0].cart_id; // Assuming first cart for the user
         } else {
-          return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-list/', { user_id: userId })
+          return axios.post(`${config.BASE_URL}api/v1/orders/cart-list/`, { user_id: userId })
             .then(response => {
               cartId = response.data.cart_id;
               return cartId;
@@ -60,7 +61,7 @@ const Wishlist = () => {
           quantity: quantity
         };
 
-        return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-items-create/', dataToSend);
+        return axios.post(`${config.BASE_URL}api/v1/orders/cart-items-create/`, dataToSend);
       })
       .then(() => {
         toast.success('Product added to cart!');
@@ -71,7 +72,8 @@ const Wishlist = () => {
   };
 
   const removeFromWishlist = (wishlistItemId) => {
-    axios.delete(`http://127.0.0.1:8000/api/v1/orders/wishlist-items/${wishlistItemId}/`)
+    
+    axios.delete(`${config.BASE_URL}api/v1/orders/wishlist-items/${wishlistItemId}/`)
       .then(() => {
         setWishlistItems(wishlistItems.filter(item => item.wishlist_item_id !== wishlistItemId));
         toast.info('Item removed from wishlist');
@@ -124,7 +126,7 @@ const Wishlist = () => {
       wishlistItems.map((item) => (
         <div key={item.wishlist_item_id} className="specific-wishlist-item">
           <img
-            src={item.product?.image ? `${BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
+            src={item.product?.image ? `${config.BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
             alt={item.product?.name || 'Product Name'}
             className="specific-product-image"
           />

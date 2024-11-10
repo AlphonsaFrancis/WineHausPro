@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./forms.css";
+import config from "../../config/config";
 
 const EditCountryForm = ({ onCancel, onConfirm, initialCountryData }) => {
   const [countryData, setCountryData] = useState({
@@ -63,7 +64,7 @@ const EditCountryForm = ({ onCancel, onConfirm, initialCountryData }) => {
 
     axios
       .put(
-        `http://127.0.0.1:8000/api/v1/products/country-update/${initialCountryData.country_id}/`,
+        `${config.BASE_URL}api/v1/products/country-update/${initialCountryData.country_id}/`,
         formData
       )
       .then((response) => {

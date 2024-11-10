@@ -1,7 +1,7 @@
 import './App.css';
-import './pages/authentication/Loginregist.css'; 
+import './pages/authentication/Loginregist.css';
 import RegLogin from './pages/authentication/RegLogin';
-import "@fontsource/inter"; 
+import "@fontsource/inter";
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
@@ -15,28 +15,34 @@ import WishlistPage from './pages/home/wishlistPage';
 import AddressSelection from './pages/home/addressPage';
 import PaymentPage from './pages/home/paymentPage';
 import UserOrder from './pages/home/userOrder';
+import ProtectedRoute from './pages/authentication/ProtectedRoute';
+import AdminProtectedRoute from './pages/authentication/AdminProtectedRoute';
+import StaffProtectedRoute from './pages/authentication/StaffProtectedRoute';
 function App() {
 
   return (
-    
+
     <div>
       <Router>
-      <Routes>
-        <Route path="/login" element={<RegLogin/>} />
-        <Route path="/admin" element={<AdminDashboard/>} />
-        <Route path="/" element={<Home/>} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/staff" element={<StaffDashboard/>} />
-        <Route path="/products" element={<ProductPage/>} />
-        <Route path="/products/:id" element={<ProductDetail/>} />
-        <Route path="/cart" element={<CartPage/>} />
-        <Route path="/wishlist" element={<WishlistPage/>} />
-        <Route path="/address" element={<AddressSelection/>} />
-        <Route path="/payment" element={<PaymentPage/>} />
-        <Route path="/userorder" element={<UserOrder/>} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<RegLogin />} />
+          <Route path="/admin" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
 
-      </Routes>
-    </Router>
+          <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+
+          <Route path="/products" element={<ProductPage />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+\
+          <Route path="/cart" element={<ProtectedRoute element={<CartPage />} />} />
+          <Route path="/wishlist" element={<ProtectedRoute element={<WishlistPage />} />} />
+          <Route path="/address" element={<ProtectedRoute element={<AddressSelection />} />} />
+          <Route path="/payment" element={<ProtectedRoute element={<PaymentPage />} />} />
+          <Route path="/userorder" element={<ProtectedRoute element={<UserOrder />} />} />
+          <Route path="*" element={<NotFound />} />
+
+        </Routes>
+      </Router>
     </div>
   );
 }

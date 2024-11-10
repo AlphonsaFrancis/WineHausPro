@@ -5,6 +5,7 @@ import BasicModal from "../../../components/BasicModal";
 import axios from "axios";
 import { format } from "date-fns";
 import { getStaffById, findInactiveItems } from "../helper";
+import config from "../../../config/config";
 
 import AddStaffForm from "../../../components/Forms/AddStaffForm";
 import EditStaffForm from "../../../components/Forms/EditStaffForm";
@@ -44,7 +45,7 @@ function AllStaffsDashboard() {
 
   const getAllStaffs = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/staffs/list/")
+      .get(`${config.BASE_URL}api/v1/staffs/list/`)
       .then((response) => {
         setStaffsResponse(response.data);
         console.log("response.data---", response.data);
@@ -94,7 +95,7 @@ function AllStaffsDashboard() {
   const deleteUser = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/staffs/delete/${selectedStaff?.staff_id}/`
+        `${config.BASE_URL}api/v1/staffs/delete/${selectedStaff?.staff_id}/`
       )
       .then((response) => {
         alert("staff deleted");
@@ -114,7 +115,7 @@ function AllStaffsDashboard() {
   const handleDisableStaff = (row) => {
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/staffs/disable-enable-staff/${row?.staff_id}/`
+        `${config.BASE_URL}api/v1/staffs/disable-enable-staff/${row?.staff_id}/`
       )
       .then((response) => {
         getAllStaffs();

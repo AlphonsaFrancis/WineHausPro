@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import DataTable from './DataTable'; 
 import axios from 'axios';
 import { IoMdClose } from "react-icons/io";
+import config from '../config/config';
 
 function OrderItemsTable({ data, handleCloseForm }) {
   const [orderItems, setOrderItems] = useState([]);
@@ -43,7 +44,7 @@ function OrderItemsTable({ data, handleCloseForm }) {
   }, [data]);
 
   const fetchProducts = () => {
-    axios.get('http://127.0.0.1:8000/api/v1/products/list/')
+    axios.get(`${config.BASE_URL}api/v1/products/list/`)
       .then((response) => {
         setAllProducts(response.data);
       })
@@ -53,7 +54,7 @@ function OrderItemsTable({ data, handleCloseForm }) {
   };
 
   const fetchOrderItems = () => {
-    axios.get(`http://127.0.0.1:8000/api/v1/orders/items-list/${data?.order_id}/`)
+    axios.get(`${config.BASE_URL}api/v1/orders/items-list/${data?.order_id}/`)
       .then((response) => {
         setOrderItems(response.data);
       })
@@ -64,7 +65,7 @@ function OrderItemsTable({ data, handleCloseForm }) {
 
   const handleDelete = (item) => {
     console.log('Delete item:', item);
-    axios.delete(`http://127.0.0.1:8000/api/v1/orders/items-detail/${item?.order_item_id}/`)
+    axios.delete(`${config.BASE_URL}api/v1/orders/items-detail/${item?.order_item_id}/`)
       .then(() => {
         fetchOrderItems();
       })
@@ -84,6 +85,7 @@ function OrderItemsTable({ data, handleCloseForm }) {
         onDelete={handleDelete}
         hideActiveButton={true}
         showViewMoreIcon={false}
+        hideActions={true}
       />
       <button 
         onClick={handleCloseForm} 

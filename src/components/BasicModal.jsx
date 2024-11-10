@@ -19,7 +19,7 @@ const style = {
   
 };
 
-export default function BasicModal({open,setOpen,isConfirmModal,onConfirm,heading,content, customStyle}) {
+export default function BasicModal({open,setOpen,isConfirmModal,onConfirm,heading,content, customStyle,showCancel=true}) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -40,7 +40,7 @@ export default function BasicModal({open,setOpen,isConfirmModal,onConfirm,headin
          {content}
         </Typography>
         <div className='modal-button-container'>
-          <button onClick={handleClose} className='modal-cancel-button'>Cancel</button>
+         {showCancel && <button onClick={handleClose} className='modal-cancel-button'>Cancel</button>}
           <button onClick={onConfirm} className='modal-confirm-button'>Ok</button>
         </div>
       </Box>:

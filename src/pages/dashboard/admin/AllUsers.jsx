@@ -5,6 +5,7 @@ import BasicModal from "../../../components/BasicModal";
 import axios from "axios";
 import { format } from "date-fns";
 import { getIUserById, findInactiveItems } from "../helper";
+import config from "../../../config/config";
 
 import AddUserForm from "../../../components/Forms/AddUser";
 import EditUserForm from "../../../components/Forms/EditUserForm";
@@ -41,7 +42,7 @@ function AllUsersDashboard() {
 
   const getAllUsers = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/auth/users/")
+      .get(`${config.BASE_URL}api/v1/auth/users/`)
       .then((response) => {
         setUsersResponse(response.data);
         console.log("response.data---", response.data);
@@ -92,7 +93,7 @@ function AllUsersDashboard() {
   const deleteUser = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/auth/users/${selectedUser?.id}/delete/`
+        `${config.BASE_URL}api/v1/auth/users/${selectedUser?.id}/delete/`
       )
       .then((response) => {
         alert("user deleted");
@@ -112,7 +113,7 @@ function AllUsersDashboard() {
   const handleDisableUser = (row) => {
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/auth/disable-enable-user/${row?.id}/`
+        `${config.BASE_URL}api/v1/auth/disable-enable-user/${row?.id}/`
       )
       .then((response) => {
         getAllUsers();

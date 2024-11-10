@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './forms.css';
 import { formatDateForInput } from '../../pages/dashboard/helper';
+import config from '../../config/config';
 
 const EditOrderForm = ({ onCancel,onConfirm, initialOrderData }) => {
   const [orderData, setOrderData] = useState({
@@ -55,7 +56,7 @@ const EditOrderForm = ({ onCancel,onConfirm, initialOrderData }) => {
 
       // Update existing order
       axios
-        .put(`http://127.0.0.1:8000/api/v1/orders/update/${initialOrderData?.order_id}/`, formData, {
+        .put(`${config.BASE_URL}api/v1/orders/update/${initialOrderData?.order_id}/`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

@@ -41,22 +41,27 @@ const Dropdown = ({ toggleDropdown, username }) => {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
+    localStorage.removeItem('isAgeVerified')
+
     navigate('/');
   };
-  const handleLogin=()=>{
+  const handleLogin = () => {
     navigate('/login');
   }
-  const handleorders=()=>{
+  const handleorders = () => {
     navigate('/userorder');
   }
 
   return (
     <div className="dropdown-container">
       <div className="dropdown-content">
-      <button onClick={handleLogin} className="logout-btn">Login</button>
-        <button onClick={handleLogout} className="logout-btn">Logout</button>
+        {userId ?
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
+          :
+          <button onClick={handleLogin} className="logout-btn">Login</button>
+        }
         <button onClick={handleorders} className="logout-btn">Orders</button>
-        
+
       </div>
     </div>
   );

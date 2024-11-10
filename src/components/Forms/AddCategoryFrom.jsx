@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./forms.css";
+import config from "../../config/config";
 
 const AddCategoryForm = ({ onCancel, onConfirm }) => {
   const [categoryData, setCategoryData] = useState({
@@ -53,7 +54,7 @@ const AddCategoryForm = ({ onCancel, onConfirm }) => {
   //   });
 
   //   axios
-  //     .post("http://127.0.0.1:8000/api/v1/products/category-create/", formData)
+  //     .post("https://alphonsa.pythonanywhere.com/api/v1/products/category-create/", formData)
   //     .then((res) => {
   //       alert("Category Added!");
   //       onConfirm();  
@@ -77,7 +78,7 @@ const AddCategoryForm = ({ onCancel, onConfirm }) => {
     });
   
     axios
-      .post("http://127.0.0.1:8000/api/v1/products/category-create/", formData)
+      .post(`${config.BASE_URL}api/v1/products/category-create/`, formData)
       .then((res) => {
         alert("Category Added!");
         onConfirm();

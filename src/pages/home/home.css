@@ -1,5 +1,7 @@
 
 
+
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
@@ -269,7 +271,7 @@ p {
     margin-bottom: 20px;   /* I think spasce btn different css */
 } 
 
-.product-container {
+.home-product-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -277,7 +279,7 @@ p {
     gap: 10px;
 }
 
-.product-card {
+.home-product-card {
     /* background-color: #fff; */
     border-radius: 15px;
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
@@ -288,22 +290,22 @@ p {
     transition: transform 0.3s ease;
 }
 
-.product-card:hover {
+.home-product-card:hover {
     transform: translateY(-10px);
 }
 
-.product-image {
+.home-product-image {
     overflow: hidden;
     border-radius: 10px;
 }
 
-.product-image img {
+.home-product-image img {
     width: 100%;
     border-radius: 10px;
     transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-image img {
+.home-product-card:hover .home-product-image img {
     transform: scale(1.4);
 }
 
@@ -380,6 +382,6 @@ p {
 }
 
 
-/* Footer Styles */
+
 
 

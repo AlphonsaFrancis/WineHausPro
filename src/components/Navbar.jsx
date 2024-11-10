@@ -7,6 +7,10 @@ import { Link } from 'react-router-dom';
 import Dropdown from './Dropdown';
 import user from '../assets/user.png';
 import { useNavigate } from 'react-router-dom';
+import { FaShoppingCart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
+
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -79,10 +83,13 @@ function Navbar() {
 
         <div className="icon-links">
           <div className="icon">
-            <img src={cart} alt="cart"  onClick={gotoCart}/>
+            {/* <img src={cart} alt="cart"  onClick={gotoCart}/> */}
+
+            <FaShoppingCart onClick={gotoCart} fontSize={26}/>
           </div>
           <div className="icon">
-            <img src={whishlist} alt="whishlist" onClick={gotoWishlist} />
+            {/* <img src={whishlist} alt="whishlist" onClick={gotoWishlist} /> */}
+            <FaHeart  onClick={gotoWishlist} fontSize={26} color='red' />
           </div>
           <div className="icon">
             <UserDropdown 
@@ -101,7 +108,8 @@ function Navbar() {
 const UserDropdown = ({ isOpen, toggleDropdown, handleLogout, username }) => (
   <>
     <div className="user-icon" onClick={toggleDropdown}>
-      <img src={user} alt="user" />
+      {/* <img src={user} alt="user" /> */}
+      <FaUser fontSize={26}/>
     </div>
     {isOpen && (
       <Dropdown 

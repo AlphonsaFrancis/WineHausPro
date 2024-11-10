@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./forms.css";
 import axios from "axios";
 import { formatDateForInput } from "../../pages/dashboard/helper";
+import config from "../../config/config";
 
 const AddUserForm = ({ onCancel, onConfirm }) => {
   const [userData, setUserData] = useState({
@@ -84,7 +85,7 @@ const AddUserForm = ({ onCancel, onConfirm }) => {
       }
 
     axios
-      .post("http://127.0.0.1:8000/api/v1/auth/add-new-user/", formData)
+      .post(`${config.BASE_URL}api/v1/auth/add-new-user/`, formData)
       .then((res) => {
         alert("User Added!");
         onCancel()

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './forms.css';
 import axios from 'axios';
+import config from '../../config/config';
 
 const EditBrandForm = ({ onCancel, onConfirm, initialBrandData }) => {
   const [brandData, setBrandData] = useState({
@@ -63,7 +64,7 @@ const EditBrandForm = ({ onCancel, onConfirm, initialBrandData }) => {
       formData.append(key, brandData[key]);
     });
 
-    axios.put(`http://127.0.0.1:8000/api/v1/products/brand-update/${initialBrandData.brand_id}/`, formData)
+    axios.put(`${config.BASE_URL}api/v1/products/brand-update/${initialBrandData.brand_id}/`, formData)
       .then((response) => {
         alert("Brand updated successfully!");
         onCancel()

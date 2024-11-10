@@ -4,6 +4,7 @@ import config from "../../config/config";
 import axios from "axios";
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+// import config from "../../config/config";
 
 const Login = ({ setIslogin }) => {
   const [username, setUsername] = useState("");
@@ -20,7 +21,7 @@ const Login = ({ setIslogin }) => {
 
       axios
         .post(
-          config.googleAuthLoginApi,
+          `${config.BASE_URL}api/v1/auth/auth-google/`,
           {
             token: codeResponse.access_token,
           },
@@ -36,7 +37,7 @@ const Login = ({ setIslogin }) => {
           // Store access token and user info in localStorage
           localStorage.setItem('authToken', codeResponse.access_token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
-          localStorage.setItem('userId', user_id);
+          localStorage.setItem('userId', JSON.stringify(response.data.user.id));
 
           if (response.status === 200) {
             navigate('/');
@@ -90,7 +91,7 @@ const Login = ({ setIslogin }) => {
       formData.append("email", username);
       formData.append("password", password);
       axios
-        .post(`${config.loginApi}`, formData)
+        .post(`${config.BASE_URL}api/v1/auth/login/`, formData)
         .then((response) => {
           console.log(response.data);
           // Store access token and user info in localStorage
@@ -129,7 +130,7 @@ const Login = ({ setIslogin }) => {
     const formData = new FormData();
     formData.append("email", username);
     axios
-      .post(`${config.passwordResetApi}`, formData)
+      .post(`${config.BASE_URL}api/v1/auth/password-reset/`, formData)
       .then((response) => {
         console.log(response.data);
         if (response.status === 200)

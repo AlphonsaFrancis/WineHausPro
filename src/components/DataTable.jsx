@@ -50,7 +50,7 @@ import { FaEdit, FaTrashAlt, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { IoMdEye } from "react-icons/io";
 import "./DataTable.css";
 
-const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActiveButton,showViewMoreIcon,onShowMoreDetails,showDeleteIcon=true,showEditIcon=true}) => {
+const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActiveButton,showViewMoreIcon,onShowMoreDetails,showDeleteIcon=true,showEditIcon=true,hideActions=false}) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -81,7 +81,8 @@ const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActive
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps()}>{column.render("Header")}</th>
               ))}
-              <th>Actions</th>
+               {!hideActions && <th>Actions</th>}
+             
             </tr>
           ))}
         </thead>
@@ -93,6 +94,7 @@ const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActive
                 {row.cells.map((cell) => (
                   <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                 ))}
+                {!hideActions &&
                 <td>
                   {showEditIcon && 
                   <button
@@ -131,6 +133,7 @@ const DataTable = ({ columns, data, onEdit, onDelete, onToggleStatus ,hideActive
                   </button>
                   }
                 </td>
+                }
               </tr>
             );
           })}

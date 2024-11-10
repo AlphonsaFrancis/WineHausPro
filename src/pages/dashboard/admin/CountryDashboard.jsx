@@ -10,6 +10,7 @@ import {
   getItemById,
   findInactiveItems,
 } from "../helper";
+import config from "../../../config/config";
 import AddcountryForm from "../../../components/Forms/AddcountryFrom";
 import EditcountryForm from "../../../components/Forms/Editcountry";
 
@@ -47,7 +48,7 @@ function CountryDashboard() {
 
   const getAllcountries = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/country-list/")
+      .get(`${config.BASE_URL}api/v1/products/country-list/`)
       .then((response) => {
         setCountryResponse(response.data);
         console.log("response.data", response.data);
@@ -94,7 +95,7 @@ function CountryDashboard() {
   const deletecountry = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/products/country-delete/${selectedCountry?.country_id}/`
+        `${config.BASE_URL}api/v1/products/country-delete/${selectedCountry?.country_id}/`
       )
       .then((response) => {
         alert("country deleted");
@@ -115,7 +116,7 @@ function CountryDashboard() {
     console.log("row--", row);
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/products/disable-enable-country/${row?.country_id}/`
+        `${config.BASE_URL}api/v1/products/disable-enable-country/${row?.country_id}/`
       )
       .then((response) => {
         getAllcountries();

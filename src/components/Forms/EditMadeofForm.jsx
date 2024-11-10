@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import './forms.css';
+import config from '../../config/config';
 
 const EditMadeofForm = ({ onCancel, onConfirm, initialMadeOfData }) => {
   const [madeOfData, setMadeOfData] = useState({
@@ -62,7 +63,7 @@ const EditMadeofForm = ({ onCancel, onConfirm, initialMadeOfData }) => {
     });
 
     axios
-      .put(`http://127.0.0.1:8000/api/v1/products/madeof-update/${initialMadeOfData.madeof_id}/`, formData)
+      .put(`${config.BASE_URL}api/v1/products/madeof-update/${initialMadeOfData.madeof_id}/`, formData)
       .then((response) => {
         alert("Made of updated successfully!");
         onConfirm()

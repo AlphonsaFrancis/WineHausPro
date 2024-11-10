@@ -4,6 +4,7 @@ import Sidebar from "../../components/Sidebar";
 import AdminNavbar from "../../components/AdminNavbar";
 import ProductDashboard from "../../pages/dashboard/admin/ProductDashboard";
 import Brands from "../../pages/dashboard/admin/Brands";
+import config from "../../config/config";
 
 import axios from "axios";
 import CategoryDashboard from "./admin/CategoryDashboard";
@@ -19,7 +20,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/category-list/")
+      .get(`${config.BASE_URL}api/v1/products/category-list/`)
       .then((response) => {
         if (response.status === 200) {
           localStorage.setItem("categories", JSON.stringify(response.data));
@@ -32,7 +33,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/brand-list/")
+      .get(`${config.BASE_URL}api/v1/products/brand-list/`)
       .then((response) => {
         if (response.status === 200) {
           localStorage.setItem("brands", JSON.stringify(response.data));
@@ -45,7 +46,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/country-list/")
+      .get(`${config.BASE_URL}api/v1/products/country-list/`)
       .then((response) => {
         if (response.status === 200) {
           localStorage.setItem("countries", JSON.stringify(response.data));
@@ -58,7 +59,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/madeof-list/")
+      .get(`${config.BASE_URL}api/v1/products/madeof-list/`)
       .then((response) => {
         if (response.status === 200) {
           localStorage.setItem("madeOf", JSON.stringify(response.data));

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './forms.css';
 import axios from 'axios';
+import config from '../../config/config';
 
 const AddBrandForm = ({ onCancel, onConfirm }) => {
   const [brandData, setBrandData] = useState({
@@ -53,7 +54,7 @@ const AddBrandForm = ({ onCancel, onConfirm }) => {
       formData.append(key, brandData[key]);
     });
 
-    axios.post("http://127.0.0.1:8000/api/v1/products/brand-create/", formData)
+    axios.post(`${config.BASE_URL}api/v1/products/brand-create/`, formData)
       .then((res) => {
         alert("Brand Added!");
         onCancel();

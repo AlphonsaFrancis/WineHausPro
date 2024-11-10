@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './userorder.css';
 import Header from '../../components/Navbar';
+import config from '../../config/config';
 
 const BASE_URL = 'http://127.0.0.1:8000';
 
@@ -17,13 +18,13 @@ const OrdersPage = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/v1/orders/user-orders/${userId}/`);
+                const response = await axios.get(`${config.BASE_URL}api/v1/orders/user-orders/${userId}/`);
                 if (Array.isArray(response.data)) {
                     const ordersWithItems = await Promise.all(response.data.map(async (orderData) => {
                         const orderId = orderData.order.order_id;
                         if (orderId) {
                             try {
-                                const itemsResponse = await axios.get(`${BASE_URL}/api/v1/orders/order-items/${orderId}/`);
+                                const itemsResponse = await axios.get(`${config.BASE_URL}api/v1/orders/order-items/${orderId}/`);
                                 return {
                                     ...orderData,
                                     order_items: itemsResponse.data
@@ -55,7 +56,7 @@ const OrdersPage = () => {
 
     const confirmDeletion = async () => {
         try {
-            await axios.delete(`${BASE_URL}/api/v1/orders/delete/${selectedOrderId}/`);
+            await axios.delete(`${config.BASE_URL}api/v1/orders/delete/${selectedOrderId}/`);
             setOrders(orders.filter(order => order.order.order_id !== selectedOrderId));
             toast.success('Order deleted successfully.');
         } catch (error) {

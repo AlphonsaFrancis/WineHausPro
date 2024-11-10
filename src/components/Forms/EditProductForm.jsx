@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./forms.css";
 import {findActiveItems} from "../../pages/dashboard/helper"
+import config from "../../config/config";
 
 const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
   const [categories,setCategories] = useState();
@@ -23,7 +24,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
   });
 
   useEffect(()=>{
-    axios.get("http://127.0.0.1:8000/api/v1/products/brand-list/")
+    axios.get(`${config.BASE_URL}api/v1/products/brand-list/`)
     .then((response)=>{
       if(response?.status === 200){
         const activeBrands = findActiveItems(response?.data)
@@ -34,7 +35,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
       console.log(error)
     })
 
-    axios.get("http://127.0.0.1:8000/api/v1/products/category-list/")
+    axios.get(`${config.BASE_URL}api/v1/products/category-list/`)
     .then((response)=>{
       if(response?.status === 200){
         const activeCategories = findActiveItems(response?.data)
@@ -45,7 +46,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
       console.log(error)
     })
 
-    axios.get("http://127.0.0.1:8000/api/v1/products/country-list/")
+    axios.get(`${config.BASE_URL}api/v1/products/country-list/`)
     .then((response)=>{
       if(response?.status === 200){
         const activeCountries = findActiveItems(response?.data)
@@ -56,7 +57,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
       console.log(error)
     })
 
-    axios.get("http://127.0.0.1:8000/api/v1/products/madeof-list/")
+    axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`)
     .then((response)=>{
       if(response?.status === 200){
         const activeMadeOfs = findActiveItems(response?.data)
@@ -161,7 +162,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
 
     axios
       .put(
-        `http://127.0.0.1:8000/api/v1/products/update/${initialProductData.product_id}/`,
+        `${config.BASE_URL}api/v1/products/update/${initialProductData.product_id}/`,
         formData,
         {
           headers: {

@@ -1,9 +1,10 @@
 // Filter.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import config from '../config/config'
 
 const Filter = ({ category, setCategory, brand, setBrand, country, setCountry, madeOf, setMadeOf, sortOrder, setSortOrder }) => {
-  const BASE_URL = 'http://127.0.0.1:8000';
+  // const BASE_URL = 'http://127.0.0.1:8000';
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -12,22 +13,22 @@ const Filter = ({ category, setCategory, brand, setBrand, country, setCountry, m
   // Fetch filter options
   const fetchFilterOptions = () => {
     // Fetch categories
-    axios.get(`${BASE_URL}/api/v1/products/category-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/category-list/`)
       .then(response => setCategories(response.data))
       .catch(error => console.error("Error fetching categories:", error));
 
     // Fetch brands
-    axios.get(`${BASE_URL}/api/v1/products/brand-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/brand-list/`)
       .then(response => setBrands(response.data))
       .catch(error => console.error("Error fetching brands:", error));
 
     // Fetch countries
-    axios.get(`${BASE_URL}/api/v1/products/country-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/country-list/`)
       .then(response => setCountries(response.data))
       .catch(error => console.error("Error fetching countries:", error));
 
     // Fetch madeOf options
-    axios.get(`${BASE_URL}/api/v1/products/madeof-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`)
       .then(response => setMadeOfOptions(response.data))
       .catch(error => console.error("Error fetching materials:", error));
   };

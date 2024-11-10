@@ -98,6 +98,7 @@ import React, { useState } from 'react';
 import google from '../../assets/googleicon.png'
 import config from '../../config/config';
 import axios from 'axios';
+// import config from '../../config/config';
 
 const Register = ({ setIslogin }) => {
   const [username, setUsername] = useState('');
@@ -132,7 +133,7 @@ const Register = ({ setIslogin }) => {
       setShowOtpPage(true)
 
 
-      axios.post(`http://localhost:8000/api/v1/auth/register/`, formData)
+      axios.post(`${config.BASE_URL}api/v1/auth/register/`, formData)
         .then((response) => {
           console.log(response.data);
           if (response.status === 201) {
@@ -154,7 +155,7 @@ const Register = ({ setIslogin }) => {
     formData.append('email', username);
 
 
-    axios.post(`http://localhost:8000/api/v1/auth/validate-otp/`, formData)
+    axios.post(`${config.BASE_URL}api/v1/auth/validate-otp/`, formData)
       .then((response) => {
         console.log(response.data);
         if (response.status === 201) {

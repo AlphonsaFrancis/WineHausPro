@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./forms.css";
 import axios from "axios";
 import { convertToDateInputFormat } from "../../pages/dashboard/helper";
+import config from "../../config/config";
 
 const EditUserForm = ({ user, onCancel, onConfirm }) => {
   const [userData, setUserData] = useState({
@@ -73,7 +74,7 @@ const EditUserForm = ({ user, onCancel, onConfirm }) => {
     };
 
     axios
-      .put(`http://127.0.0.1:8000/api/v1/auth/update-user/${user.id}/`, processedData)
+      .put(`${config.BASE_URL}api/v1/auth/update-user/${user.id}/`, processedData)
       .then((res) => {
         alert("User Updated!");
         onCancel();

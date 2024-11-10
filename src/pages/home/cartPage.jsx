@@ -150,6 +150,7 @@ import Navbar from '../../components/Navbar';
 import { toast, ToastContainer } from 'react-toastify'; // Import Toast
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import { useNavigate } from 'react-router-dom';
+import config from '../../config/config';
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -161,7 +162,7 @@ const CartPage = () => {
   // Fetch cart items from the Django backend
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-    axios.get(`${BASE_URL}/api/v1/orders/cart-items/?user_id=${userId}`)
+    axios.get(`${config.BASE_URL}api/v1/orders/cart-items/?user_id=${userId}`)
       .then(response => {
         setCartItems(response.data); // Response should now include product details including stock
         calculateTotal(response.data);
@@ -184,7 +185,7 @@ const CartPage = () => {
       return;
     }
 
-    axios.patch(`${BASE_URL}/api/v1/orders/cart-items-detail/${id}/`, { quantity: newQuantity })
+    axios.patch(`${config.BASE_URL}api/v1/orders/cart-items-detail/${id}/`, { quantity: newQuantity })
       .then(response => {
         const updatedItems = cartItems.map(item => 
           item.cart_item_id === id ? { ...item, quantity: newQuantity } : item
@@ -198,7 +199,7 @@ const CartPage = () => {
 
   // Remove an item from the cart
   const removeItem = (id) => {
-    axios.delete(`${BASE_URL}/api/v1/orders/cart-items-detail/${id}/`)
+    axios.delete(`${config.BASE_URL}api/v1/orders/cart-items-detail/${id}/`)
       .then(() => {
         const updatedItems = cartItems.filter(item => item.cart_item_id !== id);
         setCartItems(updatedItems);
@@ -235,7 +236,7 @@ const CartPage = () => {
               cartItems.map(item => (
                 <div className="cart-item" key={item.cart_item_id}>
                   <img
-                    src={item.product.image ? `${BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
+                    src={item.product.image ? `${config.BASE_URL}${item.product.image}` : 'https://via.placeholder.com/150'}
                     alt={item.product.name}
                     className="product-image"
                   />

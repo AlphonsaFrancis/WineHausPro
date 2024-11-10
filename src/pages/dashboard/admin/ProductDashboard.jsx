@@ -13,6 +13,7 @@ import {
   findOutOfStockItems,
   findInactiveItems,
 } from "../helper";
+import config from "../../../config/config";
 import AddProductForm from "../../../components/Forms/AddProductFrom";
 import EditProductForm from "../../../components/Forms/EditProductForm";
 
@@ -55,7 +56,7 @@ function ProductDashboard() {
 
   const getAllProducts = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/list/")
+      .get(`${config.BASE_URL}api/v1/products/list/`)
       .then((response) => {
         setProductResponse(response.data);
         const transformedData = transformProductData(response.data);
@@ -109,7 +110,7 @@ function ProductDashboard() {
   const deleteProduct = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/products/delete/${selectedProduct?.id}/`
+        `${config.BASE_URL}api/v1/products/delete/${selectedProduct?.id}/`
       )
       .then((response) => {
         alert("Product deleted");
@@ -127,7 +128,7 @@ function ProductDashboard() {
   const handleDisableProduct = (row) => {
     axios
       .post(
-        `http://localhost:8000/api/v1/products/disable-or-enable/${row?.id}/`
+        `${config.BASE_URL}api/v1/products/disable-or-enable/${row?.id}/`
       )
       .then((response) => {
         getAllProducts();

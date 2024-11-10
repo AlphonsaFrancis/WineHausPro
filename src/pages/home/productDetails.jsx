@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import './product-detail.css';
 import Navbar from '../../components/Navbar';
+import config from '../../config/config';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -18,7 +19,7 @@ const ProductDetail = () => {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/v1/products/details/${id}/`)
+    axios.get(`${config.BASE_URL}api/v1/products/details/${id}/`)
       .then(response => {
         setProduct(response.data);
         setLoading(false);
@@ -28,7 +29,7 @@ const ProductDetail = () => {
         setLoading(false);
       });
 
-    axios.get(`${BASE_URL}/api/v1/products/category-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/category-list/`)
       .then(response => {
         const categoryMap = response.data.reduce((acc, category) => {
           acc[category.id] = category.name;
@@ -37,7 +38,7 @@ const ProductDetail = () => {
         setCategories(categoryMap);
       });
 
-    axios.get(`${BASE_URL}/api/v1/products/brand-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/brand-list/`)
       .then(response => {
         const brandMap = response.data.reduce((acc, brand) => {
           acc[brand.brand_id] = brand.name;
@@ -46,7 +47,7 @@ const ProductDetail = () => {
         setBrands(brandMap);
       });
 
-    axios.get(`${BASE_URL}/api/v1/products/country-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/country-list/`)
       .then(response => {
         const countryMap = response.data.reduce((acc, country) => {
           acc[country.country_id] = country.name;
@@ -55,7 +56,7 @@ const ProductDetail = () => {
         setCountries(countryMap);
       });
 
-    axios.get(`${BASE_URL}/api/v1/products/madeof-list/`)
+    axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`)
       .then(response => {
         const materialMap = response.data.reduce((acc, material) => {
           acc[material.madeof_id] = material.name;
@@ -74,14 +75,14 @@ const ProductDetail = () => {
     }
     console.log(userId)
   
-    axios.get(`http://127.0.0.1:8000/api/v1/orders/cart-list/?user_id=${userId}`)
+    axios.get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`)
       .then(response => {
         let cartId;
   
         if (response.data.length > 0) {
           cartId = response.data[0].cart_id; // Assuming first cart for the user
         } else {
-          return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-list/', { user_id: userId })
+          return axios.post(`${config.BASE_URL}api/v1/orders/cart-list/`, { user_id: userId })
             .then(response => {
               cartId = response.data.cart_id;
               return cartId;
@@ -97,7 +98,7 @@ const ProductDetail = () => {
           quantity: quantity
         };
   
-        return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-items-create/', dataToSend);
+        return axios.post(`${config.BASE_URL}api/v1/orders/cart-items-create/`, dataToSend);
       })
       .then(() => {
         alert('Product added to cart!');
@@ -112,14 +113,14 @@ const ProductDetail = () => {
       return;
     }
 
-    axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-list/?user_id=${userId}`)
+    axios.get(`${config.BASE_URL}api/v1/orders/wishlist-list/?user_id=${userId}`)
       .then(response => {
         let wishlistId;
 
         if (response.data.length > 0) {
           wishlistId = response.data[0].wishlist_id;
         } else {
-          return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-list/', { user_id: userId })
+          return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-list/`, { user_id: userId })
             .then(response => {
               wishlistId = response.data.wishlist_id;
             });
@@ -128,7 +129,7 @@ const ProductDetail = () => {
         return wishlistId;
       })
       .then(wishlistId => {
-        return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-items-create/', {
+        return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-items-create/`, {
           wishlist_id: wishlistId,
           product_id: productId
         });
@@ -172,7 +173,7 @@ const ProductDetail = () => {
             <div className="product-detail-container">
               <div className="product-detail-image-container">
                 <img
-                  src={product.image ? `${BASE_URL}${product.image} `: 'https://via.placeholder.com/400'}
+                  src={product.image ? `${config.BASE_URL}${product.image} `: 'https://via.placeholder.com/400'}
                   alt={product.name}
                   className="product-detail-image"
                 />

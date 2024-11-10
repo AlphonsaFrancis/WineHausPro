@@ -2,6 +2,7 @@ import React, { useState ,useEffect} from "react";
 import "./forms.css";
 import axios from "axios";
 import {formatDateForInput} from "../../pages/dashboard/helper"
+import config from "../../config/config";
 
 const EditStaffForm = ({ staffDetails, onCancel, onConfirm }) => {
 
@@ -55,7 +56,7 @@ const EditStaffForm = ({ staffDetails, onCancel, onConfirm }) => {
 
     try {
       // Call the API to update staff (assuming staffDetails has staffId)
-      await axios.put(`http://127.0.0.1:8000/api/v1/staffs/update/${staffDetails.staff_id}/`, staffData);
+      await axios.put(`${config.BASE_URL}api/v1/staffs/update/${staffDetails.staff_id}/`, staffData);
       alert("Staff updated successfully!");
       onConfirm();
       onCancel();

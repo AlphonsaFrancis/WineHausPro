@@ -69,3 +69,5 @@ yarn-error.log*
 # Ignore public directory contents except public/index.html
 public/*
 !public/index.html
+
+*.zip

@@ -5,6 +5,7 @@ import BasicModal from "../../../components/BasicModal";
 import axios from "axios";
 import { format } from "date-fns";
 import { getMadeofById, getItemById, findInactiveItems } from "../helper";
+import config from "../../../config/config";
 import AddMadeofForm from "../../../components/Forms/AddMadeofForm";
 import EditMadeofForm from "../../../components/Forms/EditMadeofForm";
 
@@ -40,7 +41,7 @@ function MadeofDashboard() {
 
   const getAllmadeOfs = () => {
     axios
-      .get("http://127.0.0.1:8000/api/v1/products/madeof-list/")
+      .get(`${config.BASE_URL}api/v1/products/madeof-list/`)
       .then((response) => {
         setMadeofResponse(response.data);
         console.log("response.data", response.data);
@@ -87,7 +88,7 @@ function MadeofDashboard() {
   const deletecountry = () => {
     axios
       .delete(
-        `http://127.0.0.1:8000/api/v1/products/madeof-delete/${selectedMadeof?.madeof_id}/`
+        `${config.BASE_URL}api/v1/products/madeof-delete/${selectedMadeof?.madeof_id}/`
       )
       .then((response) => {
         alert("madeof deleted");
@@ -108,7 +109,7 @@ function MadeofDashboard() {
     console.log("row--", row);
     axios
       .post(
-        `http://127.0.0.1:8000/api/v1/products/disable-enable-madeof/${row?.madeof_id}/`
+        `${config.BASE_URL}api/v1/products/disable-enable-madeof/${row?.madeof_id}/`
       )
       .then((response) => {
         getAllmadeOfs();

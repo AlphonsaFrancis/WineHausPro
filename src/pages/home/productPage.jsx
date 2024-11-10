@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navbar from '../../components/Navbar';
 import Filter from '../../components/Filters';
 import './product.css';
+import config from '../../config/config';
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -29,7 +30,7 @@ const ProductPage = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/v1/products/list/?search=${searchQuery}`
+          `${config.BASE_URL}api/v1/products/list/?search=${searchQuery}`
         );
         console.log('Fetched Products:', response.data); // Debug log
         setProducts(response.data);
@@ -50,7 +51,7 @@ const ProductPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${BASE_URL}/api/v1/products/filter/`, {
+      const response = await axios.get(`${config.BASE_URL}api/v1/products/filter/`, {
         params: {
           category: category !== 'all' ? category : null,
           brand: brand !== 'all' ? brand : null,
@@ -172,20 +173,21 @@ const ProductPage = () => {
 // };
 const addToCart = (productId, quantity = 1) => {
   const userId = localStorage.getItem('userId');
+  console.log("UserId---",userId)
   if (!userId) {
     alert("Please log in first to add items to the cart.");
     return;
   }
   console.log(userId)
 
-  axios.get(`http://127.0.0.1:8000/api/v1/orders/cart-list/?user_id=${userId}`)
+  axios.get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`)
     .then(response => {
       let cartId;
 
       if (response.data.length > 0) {
         cartId = response.data[0].cart_id; // Assuming first cart for the user
       } else {
-        return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-list/', { user_id: userId })
+        return axios.post(`${config.BASE_URL}api/v1/orders/cart-list/`, { user_id: userId })
           .then(response => {
             cartId = response.data.cart_id;
             return cartId;
@@ -201,7 +203,7 @@ const addToCart = (productId, quantity = 1) => {
         quantity: quantity
       };
 
-      return axios.post('http://127.0.0.1:8000/api/v1/orders/cart-items-create/', dataToSend);
+      return axios.post(`${config.BASE_URL}api/v1/orders/cart-items-create/`, dataToSend);
     })
     .then(() => {
       alert('Product added to cart!');
@@ -216,14 +218,14 @@ const addToWishlist = (productId) => {
     return;
   }
 
-  axios.get(`http://127.0.0.1:8000/api/v1/orders/wishlist-list/?user_id=${userId}`)
+  axios.get(`${config.BASE_URL}api/v1/orders/wishlist-list/?user_id=${userId}`)
     .then(response => {
       let wishlistId;
 
       if (response.data.length > 0) {
         wishlistId = response.data[0].wishlist_id;
       } else {
-        return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-list/', { user_id: userId })
+        return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-list/`, { user_id: userId })
           .then(response => {
             wishlistId = response.data.wishlist_id;
           });
@@ -232,7 +234,7 @@ const addToWishlist = (productId) => {
       return wishlistId;
     })
     .then(wishlistId => {
-      return axios.post('http://127.0.0.1:8000/api/v1/orders/wishlist-items-create/', {
+      return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-items-create/`, {
         wishlist_id: wishlistId,
         product_id: productId
       });
@@ -292,7 +294,7 @@ const addToWishlist = (productId) => {
                       <img
                         src={
                           product.image
-                            ? `${BASE_URL}${product.image}`
+                            ? `${config.BASE_URL}${product.image}`
                             : 'https://via.placeholder.com/150'
                         }
                         alt={product.name}
