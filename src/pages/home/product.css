@@ -224,3 +224,40 @@
   text-align: center;
   margin-top: 10px;
 }
+
+/* ******  MAIN PROJECT ********** */
+
+.feedback-container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-container{
+  display: flex;
+  flex-direction: column;
+
+  
+}
+
+.rating{
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+}
+
+.stars {
+  color: gold;
+  font-size: 1.2rem;
+}
+
+.emoji {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+
+

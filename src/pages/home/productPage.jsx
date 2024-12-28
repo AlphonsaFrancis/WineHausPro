@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import Navbar from '../../components/Navbar';
-import Filter from '../../components/Filters';
-import './product.css';
-import config from '../../config/config';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import Navbar from "../../components/Navbar";
+import Filter from "../../components/Filters";
+import "./product.css";
+import config from "../../config/config";
+
+import { IoStar } from "react-icons/io5";
+import { IoStarOutline } from "react-icons/io5";
+import { FaRegSmile } from "react-icons/fa";
+import { MdOutlineSentimentNeutral } from "react-icons/md";
+import { TbMoodSad } from "react-icons/tb";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -12,18 +18,20 @@ const ProductPage = () => {
   const [error, setError] = useState(null);
 
   // States for filters
-  const [category, setCategory] = useState('all');
-  const [brand, setBrand] = useState('all');
-  const [country, setCountry] = useState('all');
-  const [madeOf, setMadeOf] = useState('all');
-  const [sortOrder, setSortOrder] = useState('default');
+  const [category, setCategory] = useState("all");
+  const [brand, setBrand] = useState("all");
+  const [country, setCountry] = useState("all");
+  const [madeOf, setMadeOf] = useState("all");
+  const [sortOrder, setSortOrder] = useState("default");
+
+  const [feedbackSummaries, setFeedbackSummaries] = useState();
   const location = useLocation();
 
-  const BASE_URL = 'http://127.0.0.1:8000';
-  const userId = localStorage.getItem('userId'); // Get the logged-in user ID from localStorage
+  const BASE_URL = "http://127.0.0.1:8000";
+  const userId = localStorage.getItem("userId"); // Get the logged-in user ID from localStorage
 
   const searchParams = new URLSearchParams(location.search);
-  const searchQuery = searchParams.get('search') || '';
+  const searchQuery = searchParams.get("search") || "";
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -32,17 +40,17 @@ const ProductPage = () => {
         const response = await axios.get(
           `${config.BASE_URL}api/v1/products/list/?search=${searchQuery}`
         );
-        console.log('Fetched Products:', response.data); // Debug log
+        console.log("Fetched Products:", response.data); // Debug log
         setProducts(response.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching products:', err); // Debug log
-        setError('Failed to fetch products');
+        console.error("Error fetching products:", err); // Debug log
+        setError("Failed to fetch products");
         setLoading(false);
       }
     };
-  
-    console.log('Search Query:', searchQuery); // Debug log
+
+    console.log("Search Query:", searchQuery); // Debug log
     fetchProducts();
   }, [BASE_URL, searchQuery]);
 
@@ -51,19 +59,22 @@ const ProductPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${config.BASE_URL}api/v1/products/filter/`, {
-        params: {
-          category: category !== 'all' ? category : null,
-          brand: brand !== 'all' ? brand : null,
-          country: country !== 'all' ? country : null,
-          made_of: madeOf !== 'all' ? madeOf : null,
-          sort: sortOrder !== 'default' ? sortOrder : null,
-        },
-      });
+      const response = await axios.get(
+        `${config.BASE_URL}api/v1/products/filter/`,
+        {
+          params: {
+            category: category !== "all" ? category : null,
+            brand: brand !== "all" ? brand : null,
+            country: country !== "all" ? country : null,
+            made_of: madeOf !== "all" ? madeOf : null,
+            sort: sortOrder !== "default" ? sortOrder : null,
+          },
+        }
+      );
       setProducts(response.data);
     } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Failed to fetch products');
+      console.error("Error fetching products:", err);
+      setError("Failed to fetch products");
     } finally {
       setLoading(false);
     }
@@ -74,183 +85,129 @@ const ProductPage = () => {
     fetchProducts();
   }, [category, brand, country, madeOf, sortOrder]);
 
-  // Function to add a product to the cart
-  // const addToCart = async (productId, quantity = 1) => {
-  //   if (!userId) {
-  //     alert('Please log in first to add items to the cart.');
-  //     return;
-  //   }
-
-  //   try {
-  //     const cartResponse = await axios.get(
-  //       `${BASE_URL}/api/v1/orders/cart-list/`,
-  //       { params: { user_id: userId } }
-  //     );
-
-  //     let cartId = cartResponse.data.length
-  //       ? cartResponse.data[0].cart_id
-  //       : null;
-
-  //     // Create a new cart if one doesn't exist
-  //     if (!cartId) {
-  //       const newCartResponse = await axios.post(
-  //         `${BASE_URL}/api/v1/orders/cart-list/`,
-  //         { user_id: userId }
-  //       );
-  //       cartId = newCartResponse.data.cart_id;
-  //     }
-
-  //     // Add the product to the cart
-  //     await axios.post(`${BASE_URL}/api/v1/orders/cart-items-create/`, {
-  //       cart_id: cartId,
-  //       user_id: userId,
-  //       product_id: productId,
-  //       quantity: quantity,
-  //     });
-
-  //     alert('Product added to cart!');
-  //   } catch (error) {
-  //     console.error('Error adding product to cart:', error);
-  //     alert('Error adding the product to the cart.');
-  //   }
-  // };
-//   const addToCart = async (productId, quantity = 1) => {
-//   if (!userId) {
-//     alert('Please log in first to add items to the cart.');
-//     return;
-//   }
-
-//   try {
-//     // Fetch product details to check stock quantity
-//     const productResponse = await axios.get(`${BASE_URL}/api/v1/products/details/${productId}/`);
-//     const productStockQuantity = productResponse.data.stock_quantity;
-
-//     // Fetch existing cart and cart item quantity
-//     const cartResponse = await axios.get(
-//       `${BASE_URL}/api/v1/orders/cart-list/`,
-//       { params: { user_id: userId } }
-//     );
-
-//     let cartId = cartResponse.data.length ? cartResponse.data[0].cart_id : null;
-
-//     // Create a new cart if one doesn't exist
-//     if (!cartId) {
-//       const newCartResponse = await axios.post(
-//         `${BASE_URL}/api/v1/orders/cart-list/`,
-//         { user_id: userId }
-//       );
-//       cartId = newCartResponse.data.cart_id;
-//     }
-
-//     // Check if the product is already in the cart and get the current quantity
-//     const cartItemsResponse = await axios.get(`${BASE_URL}/api/v1/orders/cart-items/`, {
-//       params: { cart_id: cartId, product_id: productId },
-//     });
-
-//     const currentCartQuantity = cartItemsResponse.data.length
-//       ? cartItemsResponse.data[0].quantity
-//       : 0;
-
-//     // Check if adding the product exceeds stock quantity
-//     if (currentCartQuantity + quantity > productStockQuantity) {
-//       alert('Cannot add more of this product to the cart. Stock limit exceeded.');
-//       return;
-//     }
-
-//     // Add the product to the cart
-//     await axios.post(`${BASE_URL}/api/v1/orders/cart-items-create/`, {
-//       cart_id: cartId,
-//       user_id: userId,
-//       product_id: productId,
-//       quantity: quantity,
-//     });
-
-//     alert('Product added to cart!');
-//   } catch (error) {
-//     console.error('Error adding product to cart:', error);
-//     alert('Error adding the product to the cart.');
-//   }
-// };
-const addToCart = (productId, quantity = 1) => {
-  const userId = localStorage.getItem('userId');
-  console.log("UserId---",userId)
-  if (!userId) {
-    alert("Please log in first to add items to the cart.");
-    return;
-  }
-  console.log(userId)
-
-  axios.get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`)
-    .then(response => {
-      let cartId;
-
-      if (response.data.length > 0) {
-        cartId = response.data[0].cart_id; // Assuming first cart for the user
-      } else {
-        return axios.post(`${config.BASE_URL}api/v1/orders/cart-list/`, { user_id: userId })
-          .then(response => {
-            cartId = response.data.cart_id;
-            return cartId;
-          });
+  useEffect(() => {
+    const fetchFeedbackSummaries = async () => {
+      const summaries = [];
+      for (const item of products) {
+        try {
+          const response = await axios.get(
+            `${config.BASE_URL}api/v1/products/${item.product_id}/review-summary/`
+          );
+          console.log("feedback response", response);
+          summaries.push(response.data.data);
+        } catch (error) {
+          console.error(
+            `Failed to fetch feedback for product ${item.product_id}:`,
+            error
+          );
+        }
       }
+      setFeedbackSummaries(summaries);
+    };
 
-      return cartId;
-    })
-    .then(cartId => {
-      const dataToSend = {
-        user_id: userId,
-        product_id: productId,
-        quantity: quantity
-      };
+    fetchFeedbackSummaries();
+  }, [products]);
 
-      return axios.post(`${config.BASE_URL}api/v1/orders/cart-items-create/`, dataToSend);
-    })
-    .then(() => {
-      alert('Product added to cart!');
-    })
-    .catch(error => {
-      alert('Error adding the product to the cart!');
-    });
-};
-const addToWishlist = (productId) => {
-  if (!userId) {
-    alert("Please log in first to add items to the wishlist.");
-    return;
-  }
+  console.log("feedbackSummaries---", feedbackSummaries);
+  console.log("products--", products);
 
-  axios.get(`${config.BASE_URL}api/v1/orders/wishlist-list/?user_id=${userId}`)
-    .then(response => {
-      let wishlistId;
+  const addToCart = (productId, quantity = 1) => {
+    const userId = localStorage.getItem("userId");
+    console.log("UserId---", userId);
+    if (!userId) {
+      alert("Please log in first to add items to the cart.");
+      return;
+    }
+    console.log(userId);
 
-      if (response.data.length > 0) {
-        wishlistId = response.data[0].wishlist_id;
-      } else {
-        return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-list/`, { user_id: userId })
-          .then(response => {
-            wishlistId = response.data.wishlist_id;
-          });
-      }
+    axios
+      .get(`${config.BASE_URL}api/v1/orders/cart-list/?user_id=${userId}`)
+      .then((response) => {
+        let cartId;
 
-      return wishlistId;
-    })
-    .then(wishlistId => {
-      return axios.post(`${config.BASE_URL}api/v1/orders/wishlist-items-create/`, {
-        wishlist_id: wishlistId,
-        product_id: productId
+        if (response.data.length > 0) {
+          cartId = response.data[0].cart_id; // Assuming first cart for the user
+        } else {
+          return axios
+            .post(`${config.BASE_URL}api/v1/orders/cart-list/`, {
+              user_id: userId,
+            })
+            .then((response) => {
+              cartId = response.data.cart_id;
+              return cartId;
+            });
+        }
+
+        return cartId;
+      })
+      .then((cartId) => {
+        const dataToSend = {
+          user_id: userId,
+          product_id: productId,
+          quantity: quantity,
+        };
+
+        return axios.post(
+          `${config.BASE_URL}api/v1/orders/cart-items-create/`,
+          dataToSend
+        );
+      })
+      .then(() => {
+        alert("Product added to cart!");
+      })
+      .catch((error) => {
+        alert("Error adding the product to the cart!");
       });
-    })
-    .then(() => {
-      alert('Product added to wishlist!');
-    })
-    .catch(error => {
-      if (error.response && error.response.data && error.response.data.error === "Product is already in the wishlist") {
-        alert('Product is already in the wishlist.');
-      } else {
-        alert('Error adding product to wishlist!');
-      }
-    });
-};
+  };
+  const addToWishlist = (productId) => {
+    if (!userId) {
+      alert("Please log in first to add items to the wishlist.");
+      return;
+    }
 
+    axios
+      .get(`${config.BASE_URL}api/v1/orders/wishlist-list/?user_id=${userId}`)
+      .then((response) => {
+        let wishlistId;
+
+        if (response.data.length > 0) {
+          wishlistId = response.data[0].wishlist_id;
+        } else {
+          return axios
+            .post(`${config.BASE_URL}api/v1/orders/wishlist-list/`, {
+              user_id: userId,
+            })
+            .then((response) => {
+              wishlistId = response.data.wishlist_id;
+            });
+        }
+
+        return wishlistId;
+      })
+      .then((wishlistId) => {
+        return axios.post(
+          `${config.BASE_URL}api/v1/orders/wishlist-items-create/`,
+          {
+            wishlist_id: wishlistId,
+            product_id: productId,
+          }
+        );
+      })
+      .then(() => {
+        alert("Product added to wishlist!");
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error === "Product is already in the wishlist"
+        ) {
+          alert("Product is already in the wishlist.");
+        } else {
+          alert("Error adding product to wishlist!");
+        }
+      });
+  };
 
   if (loading) {
     return <div>Loading products...</div>;
@@ -267,7 +224,7 @@ const addToWishlist = (productId) => {
         <h1 className="hard-page-title">
           {searchQuery
             ? `Search Results for "${searchQuery}"`
-            : 'Discover Our Premium Products'}
+            : "Discover Our Premium Products"}
         </h1>
         <div className="hard-main-content">
           <Filter
@@ -295,7 +252,7 @@ const addToWishlist = (productId) => {
                         src={
                           product.image
                             ? `${config.BASE_URL}${product.image}`
-                            : 'https://via.placeholder.com/150'
+                            : "https://via.placeholder.com/150"
                         }
                         alt={product.name}
                         className="hard-product-image"
@@ -307,14 +264,89 @@ const addToWishlist = (productId) => {
                       {(!product.is_active || product.stock_quantity === 0) && (
                         <p className="hard-out-of-stock-label">Out of Stock</p>
                       )}
+
+                      {feedbackSummaries?.map((item) =>
+                        item?.product_id === product.product_id ? (
+                          <div
+                            className="feedback-container"
+                            key={item.product_id}
+                          >
+                            <div className="rating-container">
+                              <div className="rating">
+                                Rating{" "}
+                                <span style={{ color: "red" }}>
+                                  {item.average_rating}
+                                </span>
+                              </div>
+                              <div className="stars">
+                                {Array.from({ length: 5 }, (_, i) =>
+                                  i < Math.floor(item.average_rating) ? (
+                                    <IoStar key={i} />
+                                  ) : i < item.average_rating ? (
+                                    <IoStarOutline key={i} />
+                                  ) : (
+                                    <IoStarOutline key={i} />
+                                  )
+                                )}
+                              </div>
+                            </div>
+                            <div className="emoji">
+                              {(() => {
+                                const sentiment = item.sentiment_summary;
+                                const positive = parseFloat(
+                                  sentiment.Positive || "0"
+                                );
+                                const neutral = parseFloat(
+                                  sentiment.Neutral || "0"
+                                );
+                                const negative = parseFloat(
+                                  sentiment.Negative || "0"
+                                );
+
+                                // Determine the dominant sentiment
+                                if (
+                                  positive >= neutral &&
+                                  positive >= negative
+                                ) {
+                                  return (
+                                    <span style={{ color: "green" }}>
+                                      <FaRegSmile />
+                                    </span>
+                                  );
+                                } else if (
+                                  neutral >= positive &&
+                                  neutral >= negative
+                                ) {
+                                  return (
+                                    <span style={{ color: "yellow" }}>
+                                      <MdOutlineSentimentNeutral />
+                                    </span>
+                                  );
+                                } else {
+                                  return (
+                                    <span style={{ color: "red" }}>
+                                      <TbMoodSad />
+                                    </span>
+                                  );
+                                }
+                              })()}
+                            </div>
+                          </div>
+                        ) : null
+                      )}
                     </a>
                     <div className="hard-product-actions">
-                      <button className="hard-wishlist-btn" onClick={() => addToWishlist(product.product_id)}>
+                      <button
+                        className="hard-wishlist-btn"
+                        onClick={() => addToWishlist(product.product_id)}
+                      >
                         <i className="fas fa-heart"></i> Wishlist
                       </button>
                       <button
                         className="hard-cart-btn"
-                        disabled={!product.is_active || product.stock_quantity === 0}
+                        disabled={
+                          !product.is_active || product.stock_quantity === 0
+                        }
                         onClick={() => addToCart(product.product_id)}
                       >
                         <i className="fas fa-shopping-cart"></i> Add to Cart
@@ -334,4 +366,3 @@ const addToWishlist = (productId) => {
 };
 
 export default ProductPage;
-
