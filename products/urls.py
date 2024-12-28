@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import product_filter
+from .views import product_filter, product_review_sentiment_summary
 from .views import search_products
 
 
@@ -39,6 +39,14 @@ urlpatterns = [
     path('disable-enable-category/<int:pk>/',views.disable_enable_category,name='disable_enable_category'),
     path('disable-enable-madeof/<int:pk>/',views.disable_enable_madeof,name='disable_enable_madeof'),
     path('disable-enable-country/<int:pk>/',views.disable_enable_country,name='disable_enable_country'),
+
+
+    # MAIN PROJECT
+
+    path('<int:product_id>/reviews/', views.list_reviews, name='list_reviews'),
+    path('reviews/create/', views.create_review, name='create_review'),
+    path('<int:product_id>/review-summary/', product_review_sentiment_summary, name='product_sentiment_summary')
+
 
 ]
 

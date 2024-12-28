@@ -18,6 +18,7 @@ class Order(models.Model):
 
 
 class OrderItems(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, default=None)
     order_item_id = models.AutoField(primary_key=True)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -76,15 +77,6 @@ class CartItems(models.Model):
 
 
 
-# class Payment(models.Model):
-#     payment_id = models.AutoField(primary_key=True)
-#     cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE)
-#     amount = models.FloatField()
-#     updated_at = models.DateTimeField(auto_now=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"Payment {self.payment_id} for Cart {self.cart_id}"
 class Payment(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ('online', 'Online'),

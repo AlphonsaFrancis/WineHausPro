@@ -76,6 +76,7 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser,PermissionsMixin):
     # username=models.CharField(max_length=255,unique=True)
     email=models.CharField(max_length=255,unique=True)
+    name = models.CharField(max_length=255, default=None, null=True)
     password=models.CharField(max_length=255)
     date_joined=models.DateTimeField(auto_now_add=True)
     is_staff=models.BooleanField(default=False)

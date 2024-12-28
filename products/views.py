@@ -2,10 +2,15 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Product,Category,MadeOf,Country,Brand
-from .serializers import ProductSerializer,CategorySerializer,MadeOfSerializer,CountrySerializer,BrandSerializer
+
+from authentication.models import User
+from orders.models import Order, OrderItems
+from .models import Product,Category,MadeOf,Country,Brand, Review, SentimentAnalysis
+from .serializers import GetReviewSerializer, ProductSerializer,CategorySerializer,MadeOfSerializer,CountrySerializer,BrandSerializer, ReviewSerializer
 from django.db.models import Q
 from django.http import JsonResponse
+from textblob import TextBlob
+from django.db.models import Avg, Count
 
 # product function based views
 from rest_framework.decorators import api_view
@@ -150,55 +155,6 @@ def disable_enable_product(request,pk):
         print(f"ERROR: {e}")
         return Response({'message': f"An error occurred while processing your request"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# @api_view(['GET'])
-# def product_list(request):
-#     products = Product.objects.all()
-#     serializer = ProductSerializer(products, many=True)
-#     return Response(serializer.data)
-
-# @api_view(['POST'])
-# def product_create(request):
-#     serializer = ProductSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET'])
-# def product_detail(request, pk):
-#     try:
-#         product = Product.objects.get(pk=pk)
-#     except Product.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     serializer = ProductSerializer(product)
-#     return Response(serializer.data)
-
-# @api_view(['PUT'])
-# def product_update(request, pk):
-#     try:
-#         product = Product.objects.get(pk=pk)
-#     except Product.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     serializer = ProductSerializer(product, data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['DELETE'])
-# def product_delete(request, pk):
-#     try:
-#         product = Product.objects.get(pk=pk)
-#         product.delete()
-#         return Response({'message':'Product deleted'},status=status.HTTP_200_OK)
-
-#     except Product.DoesNotExist:
-#         return Response({'error':'Product not found for this id'},status=status.HTTP_204_NO_CONTENT)
-    
-
-
 # category function based views
 
 @api_view(['GET'])
@@ -207,13 +163,6 @@ def category_list(request):
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
 
-# @api_view(['POST'])
-# def category_create(request):
-#     serializer = CategorySerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def category_create(request):
@@ -586,3 +535,118 @@ def product_search(request):
     serializer = ProductSerializer(products, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def analyze_sentiment(comment):
+    blob = TextBlob(comment)
+    polarity = blob.sentiment.polarity
+    if polarity > 0:
+        return "Positive", polarity
+    elif polarity < 0:
+        return "Negative", polarity
+    else:
+        return "Neutral", polarity
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def create_review(request):
+    try:
+        product_id = request.data['product_id']
+        user_id = request.data['user_id']
+        product = Product.objects.get(product_id=product_id)
+        user = User.objects.get(id=user_id)
+
+        # Check if the user purchased the product
+        if not OrderItems.objects.filter(user=user, product_id=product).exists():
+            return Response({
+                "success":"False",
+                "message": "You have not purchased this product",
+                "error":"You must have purchased the product to leave a review.",
+                "status":status.HTTP_400_BAD_REQUEST
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+
+        # Serialize and save review
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=user, product=product)
+            review = serializer.instance
+
+            # Perform sentiment analysis
+            sentiment, score = analyze_sentiment(review.comment)
+            SentimentAnalysis.objects.create(review=review, sentiment=sentiment, score=score)
+            return Response({
+                "success": "True",
+                "message": "Review created successfully",
+                "data":serializer.data,
+                "status": status.HTTP_201_CREATED,
+            })
+
+        return Response({
+            "success": "False",
+            "message": "Invalid data",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST
+        })
+    except Product.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "Product not found",
+            "error": "Product does not exist",
+            "status": status.HTTP_404_NOT_FOUND
+        })
+
+@api_view(['GET'])
+def list_reviews(request, product_id):
+    try:
+        reviews = Review.objects.filter(product_id=product_id)
+        serializer = GetReviewSerializer(reviews, many=True)
+        return Response({
+            "success": "True",
+            "message": "Reviews listed successfully",
+            "data": serializer.data,
+            "status": status.HTTP_200_OK
+        })
+    except Product.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "Product not found",
+            "error": "Product does not exist",
+            "status": status.HTTP_404_NOT_FOUND 
+        })
+    
+
+
+@api_view(['GET'])
+def product_review_sentiment_summary(request, product_id):
+    try:
+        average_rating = Review.objects.filter(product_id=product_id).aggregate(Avg('rating'))['rating__avg']
+        sentiments = SentimentAnalysis.objects.filter(review__product_id=product_id)
+        total_sentiments = sentiments.count()
+
+        sentiment_summary = sentiments.values('sentiment').annotate(count=Count('sentiment'))
+        average_score = sentiments.aggregate(Avg('score'))['score__avg']
+
+        sentiment_percentage = {
+            sentiment['sentiment']: f"{round((sentiment['count'] / total_sentiments) * 100, 2)}%"
+            for sentiment in sentiment_summary
+        } if total_sentiments > 0 else {}
+
+        response_data = {
+            "average_rating": round(average_rating, 2) if average_rating else 0,
+            "average_score": round(average_score, 2) if average_score else 0,
+            "sentiment_summary":sentiment_percentage
+        }
+        return Response({
+            "success": "True",
+            "message": "Product review sentiment summary listed successfully",
+            "data": response_data,
+            "status": status.HTTP_200_OK
+        })
+    except Exception as e:
+        return Response({
+            "success": "False",
+            "message": "An error occurred",
+            "error": str(e),
+            "status": status.HTTP_500_INTERNAL_SERVER_ERROR
+        })

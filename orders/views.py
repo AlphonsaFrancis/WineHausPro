@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+
+from authentication.models import User
 from .models import Order, OrderItems,Wishlist, WishlistItems,Cart, CartItems,Payment,Address,Shipping
 from .serializers import OrderSerializer, OrderItemsSerializer,WishlistSerializer, WishlistItemsSerializer
 from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,AddressSerializer,ShippingSerializer
@@ -382,7 +384,7 @@ def create_payment(request):
         )
         payment.save()
 
-        create_order_items(order, cart_id)
+        create_order_items(order, cart_id, cart.user_id)
 
         return Response({'message': 'Order placed successfully with COD', 'order_id': order.order_id}, status=status.HTTP_201_CREATED)
 
@@ -430,7 +432,7 @@ def verify_payment(request):
             payment.order_id = order  # Associate the order with payment
             payment.save()
 
-            create_order_items(order, payment.cart_id)
+            create_order_items(order, payment.cart_id, payment.cart_id.user_id)
             
             return Response({'message': 'Payment verified and order created', 'order_id': order.order_id}, status=status.HTTP_200_OK)
 
@@ -442,8 +444,9 @@ def verify_payment(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST) 
     
-def create_order_items(order, cart_id):
+def create_order_items(order, cart_id, user_id):
     cart_items = CartItems.objects.filter(cart_id=cart_id)
+    user = User.objects.get(id=user_id)
     for item in cart_items:
         # Get product and quantity from each cart item
         product = item.product_id
@@ -454,6 +457,7 @@ def create_order_items(order, cart_id):
 
         # Create an OrderItem instance
         OrderItems.objects.create(
+            user = user,
             order_id=order,
             product_id=product,
             quantity=quantity,
