@@ -3,14 +3,10 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Filter from "../../components/Filters";
+import ReviewBox from "../../components/ReviewBox"
 import "./product.css";
 import config from "../../config/config";
 
-import { IoStar } from "react-icons/io5";
-import { IoStarOutline } from "react-icons/io5";
-import { FaRegSmile } from "react-icons/fa";
-import { MdOutlineSentimentNeutral } from "react-icons/md";
-import { TbMoodSad } from "react-icons/tb";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -267,73 +263,11 @@ const ProductPage = () => {
 
                       {feedbackSummaries?.map((item) =>
                         item?.product_id === product.product_id ? (
-                          <div
-                            className="feedback-container"
-                            key={item.product_id}
-                          >
-                            <div className="rating-container">
-                              <div className="rating">
-                                Rating{" "}
-                                <span style={{ color: "red" }}>
-                                  {item.average_rating}
-                                </span>
-                              </div>
-                              <div className="stars">
-                                {Array.from({ length: 5 }, (_, i) =>
-                                  i < Math.floor(item.average_rating) ? (
-                                    <IoStar key={i} />
-                                  ) : i < item.average_rating ? (
-                                    <IoStarOutline key={i} />
-                                  ) : (
-                                    <IoStarOutline key={i} />
-                                  )
-                                )}
-                              </div>
-                            </div>
-                            <div className="emoji">
-                              {(() => {
-                                const sentiment = item.sentiment_summary;
-                                const positive = parseFloat(
-                                  sentiment.Positive || "0"
-                                );
-                                const neutral = parseFloat(
-                                  sentiment.Neutral || "0"
-                                );
-                                const negative = parseFloat(
-                                  sentiment.Negative || "0"
-                                );
-
-                                // Determine the dominant sentiment
-                                if (
-                                  positive >= neutral &&
-                                  positive >= negative
-                                ) {
-                                  return (
-                                    <span style={{ color: "green" }}>
-                                      <FaRegSmile />
-                                    </span>
-                                  );
-                                } else if (
-                                  neutral >= positive &&
-                                  neutral >= negative
-                                ) {
-                                  return (
-                                    <span style={{ color: "yellow" }}>
-                                      <MdOutlineSentimentNeutral />
-                                    </span>
-                                  );
-                                } else {
-                                  return (
-                                    <span style={{ color: "red" }}>
-                                      <TbMoodSad />
-                                    </span>
-                                  );
-                                }
-                              })()}
-                            </div>
-                          </div>
+                          <ReviewBox feedbackSummaryProd={item}/>
                         ) : null
                       )}
+
+
                     </a>
                     <div className="hard-product-actions">
                       <button
