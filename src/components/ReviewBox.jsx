@@ -6,24 +6,24 @@ import { FaRegSmile } from "react-icons/fa";
 import { MdOutlineSentimentNeutral } from "react-icons/md";
 import { TbMoodSad } from "react-icons/tb";
 
-function ReviewBox({ feedbackSummaryProd }) {
+function ReviewBox({ feedbackSummaryProd, ratingText }) {
 
   console.log("feedbackSummaryProd",feedbackSummaryProd)
   return (
     <div>
-      <div className="feedback-container" key={feedbackSummaryProd.product_id}>
+      <div className="feedback-container" key={feedbackSummaryProd?.product_id}>
         <div className="rating-container">
           <div className="rating">
-            Rating{" "}
+            {ratingText ? ratingText : "Rating"}{" "}
             <span style={{ color: "red" }}>
-              {feedbackSummaryProd.average_rating}
+              {feedbackSummaryProd?.average_rating}
             </span>
           </div>
           <div className="stars">
             {Array.from({ length: 5 }, (_, i) =>
-              i < Math.floor(feedbackSummaryProd.average_rating) ? (
+              i < Math.floor(feedbackSummaryProd?.average_rating) ? (
                 <IoStar key={i} />
-              ) : i < feedbackSummaryProd.average_rating ? (
+              ) : i < feedbackSummaryProd?.average_rating ? (
                 <IoStarOutline key={i} />
               ) : (
                 <IoStarOutline key={i} />
@@ -33,10 +33,10 @@ function ReviewBox({ feedbackSummaryProd }) {
         </div>
         <div className="emoji">
           {(() => {
-            const sentiment = feedbackSummaryProd.sentiment_summary;
-            const positive = parseFloat(sentiment.Positive || "0");
-            const neutral = parseFloat(sentiment.Neutral || "0");
-            const negative = parseFloat(sentiment.Negative || "0");
+            const sentiment = feedbackSummaryProd?.sentiment_summary;
+            const positive = parseFloat(sentiment?.Positive || "0");
+            const neutral = parseFloat(sentiment?.Neutral || "0");
+            const negative = parseFloat(sentiment?.Negative || "0");
 
             // Determine the dominant sentiment
             if (positive >= neutral && positive >= negative) {

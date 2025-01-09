@@ -1,0 +1,144 @@
+/* Main container */
+.review-container {
+    max-width: 500px;
+    padding: 20px;
+  }
+  
+  /* Initial prompt text */
+  .review-prompt {
+    text-align: left;
+    cursor: pointer;
+    color: #4CAF50;
+    transition: color 0.3s ease;
+    font-size: 14px;
+    font-weight: 700;
+    
+  }
+  
+  .review-prompt:hover {
+    color: #4CAF50;
+  }
+  
+  /* Review form */
+  .review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  /* Stars container */
+  .star-container {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 8px;
+  }
+  
+  /* Star buttons */
+  .star-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .star-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .star-button:focus {
+    outline: none;
+  }
+  
+  /* Star icons */
+  .star-empty {
+    color: #ddd;
+    transition: color 0.2s ease;
+  }
+  
+  .star-filled {
+    color: #ffd700;
+    fill: #ffd700;
+    transition: all 0.2s ease;
+  }
+  
+  /* Textarea styles */
+  .review-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .review-textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  .review-textarea::placeholder {
+    color: #999;
+  }
+  
+  /* Submit button */
+  .submit-button {
+    padding: 8px 10px;
+    width: 25%;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .submit-button:hover:not(:disabled) {
+    background-color: #4CAF50;
+    transform: translateY(-1px);
+  }
+  
+  .submit-button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  .submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Animation for form appearance */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 600px) {
+    .review-container {
+      padding: 15px;
+    }
+    
+    .star-button svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .submit-button {
+      padding: 10px 20px;
+    }
+  }

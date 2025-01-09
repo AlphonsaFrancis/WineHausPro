@@ -173,3 +173,24 @@
     from { transform: translateY(-20px); }
     to { transform: translateY(0); }
 }
+
+.order-tracking-container{
+
+}
+.order-status-text-container{
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 8px;
+}
+.order-status-text-key{
+    font-size: 13px;
+    font-weight: 700;
+    color: black;
+}
+.order-status-text-value{
+    font-size: 13px;
+    font-weight: 500;
+    color: black;
+}
