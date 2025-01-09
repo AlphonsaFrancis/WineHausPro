@@ -364,7 +364,8 @@ def create_payment(request):
         cart = Cart.objects.get(cart_id=cart_id)
     except Cart.DoesNotExist:
         return Response({'error': 'Invalid cart ID'}, status=status.HTTP_400_BAD_REQUEST)
-
+    print("cart", cart)
+    print("user id", cart.user_id.id)
     if payment_method == 'cod':
         # Create order entry before saving payment
         order = Order.objects.create(
@@ -384,7 +385,7 @@ def create_payment(request):
         )
         payment.save()
 
-        create_order_items(order, cart_id, cart.user_id)
+        create_order_items(order, cart_id, cart.user_id.id)
 
         return Response({'message': 'Order placed successfully with COD', 'order_id': order.order_id}, status=status.HTTP_201_CREATED)
 
@@ -415,7 +416,6 @@ def verify_payment(request):
     try:
         payment = Payment.objects.get(payment_id=razorpay_order_id)
         razorpay_payment = razorpay_client.payment.fetch(payment_id)
-
         if razorpay_payment['status'] == 'captured':
             # Create an order for the successful payment
             order = Order.objects.create(
@@ -432,7 +432,7 @@ def verify_payment(request):
             payment.order_id = order  # Associate the order with payment
             payment.save()
 
-            create_order_items(order, payment.cart_id, payment.cart_id.user_id)
+            create_order_items(order, payment.cart_id, payment.cart_id.user_id.id)
             
             return Response({'message': 'Payment verified and order created', 'order_id': order.order_id}, status=status.HTTP_200_OK)
 
@@ -440,8 +440,10 @@ def verify_payment(request):
             return Response({'error': 'Payment not captured. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
 
     except Payment.DoesNotExist:
+        print("Payment not found")
         return Response({'error': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        print("error",e)
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST) 
     
 def create_order_items(order, cart_id, user_id):

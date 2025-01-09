@@ -633,6 +633,7 @@ def product_review_sentiment_summary(request, product_id):
         } if total_sentiments > 0 else {}
 
         response_data = {
+            "product_id":product_id,
             "average_rating": round(average_rating, 2) if average_rating else 0,
             "average_score": round(average_score, 2) if average_score else 0,
             "sentiment_summary":sentiment_percentage
