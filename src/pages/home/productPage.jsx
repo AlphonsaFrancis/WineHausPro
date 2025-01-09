@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Filter from "../../components/Filters";
-import ReviewBox from "../../components/ReviewBox"
+import ProductCard from "../../components/ProductCard"
 import "./product.css";
 import config from "../../config/config";
 
@@ -238,56 +238,7 @@ const ProductPage = () => {
           <div className="hard-product-display">
             <div className="hard-products-grid">
               {products.length > 0 ? (
-                products.map((product) => (
-                  <div className="hard-product-card" key={product.product_id}>
-                    <a
-                      href={`/products/${product.product_id}`}
-                      className="hard-product-link"
-                    >
-                      <img
-                        src={
-                          product.image
-                            ? `${config.BASE_URL}${product.image}`
-                            : "https://via.placeholder.com/150"
-                        }
-                        alt={product.name}
-                        className="hard-product-image"
-                      />
-                      <div className="hard-product-info">
-                        <h4>{product.name}</h4>
-                        <p className="hard-price">₹ {product.price}</p>
-                      </div>
-                      {(!product.is_active || product.stock_quantity === 0) && (
-                        <p className="hard-out-of-stock-label">Out of Stock</p>
-                      )}
-
-                      {feedbackSummaries?.map((item) =>
-                        item?.product_id === product.product_id ? (
-                          <ReviewBox feedbackSummaryProd={item}/>
-                        ) : null
-                      )}
-
-
-                    </a>
-                    <div className="hard-product-actions">
-                      <button
-                        className="hard-wishlist-btn"
-                        onClick={() => addToWishlist(product.product_id)}
-                      >
-                        <i className="fas fa-heart"></i> Wishlist
-                      </button>
-                      <button
-                        className="hard-cart-btn"
-                        disabled={
-                          !product.is_active || product.stock_quantity === 0
-                        }
-                        onClick={() => addToCart(product.product_id)}
-                      >
-                        <i className="fas fa-shopping-cart"></i> Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                ))
+                <ProductCard products={products} feedbackSummaries={feedbackSummaries} addToWishlist={addToWishlist} addToCart={addToCart}/>
               ) : (
                 <p>No products found for "{searchQuery}"</p>
               )}

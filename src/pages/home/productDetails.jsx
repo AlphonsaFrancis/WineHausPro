@@ -313,8 +313,9 @@ import "./product-detail.css";
 import Navbar from "../../components/Navbar";
 import config from "../../config/config";
 import ReviewBox from "../../components/ReviewBox";
+import ProductCard from "../../components/ProductCard";
+
 import { MdShoppingCart, MdFavoriteBorder, MdLocationOn, MdCategory, MdBusinessCenter, MdInventory } from "react-icons/md";
-import { formatTimestamp } from "./helper";
 import ProductReviews from "../../components/ProductReviews";
 
 const ProductDetail = () => {
@@ -537,12 +538,16 @@ const ProductDetail = () => {
               </p>
             )}
           </div>
+          <div>
+          <h5>Customer Reviews</h5>
+          <ProductReviews reviews={reviews} />
+          </div>
 
           {reviews?.length > 0 && (
             <div className="product-review-container">
-              <h2>Customer Reviews</h2>
+              <h2>Similar Products</h2>
               <div className="reviews-grid">
-                <ProductReviews reviews={reviews} />
+              <ProductCard products={[]} feedbackSummaries={[]} addToWishlist={addToWishlist} addToCart={addToCart}/>
               </div>
             </div>
           )}
