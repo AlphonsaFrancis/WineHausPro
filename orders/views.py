@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from products.serializers import ReviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,13 +8,46 @@ from authentication.models import User
 from .models import Order, OrderItems,Wishlist, WishlistItems,Cart, CartItems,Payment,Address,Shipping
 from .serializers import OrderSerializer, OrderItemsSerializer,WishlistSerializer, WishlistItemsSerializer
 from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,AddressSerializer,ShippingSerializer
-from products.models import Product
+from products.models import Product, Review
 # order && order_item function based view
+
+# @api_view(['GET'])
+# def user_orders(request, user_id):
+#     try:
+#         orders = Order.objects.filter(user_id=user_id)
+#         serialized_orders = []
+
+#         for order in orders:
+#             order_serializer = OrderSerializer(order)
+#             order_items = OrderItems.objects.filter(order_id=order.order_id)
+#             order_items_serializer = OrderItemsSerializer(order_items, many=True)
+#             products_reviewed=[]
+#             for order_item in order_items:
+#                 products_reviewed[order_item.product_id.product_id] = Review.objects.filter(user=order_item.user,product=order_item.product_id.product_id)
+            
+#             serialized_orders.append({
+#                 'order': order_serializer.data,
+#                 'order_items': order_items_serializer.data,
+#                 'products_reviewed':products_reviewed
+#             })
+
+#         return Response(serialized_orders, status=status.HTTP_200_OK)
+
+#     except Order.DoesNotExist:
+#         return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 @api_view(['GET'])
 def user_orders(request, user_id):
     try:
         orders = Order.objects.filter(user_id=user_id)
+        
+        if not orders.exists():
+            return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
+            
         serialized_orders = []
 
         for order in orders:
@@ -21,16 +55,35 @@ def user_orders(request, user_id):
             order_items = OrderItems.objects.filter(order_id=order.order_id)
             order_items_serializer = OrderItemsSerializer(order_items, many=True)
             
+            # Initialize products_reviewed as a dictionary instead of a list
+            products_reviewed = {}
+            
+            for order_item in order_items:
+                # Get the review if it exists
+                review = Review.objects.filter(
+                    user_id=user_id,
+                    product_id=order_item.product_id.product_id
+                ).first()
+                
+                # Add to products_reviewed dictionary
+                products_reviewed[str(order_item.product_id.product_id)] = {
+                    'has_review': bool(review),
+                }
+            
             serialized_orders.append({
                 'order': order_serializer.data,
-                'order_items': order_items_serializer.data
+                'order_items': order_items_serializer.data,
+                'products_reviewed': products_reviewed
             })
 
         return Response(serialized_orders, status=status.HTTP_200_OK)
 
-    except Order.DoesNotExist:
-        return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
-
+    except Exception as e:
+        return Response(
+            {'error': f'An error occurred: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
 @api_view(['GET'])
 def order_items(request, order_id):
     try:
@@ -370,7 +423,7 @@ def create_payment(request):
         # Create order entry before saving payment
         order = Order.objects.create(
             user_id=cart.user_id,
-            order_status="Placed",
+            order_status="placed",
             order_date=timezone.now(),
             tax_amount=0,  # Modify as needed
             total_amount=amount
@@ -420,7 +473,7 @@ def verify_payment(request):
             # Create an order for the successful payment
             order = Order.objects.create(
                 user_id=payment.cart_id.user_id,
-                order_status="Placed",
+                order_status="placed",
                 order_date=timezone.now(),
                 tax_amount=50,
                 total_amount=payment.amount
