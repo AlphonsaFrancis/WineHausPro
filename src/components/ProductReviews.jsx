@@ -1,31 +1,29 @@
-import React from 'react';
-import { MdStar, MdStarBorder, MdThumbUp, MdCalendarToday, MdPerson } from 'react-icons/md';
-import './ProductReviews.css';
+import React from "react";
+import {
+  MdStar,
+  MdStarBorder,
+  MdThumbUp,
+  MdCalendarToday,
+  MdPerson,
+} from "react-icons/md";
+import "./ProductReviews.css";
 
 const ProductReviews = ({ reviews }) => {
   const formatTimestamp = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
+    return new Date(timestamp).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
   };
 
   const renderStars = (rating) => {
-    return [...Array(5)].map((_, index) => (
+    return [...Array(5)].map((_, index) =>
       index < rating ? (
-        <MdStar
-          key={index}
-          className="star-filled"
-          size={14}
-        />
+        <MdStar key={index} className="star-filled" size={14} />
       ) : (
-        <MdStarBorder
-          key={index}
-          className="star-empty"
-          size={14}
-        />
+        <MdStarBorder key={index} className="star-empty" size={14} />
       )
-    ));
+    );
   };
 
   return (
@@ -37,12 +35,8 @@ const ProductReviews = ({ reviews }) => {
               <MdPerson className="avatar-icon" />
             </div>
             <div className="user-details">
-              <h3 className="username">
-                {review?.user || 'Anonymous'}
-              </h3>
-              <div className="rating">
-                {renderStars(review?.rating)}
-              </div>
+              <h3 className="username">{review?.user || "Anonymous"}</h3>
+              <div className="rating">{renderStars(review?.rating)}</div>
             </div>
           </div>
 

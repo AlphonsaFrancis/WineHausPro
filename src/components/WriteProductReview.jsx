@@ -1,64 +1,63 @@
-import React, { useState } from 'react';
-import { Star } from 'lucide-react';
-import './WriteProductReview.css';
-import config from '../config/config';
+import React, { useState } from "react";
+import { Star } from "lucide-react";
+import "./WriteProductReview.css";
+import config from "../config/config";
 
-
-const WriteProductReview = ({ productId}) => {
+const WriteProductReview = ({ productId }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const userId = localStorage.getItem('userId')
-
+  const storedUser = localStorage.getItem("user");
+  const user = JSON.parse(storedUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!rating) return;
-    
+
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${config.BASE_URL}/api/v1/products/reviews/create/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          user_id: userId,
-          rating,
-          comment
-        })
-      });
+      const response = await fetch(
+        `${config.BASE_URL}/api/v1/products/reviews/create/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            user_email: user?.email ?? null,
+            rating,
+            comment,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to submit review');
+        throw new Error("Failed to submit review");
       }
 
       // Reset form
       setRating(0);
-      setComment('');
+      setComment("");
       setIsHovered(false);
-      
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error("Error submitting review:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div 
+    <div
       className="review-container"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !rating && !comment && setIsHovered(false)}
     >
       {!isHovered ? (
-        <div className="review-prompt">
-          Write a review...
-        </div>
+        <div className="review-prompt">Write a review...</div>
       ) : (
         <form onSubmit={handleSubmit} className="review-form">
           {/* Rating Stars */}
@@ -74,7 +73,11 @@ const WriteProductReview = ({ productId}) => {
               >
                 <Star
                   size={24}
-                  className={star <= (hoveredRating || rating) ? 'star-filled' : 'star-empty'}
+                  className={
+                    star <= (hoveredRating || rating)
+                      ? "star-filled"
+                      : "star-empty"
+                  }
                 />
               </button>
             ))}
@@ -92,9 +95,9 @@ const WriteProductReview = ({ productId}) => {
           <button
             type="submit"
             disabled={isSubmitting || !rating}
-            className={`submit-button ${isSubmitting ? 'submitting' : ''}`}
+            className={`submit-button ${isSubmitting ? "submitting" : ""}`}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </form>
       )}

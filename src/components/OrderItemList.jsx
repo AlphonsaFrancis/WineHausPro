@@ -113,7 +113,7 @@ const OrderItemsList = () => {
       // Make API call
       await axios.post(
         `${config.BASE_URL}api/v1/orders/update-order-status/${parseInt(
-          orderId
+          selectedItem
         )}/`,
         { order_status: newStatus }
       );

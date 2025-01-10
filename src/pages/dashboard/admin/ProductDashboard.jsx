@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import "./ProductDashboard.css";
 import DataTable from "../../../components/DataTable";
@@ -16,8 +15,10 @@ import {
 import config from "../../../config/config";
 import AddProductForm from "../../../components/Forms/AddProductFrom";
 import EditProductForm from "../../../components/Forms/EditProductForm";
+import { useNavigate } from "react-router-dom";
 
 function ProductDashboard() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [productResponse, setProductResponse] = useState([]);
@@ -31,8 +32,9 @@ function ProductDashboard() {
   const [showEditForm, setShowEditForm] = useState(false);
   const outOfStockItems = findOutOfStockItems(productResponse);
   const inactiveItems = findInactiveItems(productResponse);
-  const [searchTerm, setSearchTerm] = useState('');
-  const user = JSON.parse(localStorage.getItem('user'))
+  const [searchTerm, setSearchTerm] = useState("");
+  const storedUser = localStorage.getItem("user");
+  const user = JSON.parse(storedUser);
 
   useEffect(() => {
     getAllProducts();
@@ -41,14 +43,17 @@ function ProductDashboard() {
   useEffect(() => {
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
-      setFilteredProducts(products.filter(product =>
-        product.name.toLowerCase().includes(lowercasedTerm) ||
-        product.description.toLowerCase().includes(lowercasedTerm) ||
-        product.brand.toLowerCase().includes(lowercasedTerm) ||
-        product.country.toLowerCase().includes(lowercasedTerm) ||
-        product.category.toLowerCase().includes(lowercasedTerm) ||
-        product.madeof.toLowerCase().includes(lowercasedTerm)
-      ));
+      setFilteredProducts(
+        products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(lowercasedTerm) ||
+            product.description.toLowerCase().includes(lowercasedTerm) ||
+            product.brand.toLowerCase().includes(lowercasedTerm) ||
+            product.country.toLowerCase().includes(lowercasedTerm) ||
+            product.category.toLowerCase().includes(lowercasedTerm) ||
+            product.madeof.toLowerCase().includes(lowercasedTerm)
+        )
+      );
     } else {
       setFilteredProducts(products);
     }
@@ -118,7 +123,7 @@ function ProductDashboard() {
         setFilteredProducts((prevProducts) =>
           prevProducts.filter((product) => product.id !== selectedProduct.id)
         );
-        getAllProducts()
+        getAllProducts();
       })
       .catch((error) => {
         console.log(error);
@@ -127,9 +132,7 @@ function ProductDashboard() {
 
   const handleDisableProduct = (row) => {
     axios
-      .post(
-        `${config.BASE_URL}api/v1/products/disable-or-enable/${row?.id}/`
-      )
+      .post(`${config.BASE_URL}api/v1/products/disable-or-enable/${row?.id}/`)
       .then((response) => {
         getAllProducts();
       })
@@ -138,11 +141,19 @@ function ProductDashboard() {
       });
   };
 
+  const showMoreDetails = (row) => {
+    console.log("row", row);
+    if (user.is_superuser) {
+      navigate(`/admin/products/${row.id}`);
+    } else {
+      navigate(`/staff/products/${row.id}`);
+    }
+  };
+
   // HELPER FUNCTIONS
 
   const columns = React.useMemo(
     () => [
-     
       {
         Header: "Product",
         accessor: "name",
@@ -208,6 +219,8 @@ function ProductDashboard() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onToggleStatus={handleDisableProduct}
+          showViewMoreIcon={true}
+          onShowMoreDetails={showMoreDetails}
         />
       </div>
       <BasicModal
@@ -219,33 +232,43 @@ function ProductDashboard() {
         content={"Are you sure you want to delete this item?"}
       />
 
-      <BasicModal
-        open={isShowForm}
-        setOpen={handleCloseForm}
-        content={
-          <AddProductForm
-            onCancel={handleCloseForm}
-            onConfirm={getAllProducts}
-          />
-        }
-        customStyle={{ height: "87vh", overflowY: "scroll", marginTop: "0px" }}
-      />
-
-      <BasicModal
-        open={showEditForm}
-        setOpen={handleEditFormClose}
-        content={
-          <EditProductForm
-            onCancel={handleEditFormClose}
-            onConfirm={getAllProducts}
-            initialProductData={selectedProduct}
-          />
-        }
-        customStyle={{ height: "87vh", overflowY: "scroll", marginTop: "0px" }}
-      />
+      {isShowForm && (
+        <BasicModal
+          open={isShowForm}
+          setOpen={handleCloseForm}
+          content={
+            <AddProductForm
+              onCancel={handleCloseForm}
+              onConfirm={getAllProducts}
+            />
+          }
+          customStyle={{
+            height: "87vh",
+            overflowY: "scroll",
+            marginTop: "0px",
+          }}
+        />
+      )}
+      {showEditForm && (
+        <BasicModal
+          open={showEditForm}
+          setOpen={handleEditFormClose}
+          content={
+            <EditProductForm
+              onCancel={handleEditFormClose}
+              onConfirm={getAllProducts}
+              initialProductData={selectedProduct}
+            />
+          }
+          customStyle={{
+            height: "87vh",
+            overflowY: "scroll",
+            marginTop: "0px",
+          }}
+        />
+      )}
     </div>
   );
 }
 
 export default ProductDashboard;
-

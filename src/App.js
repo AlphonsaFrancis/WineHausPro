@@ -30,16 +30,22 @@ function App() {
           <Route path="/login" element={<RegLogin />} />
           <Route path="/admin" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
           <Route path="/admin/orders" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
+          <Route path="/admin/products" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
           <Route path="/admin/orders/:orderId" element={<OrderItemsList />} />
           <Route path="/orders/:orderId" element={<OrderItemsList />} />
 
 
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/orders" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/products" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+
 
 
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/admin/products/:id" element={<ProductDetail />} />
+          <Route path="/staff/products/:id" element={<ProductDetail />} />
+
 \
           <Route path="/cart" element={<ProtectedRoute element={<CartPage />} />} />
           <Route path="/wishlist" element={<ProtectedRoute element={<WishlistPage />} />} />

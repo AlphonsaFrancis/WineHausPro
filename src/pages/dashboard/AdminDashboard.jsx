@@ -25,6 +25,9 @@ function AdminDashboard() {
     if (path[2] === "orders") {
       setSelectedMenu("allOrders");
     }
+    if (path[2] === "products") {
+      setSelectedMenu("allProducts");
+    }
   }, [location, path]);
 
   useEffect(() => {

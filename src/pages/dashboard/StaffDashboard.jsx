@@ -25,6 +25,9 @@ function StaffDashboard() {
     if (path[path.length - 1] === "orders") {
       setSelectedMenu("allOrders");
     }
+    if (path[path.length - 1] === "products") {
+      setSelectedMenu("allProducts");
+    }
   }, [location, path]);
 
   useEffect(() => {

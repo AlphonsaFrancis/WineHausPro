@@ -9,6 +9,7 @@ import config from "../../config/config";
 import OrderTracker from "../../components/OrderTracker";
 import WriteProductReview from "../../components/WriteProductReview";
 import ReviewBox from "../../components/ReviewBox";
+import { timeStampToLocalString } from "../dashboard/helper";
 
 const BASE_URL = "http://127.0.0.1:8000";
 
@@ -221,7 +222,6 @@ const OrdersPage = () => {
     toast.success("Receipt downloaded successfully.");
   };
 
-  console.log("orders", orders);
   return (
     <div>
       <Header />
@@ -296,7 +296,9 @@ const OrdersPage = () => {
                               <span className="delivery-label">
                                 Delivered on:
                               </span>
-                              <span className="delivery-date">08/01/2025</span>
+                              <span className="delivery-date">
+                                {timeStampToLocalString(order?.updated_at)}
+                              </span>
                             </div>
                           </div>
                         )}
