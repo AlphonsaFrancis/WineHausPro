@@ -40,6 +40,7 @@ urlpatterns = [
 
     path('user-orders/<int:user_id>/', views.user_orders, name='user_orders'),
     path('order-items/<int:order_id>/', views.order_items, name='order_items'),
+    path('update-order-status/<int:orderItemId>/',views.update_order_status,name='update-order-status')
 ]
 
 

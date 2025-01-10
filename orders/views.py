@@ -210,6 +210,45 @@ def order_item_detail(request, pk):
     elif request.method == 'DELETE':
         order_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+@api_view(['POST'])
+def update_order_status(request, orderItemId):
+    try:
+        order_status = request.data.get('order_status')
+        order_item = OrderItems.objects.get(order_item_id=orderItemId)
+        if order_item:
+            order_item.order_status = order_status
+            order_item.save()
+
+        return Response({
+            "success":True,
+            "message":"Order status updated",
+            "data":{
+                order_status:order_status
+            },
+            "status":200
+        },200)
+    except OrderItems.DoesNotExist:
+        return Response({
+            "success":False,
+            "message":"No order item found for this id ",
+            "error":"No order item found for this id ",
+            "status":400
+
+        },400)
+    
+    except Exception as e:
+        print(f"ERROR::",str(e))
+        return Response({
+            "success":False,
+            "message":"An error occured",
+            "error":str(e),
+            "status":500
+
+        },500)
+        
+
 
 
 # Wishlist && wishlist_item function based view

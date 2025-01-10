@@ -1,5 +1,6 @@
 from django.db import models
 from authentication.models import User
+from orders.constants import ORDER_STATUS
 from products.models import Product
 
 class Order(models.Model):
@@ -22,6 +23,7 @@ class OrderItems(models.Model):
     order_item_id = models.AutoField(primary_key=True)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order_status=models.CharField(max_length=55, choices=ORDER_STATUS, default='placed')
     quantity = models.IntegerField()
     price = models.FloatField()
     updated_at = models.DateTimeField(auto_now=True)
