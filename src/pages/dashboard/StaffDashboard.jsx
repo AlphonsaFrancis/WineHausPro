@@ -14,9 +14,18 @@ import AllStaffsDashboard from "./admin/AllStaffs";
 import Welcome from "./admin/Welcome";
 import AllOrdersDashboard from "./admin/AllOrders";
 import StaffSidebar from "../../components/StaffSidebar";
+import { useLocation } from "react-router-dom";
 
 function StaffDashboard() {
+  const location = useLocation();
+  const path = location.pathname.split("/");
   const [selectedMenu, setSelectedMenu] = useState("welcome");
+
+  useEffect(() => {
+    if (path[path.length - 1] === "orders") {
+      setSelectedMenu("allOrders");
+    }
+  }, [location, path]);
 
   useEffect(() => {
     axios
@@ -78,29 +87,28 @@ function StaffDashboard() {
       <div className="content-container">
         <AdminNavbar />
         <div className="content">
-        
-          {selectedMenu === "welcome" ?
-          <Welcome/>:
-          selectedMenu === "allProducts" ? (
+          {selectedMenu === "welcome" ? (
+            <Welcome />
+          ) : selectedMenu === "allProducts" ? (
             <ProductDashboard />
           ) : selectedMenu === "brands" ? (
-            <Brands/>
+            <Brands />
           ) : selectedMenu === "categories" ? (
-            <CategoryDashboard/>
+            <CategoryDashboard />
           ) : selectedMenu === "countries" ? (
-            <CountryDashboard/>
+            <CountryDashboard />
           ) : selectedMenu === "madeOf" ? (
-            <MadeofDashboard/>
+            <MadeofDashboard />
           ) : selectedMenu === "allOrders" ? (
-            <AllOrdersDashboard/>
+            <AllOrdersDashboard />
           ) : selectedMenu === "newOrders" ? (
             "New Orders"
           ) : selectedMenu === "allStaffs" ? (
-            <AllStaffsDashboard/>
+            <AllStaffsDashboard />
           ) : selectedMenu === "deactivatedStaffs" ? (
             "Deactivated Staffs"
           ) : selectedMenu === "allUsers" ? (
-            <AllUsersDashboard/>
+            <AllUsersDashboard />
           ) : selectedMenu === "deactivatedUsers" ? (
             "Deactivated Users"
           ) : (

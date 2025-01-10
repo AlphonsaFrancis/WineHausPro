@@ -73,6 +73,12 @@ export  const getMadeofById = (id, data) => {
     return products?.filter((product) => product.is_active === true);
   };
 
+  export const timeStampToLocalString = (utcTimestamp)=>{
+    const localDate = new Date(utcTimestamp);
+    const formattedDate = localDate.toLocaleString();
+    return formattedDate
+  }
+
 // export function formatDate(dateString) {
 //   const date = new Date(dateString);
 //   const day = String(date.getDate()).padStart(2, '0');

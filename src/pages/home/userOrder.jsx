@@ -21,8 +21,6 @@ const OrdersPage = () => {
 
   const userId = localStorage.getItem("userId");
 
-  console.log("reviewSummaries", reviewSummaries);
-
   const fetchReviewSummary = async (productId) => {
     try {
       const response = await fetch(
@@ -242,60 +240,72 @@ const OrdersPage = () => {
                   products_reviewed[item.product_id.product_id];
                 const reviewSummary =
                   reviewSummaries[item.product_id.product_id];
-                console.log("reviewSummary", reviewSummary);
 
                 return (
                   <li key={item.order_item_id} className="order-item">
-                    <img
-                      src={
-                        item.product_id.image
-                          ? `${BASE_URL}${item.product_id.image}`
-                          : "https://via.placeholder.com/150"
-                      }
-                      alt={item.product_id.name}
-                      className="order-item-image"
-                    />
-                    <div className="order-item-info">
-                      <strong>{item.product_id.name}</strong>
-                      <div>
-                        Description:{" "}
-                        {item.product_id.description ||
-                          "No description available"}
-                      </div>
-                      <div>Quantity: {item.quantity}</div>
-                      <div>Price per item: ₹{item.price}</div>
+                    <div className="order-content-wrapper">
+                      <div className="order-main-content">
+                        <img
+                          src={
+                            item.product_id.image
+                              ? `${BASE_URL}${item.product_id.image}`
+                              : "https://via.placeholder.com/150"
+                          }
+                          alt={item.product_id.name}
+                          className="order-item-image"
+                        />
+                        <div className="order-item-info">
+                          <strong>{item.product_id.name}</strong>
+                          <div>
+                            Description:{" "}
+                            {item.product_id.description ||
+                              "No description available"}
+                          </div>
+                          <div>Quantity: {item.quantity}</div>
+                          <div>Price per item: ₹{item.price}</div>
 
-                      {productReview?.has_review ? (
-                        <div style={{ width: "25%", marginLeft: "-9px" }}>
-                          <ReviewBox
-                            feedbackSummaryProd={reviewSummary?.data}
-                            ratingText={"Your Rating"}
-                          />
+                          {productReview?.has_review ? (
+                            <div className="review-box-container">
+                              <ReviewBox
+                                feedbackSummaryProd={reviewSummary?.data}
+                                ratingText={"Your Rating"}
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              {item.order_status === "delivered" && (
+                                <WriteProductReview
+                                  productId={item.product_id.product_id}
+                                  userId={order.user_id}
+                                />
+                              )}
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <>
-                          {order.order_status === "delivered" ? (
-                            <WriteProductReview
-                              productId={item.product_id.product_id}
-                              userId={order.user_id}
-                            />
-                          ) : null}
-                        </>
-                      )}
+                      </div>
+
+                      <div className="order-tracking-section">
+                        {item.order_status !== "delivered" ? (
+                          <OrderTracker
+                            orderDeliveryStatus={item.order_status}
+                          />
+                        ) : (
+                          <div className="delivery-status">
+                            <span className="delivery-icon">✓</span>
+                            <div className="delivery-text">
+                              <span className="delivery-label">
+                                Delivered on:
+                              </span>
+                              <span className="delivery-date">08/01/2025</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </li>
                 );
               })}
             </ul>
-
-            {
-                order.order_status !=='delivered' ?
-                <OrderTracker orderDeliveryStatus={order.order_status} />:
-                <div style={{color:'green', fontWeight:'800'}}>Delivered on : <span style={{fontWeight:'600'}}>08/01/2025</span> </div>
-                
-
-            }
-
 
             <div className="order-actions">
               <button

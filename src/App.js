@@ -18,6 +18,7 @@ import UserOrder from './pages/home/userOrder';
 import ProtectedRoute from './pages/authentication/ProtectedRoute';
 import AdminProtectedRoute from './pages/authentication/AdminProtectedRoute';
 import StaffProtectedRoute from './pages/authentication/StaffProtectedRoute';
+import OrderItemsList from './components/OrderItemList';
 function App() {
 
   return (
@@ -28,8 +29,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<RegLogin />} />
           <Route path="/admin" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
+          <Route path="/admin/orders" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
+          <Route path="/admin/orders/:orderId" element={<OrderItemsList />} />
+          <Route path="/orders/:orderId" element={<OrderItemsList />} />
+
 
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/orders" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+
 
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<ProductDetail />} />
