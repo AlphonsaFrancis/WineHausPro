@@ -552,9 +552,9 @@ def analyze_sentiment(comment):
 def create_review(request):
     try:
         product_id = request.data['product_id']
-        user_id = request.data['user_id']
+        user_email = request.data['user_email']
         product = Product.objects.get(product_id=product_id)
-        user = User.objects.get(id=user_id)
+        user = User.objects.get(email=user_email)
 
         # Check if the user purchased the product
         if not OrderItems.objects.filter(user=user, product_id=product).exists():
