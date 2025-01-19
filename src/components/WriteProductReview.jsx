@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import "./WriteProductReview.css";
 import config from "../config/config";
 
-const WriteProductReview = ({ productId }) => {
+const WriteProductReview = ({ productId, orderId }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -20,7 +20,7 @@ const WriteProductReview = ({ productId }) => {
     setIsSubmitting(true);
     try {
       const response = await fetch(
-        `${config.BASE_URL}/api/v1/products/reviews/create/`,
+        `${config.BASE_URL}api/v1/products/reviews/create/`,
         {
           method: "POST",
           headers: {
@@ -29,6 +29,7 @@ const WriteProductReview = ({ productId }) => {
           body: JSON.stringify({
             product_id: productId,
             user_email: user?.email ?? null,
+            order_id: orderId,
             rating,
             comment,
           }),
@@ -47,6 +48,7 @@ const WriteProductReview = ({ productId }) => {
       console.error("Error submitting review:", error);
     } finally {
       setIsSubmitting(false);
+      window.location.reload();
     }
   };
 

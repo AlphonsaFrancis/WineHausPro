@@ -8,8 +8,9 @@ import Header from "../../components/Navbar";
 import config from "../../config/config";
 import OrderTracker from "../../components/OrderTracker";
 import WriteProductReview from "../../components/WriteProductReview";
-import ReviewBox from "../../components/ReviewBox";
 import { timeStampToLocalString } from "../dashboard/helper";
+import UserReviewBox from "../../components/UserReviewBox";
+import { getReviewForOrder } from "./utils";
 
 const BASE_URL = "http://127.0.0.1:8000";
 
@@ -17,63 +18,20 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const [reviewSummaries, setReviewSummaries] = useState({});
-  const [isLoadingSummaries, setIsLoadingSummaries] = useState(false);
+  const [userSummaries, setUserSummaries] = useState();
 
   const userId = localStorage.getItem("userId");
 
-  const fetchReviewSummary = async (productId) => {
-    try {
-      const response = await fetch(
-        `${config.BASE_URL}/api/v1/products/${productId}/review-summary/`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch review summary");
-      }
-      return await response.json();
-    } catch (error) {
-      console.error(
-        `Error fetching review summary for product ${productId}:`,
-        error
-      );
-      return null;
-    }
-  };
-
-  const fetchAllReviewSummaries = async (orders) => {
-    setIsLoadingSummaries(true);
-    try {
-      const summaries = {};
-      const productIds = new Set();
-      orders.forEach(({ products_reviewed }) => {
-        Object.entries(products_reviewed).forEach(([productId, data]) => {
-          if (data.has_review) {
-            productIds.add(productId);
-          }
-        });
-      });
-
-      const summaryPromises = Array.from(productIds).map(async (productId) => {
-        const summary = await fetchReviewSummary(productId);
-        if (summary) {
-          summaries[productId] = summary;
-        }
-      });
-
-      await Promise.all(summaryPromises);
-      setReviewSummaries(summaries);
-    } catch (error) {
-      console.error("Error fetching review summaries:", error);
-    } finally {
-      setIsLoadingSummaries(false);
-    }
-  };
-
   useEffect(() => {
-    if (orders && orders.length > 0) {
-      fetchAllReviewSummaries(orders);
-    }
-  }, [orders]);
+    axios
+      .get(`${config.BASE_URL}api/v1/products/${userId}/user-review-summary/`)
+      .then((response) => {
+        setUserSummaries(response?.data?.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [userId]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -221,6 +179,7 @@ const OrdersPage = () => {
     doc.save(`Order_${order.order.order_id}_Receipt.pdf`);
     toast.success("Receipt downloaded successfully.");
   };
+  console.log("orders", orders);
 
   return (
     <div>
@@ -238,8 +197,6 @@ const OrdersPage = () => {
               {order_items.map((item) => {
                 const productReview =
                   products_reviewed[item.product_id.product_id];
-                const reviewSummary =
-                  reviewSummaries[item.product_id.product_id];
 
                 return (
                   <li key={item.order_item_id} className="order-item">
@@ -264,11 +221,25 @@ const OrdersPage = () => {
                           <div>Quantity: {item.quantity}</div>
                           <div>Price per item: ₹{item.price}</div>
 
-                          {productReview?.has_review ? (
+                          {console.log(
+                            "Strict equality check:",
+                            productReview?.order_id === item?.order_id,
+                            "\nLoose equality check:",
+                            productReview?.order_id == item?.order_id
+                          )}
+
+                          {productReview?.has_review &&
+                          productReview?.order_id === item?.order_id ? (
                             <div className="review-box-container">
-                              <ReviewBox
-                                feedbackSummaryProd={reviewSummary?.data}
-                                ratingText={"Your Rating"}
+                              <UserReviewBox
+                                reviewData={
+                                  userSummaries
+                                    ? getReviewForOrder(
+                                        item?.order_id,
+                                        userSummaries
+                                      )
+                                    : []
+                                }
                               />
                             </div>
                           ) : (
@@ -277,6 +248,7 @@ const OrdersPage = () => {
                                 <WriteProductReview
                                   productId={item.product_id.product_id}
                                   userId={order.user_id}
+                                  orderId={order.order_id}
                                 />
                               )}
                             </>
