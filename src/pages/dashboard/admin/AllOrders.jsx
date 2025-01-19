@@ -25,6 +25,12 @@ function AllOrdersDashboard() {
   const [allUsers, setAllUsers] = useState();
   const [isShowMoreDetails, setIsShowMoreDetails] = useState(false);
 
+  const storedUser = localStorage.getItem("user");
+  const user = JSON.parse(storedUser);
+
+  const newOrders =
+    orders?.filter((item) => item?.order_status === "placed").length || 0;
+
   useEffect(() => {
     getAllOrders();
   }, []);
@@ -37,7 +43,6 @@ function AllOrdersDashboard() {
           (order) =>
             order.user_id.toLowerCase().includes(lowercasedTerm) ||
             order.order_id.toString().includes(lowercasedTerm)
-          // order.order_status.toString().includes(lowercasedTerm)
         )
       );
     } else {
@@ -94,7 +99,7 @@ function AllOrdersDashboard() {
       return {
         order_id: data?.order_id,
         user_id: user?.email || "N/A", // Use "N/A" if user is not found
-        // order_status: data?.order_status,
+        order_status: data?.order_status,
         order_date: new Date(data?.order_date).toLocaleDateString("en-US"),
         total_amount: data?.total_amount,
         tax_amount: data?.tax_amount,
@@ -187,6 +192,21 @@ function AllOrdersDashboard() {
           <div className="info-title">Total orders</div>
           <div className="info-value success">{orders?.length}</div>
         </div>
+        {/* {user?.is_delivery_agent && (
+          <>
+          <div className="info">
+          <div className="info-title">New orders</div>
+          <div className="info-value info">{newOrders}</div>
+        </div><div className="info">
+          <div className="info-title">Shipped orders</div>
+          <div className="info-value warning">{orders?.length}</div>
+        </div>
+        <div className="info">
+          <div className="info-title">Completed orders</div>
+          <div className="info-value success">{orders?.length}</div>
+        </div>
+          </>
+        )} */}
       </div>
 
       <div className="add-product-container">
@@ -202,7 +222,7 @@ function AllOrdersDashboard() {
       <div className="product-table">
         <DataTable
           columns={columns}
-          data={filteredOrders ?? []}
+          data={filteredOrders ? [...filteredOrders].reverse() : []}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onToggleStatus={handleDisableOrder}

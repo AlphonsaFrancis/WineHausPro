@@ -19,6 +19,8 @@ import ProtectedRoute from './pages/authentication/ProtectedRoute';
 import AdminProtectedRoute from './pages/authentication/AdminProtectedRoute';
 import StaffProtectedRoute from './pages/authentication/StaffProtectedRoute';
 import OrderItemsList from './components/OrderItemList';
+import DeliveryAgentProtectedRoute from './pages/authentication/DeliveryAgentProtectedRoute';
+import DeliveryAgentDashboard from './pages/dashboard/DeliveryAgentDashboard';
 function App() {
 
   return (
@@ -38,6 +40,9 @@ function App() {
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/orders" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/products" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+
+
+          <Route path="/order-delivery" element={<DeliveryAgentProtectedRoute element={<DeliveryAgentDashboard />} />} />
 
 
 

@@ -172,6 +172,10 @@ const OrderItemsList = () => {
             <span style={{ margin: "0 5px" }}>/</span>
             <a href="/admin/orders">Orders</a>
           </>
+        ) : user.is_delivery_agent ? (
+          <>
+            <a href="/order-delivery">Home</a>
+          </>
         ) : (
           <>
             <a href="/staff">Home</a>

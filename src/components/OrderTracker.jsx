@@ -28,10 +28,10 @@ export default function OrderTracker({ orderDeliveryStatus }) {
             orderDeliveryStatus.slice(1).replace(/-/g, " ")}
         </div>
       </div>
-      <div className="order-status-text-container">
+      {/* <div className="order-status-text-container">
         <div className="order-status-text-key">Location :</div>
         <div className="order-status-text-value">Mumbai</div>
-      </div>
+      </div> */}
       <div className="order-status-progress-container">
         {stages.map((stage, index) => (
           <div key={stage.id} className="progress-stage">

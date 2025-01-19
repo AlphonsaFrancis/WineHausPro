@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import google from "../../assets/googleicon.png";
 import config from "../../config/config";
 import axios from "axios";
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 // import config from "../../config/config";
 
 const Login = ({ setIslogin }) => {
@@ -32,15 +32,15 @@ const Login = ({ setIslogin }) => {
           }
         )
         .then((response) => {
-          console.log('Google User signed in', response.data);
+          console.log("Google User signed in", response.data);
           const { access, user_id } = response.data;
           // Store access token and user info in localStorage
-          localStorage.setItem('authToken', codeResponse.access_token);
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-          localStorage.setItem('userId', JSON.stringify(response.data.user.id));
+          localStorage.setItem("authToken", codeResponse.access_token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          localStorage.setItem("userId", JSON.stringify(response.data.user.id));
 
           if (response.status === 200) {
-            navigate('/');
+            navigate("/");
           }
         })
         .catch((error) => {
@@ -75,7 +75,6 @@ const Login = ({ setIslogin }) => {
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return gmailRegex.test(email);
   };
-  
 
   const formSubmit = (e) => {
     e.preventDefault();
@@ -97,20 +96,22 @@ const Login = ({ setIslogin }) => {
           // Store access token and user info in localStorage
           const { access, user_id } = response.data;
 
-          localStorage.setItem('authToken', response.data.access); // Adjust this line if your response structure is different
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-          localStorage.setItem('userId', user_id);
+          localStorage.setItem("authToken", response.data.access); // Adjust this line if your response structure is different
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          localStorage.setItem("userId", user_id);
 
           console.log(user_id);
 
           if (response.status === 200) {
             console.log("Login Successful");
             if (response.data.user.is_superuser) {
-              navigate('/admin');
+              navigate("/admin");
             } else if (response.data.user.is_staff) {
-              navigate('/staff');
+              navigate("/staff");
+            } else if (response.data.user.is_delivery_agent) {
+              navigate("/order-delivery");
             } else {
-              navigate('/');
+              navigate("/");
             }
           }
         })
@@ -183,7 +184,7 @@ const Login = ({ setIslogin }) => {
           </div>
 
           <button
-          id='login'
+            id="login"
             type="button"
             className="google-signin"
             onClick={() => login()}
