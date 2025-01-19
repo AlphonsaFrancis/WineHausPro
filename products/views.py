@@ -553,6 +553,7 @@ def create_review(request):
     try:
         product_id = request.data['product_id']
         user_email = request.data['user_email']
+        order_id = request.data['order_id']
         product = Product.objects.get(product_id=product_id)
         user = User.objects.get(email=user_email)
 
@@ -650,4 +651,59 @@ def product_review_sentiment_summary(request, product_id):
             "message": "An error occurred",
             "error": str(e),
             "status": status.HTTP_500_INTERNAL_SERVER_ERROR
+        })
+    
+@api_view(['GET'])
+def user_review_sentiment_summary(request, order_id):
+    try:
+        average_rating = Review.objects.filter(order_id=order_id).aggregate(Avg('rating'))['rating__avg']
+        sentiments = SentimentAnalysis.objects.filter(review__order_id=order_id)
+        total_sentiments = sentiments.count()
+
+        sentiment_summary = sentiments.values('sentiment').annotate(count=Count('sentiment'))
+        average_score = sentiments.aggregate(Avg('score'))['score__avg']
+
+        sentiment_percentage = {
+            sentiment['sentiment']: f"{round((sentiment['count'] / total_sentiments) * 100, 2)}%"
+            for sentiment in sentiment_summary
+        } if total_sentiments > 0 else {}
+
+        response_data = {
+            "order_id": order_id,
+            "average_rating": round(average_rating, 2) if average_rating else 0,
+            "average_score": round(average_score, 2) if average_score else 0,
+            "sentiment_summary": sentiment_percentage
+        }
+        return Response({
+            "success": "True",
+            "message": "User review sentiment summary listed successfully",
+            "data": response_data,
+            "status": status.HTTP_200_OK
+        })
+    except Exception as e:
+        return Response({
+            "success": "False",
+            "message": "An error occurred",
+            "error": str(e),
+            "status": status.HTTP_500_INTERNAL_SERVER_ERROR
+        })
+
+
+@api_view(['GET'])
+def list_reviews_by_user(request, user_id):
+    try:
+        reviews = Review.objects.filter(user_id=user_id)
+        serializer = GetReviewSerializer(reviews, many=True)
+        return Response({
+            "success": "True",
+            "message": "Reviews listed successfully",
+            "data": serializer.data,
+            "status": status.HTTP_200_OK
+        })
+    except Review.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "User not found",
+            "error": "User does not exist",
+            "status": status.HTTP_404_NOT_FOUND 
         })
