@@ -597,6 +597,59 @@ def create_review(request):
             "status": status.HTTP_404_NOT_FOUND
         })
 
+
+
+@api_view(['PUT'])
+def edit_review(request, order_id, user_id):
+    try:
+        # Fetch the user and order items to validate
+        user = User.objects.get(id=user_id)
+        order_item = OrderItems.objects.filter(order_id=order_id, user=user).first()
+
+        if not order_item:
+            return Response({
+                "success": "False",
+                "message": "Order not found or does not belong to the user",
+                "error": "Invalid order or user",
+                "status": status.HTTP_404_NOT_FOUND
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch the review associated with the order and user
+        review = Review.objects.filter(order_id=order_id, user=user).first()
+        if not review:
+            return Response({
+                "success": "False",
+                "message": "Review not found",
+                "error": "No review exists for this order and user",
+                "status": status.HTTP_404_NOT_FOUND
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the review
+        serializer = ReviewSerializer(review, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": "True",
+                "message": "Review updated successfully",
+                "data": serializer.data,
+                "status": status.HTTP_200_OK
+            })
+
+        return Response({
+            "success": "False",
+            "message": "Invalid data",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST
+        })
+
+    except User.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "User not found",
+            "error": "User does not exist",
+            "status": status.HTTP_404_NOT_FOUND
+        }, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['GET'])
 def list_reviews(request, product_id):
     try:
