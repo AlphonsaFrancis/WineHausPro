@@ -19,6 +19,7 @@ const OrdersPage = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [userSummaries, setUserSummaries] = useState();
+  const [isEditReview, setIsEditReview] = useState(false);
 
   const userId = localStorage.getItem("userId");
 
@@ -179,7 +180,6 @@ const OrdersPage = () => {
     doc.save(`Order_${order.order.order_id}_Receipt.pdf`);
     toast.success("Receipt downloaded successfully.");
   };
-  console.log("orders", orders);
 
   return (
     <div>
@@ -221,13 +221,6 @@ const OrdersPage = () => {
                           <div>Quantity: {item.quantity}</div>
                           <div>Price per item: ₹{item.price}</div>
 
-                          {console.log(
-                            "Strict equality check:",
-                            productReview?.order_id === item?.order_id,
-                            "\nLoose equality check:",
-                            productReview?.order_id == item?.order_id
-                          )}
-
                           {productReview?.has_review &&
                           productReview?.order_id === item?.order_id ? (
                             <div className="review-box-container">
@@ -241,6 +234,26 @@ const OrdersPage = () => {
                                     : []
                                 }
                               />
+                              <button
+                                onClick={() => {
+                                  setIsEditReview(true);
+                                  setSelectedOrderId(order?.order_id);
+                                }}
+                              >
+                                Edit Review
+                              </button>{" "}
+                              {isEditReview &&
+                                selectedOrderId === order.order_id && (
+                                  <WriteProductReview
+                                    productId={item.product_id.product_id}
+                                    userId={order.user_id}
+                                    orderId={order.order_id}
+                                    existingReview={getReviewForOrder(
+                                      order?.order_id,
+                                      userSummaries
+                                    )}
+                                  />
+                                )}
                             </div>
                           ) : (
                             <>
