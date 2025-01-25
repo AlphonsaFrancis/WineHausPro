@@ -13,6 +13,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.db.models import Count
+from django.utils.timezone import now, timedelta
+
 @api_view(['GET'])
 def user_orders(request, user_id):
     try:
@@ -1016,3 +1019,115 @@ def disable_enable_order(request,pk):
         print(f"ERROR: {e}")
         return Response({'message': f"An error occurred while processing your request"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# ORDERS PER DAY
+
+
+@api_view(['GET'])
+def orders_per_day(request):
+    try:
+        days_param = request.query_params.get('days', 7)
+        try:
+            days = int(days_param)
+            if days <= 0:
+                raise ValueError("Days parameter must be a positive integer.")
+        except ValueError as e:
+            return Response(
+                {"error": str(e), "message": "Invalid 'days' parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        end_date = now()
+        start_date = end_date - timedelta(days=days)
+
+        orders = (
+            Order.objects.filter(order_date__range=(start_date, end_date))
+            .extra(select={'date': "DATE(order_date)"})
+            .values('date')
+            .annotate(order_count=Count('order_id'))  # Use 'order_id' instead of 'id'
+            .order_by('date')
+        )
+
+        result = [{'date': entry['date'], 'order_count': entry['order_count']} for entry in orders]
+        return Response(result, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": "An unexpected error occurred.", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
+
+@api_view(['GET'])
+def category_orders_by_day(request):
+    try:
+        try:
+            days = int(request.GET.get('days', 7))
+            if days <= 0:
+                return Response(
+                    {"error": "Days must be a positive integer"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {"error": "Invalid days parameter. Must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        start_date = timezone.now().date() - timedelta(days=days)
+        
+        category_order_counts = (
+            OrderItems.objects
+            .filter(
+                created_at__date__gte=start_date,
+                is_active=True
+            )
+            .values('product_id__category__name')
+            .annotate(order_count=Count('order_item_id', distinct=True))
+        )
+        
+        if not category_order_counts:
+            return Response(
+                {"message": "No order data found for the specified period"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        total_orders = sum(item['order_count'] for item in category_order_counts)
+        
+        chart_data = {
+            'labels': [],
+            'datasets': [{
+                'data': [],
+                'backgroundColor': [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ],
+                'borderWidth': 1,
+                'borderColor': '#fff'
+            }],
+            'formatted_labels': []      
+        }
+        
+        for index, item in enumerate(category_order_counts):
+            category_name = item['product_id__category__name']
+            order_count = item['order_count']
+            percentage = (order_count / total_orders) * 100
+            
+            chart_data['labels'].append(category_name)
+            chart_data['datasets'][0]['data'].append(order_count)
+            chart_data['formatted_labels'].append(
+                f"{category_name}: {percentage:.1f}%"  
+            )
+        
+        return Response(chart_data)
+    
+    except Exception as e:
+        print(str(e))
+        
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

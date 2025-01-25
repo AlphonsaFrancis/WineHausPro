@@ -40,7 +40,14 @@ urlpatterns = [
 
     path('user-orders/<int:user_id>/', views.user_orders, name='user_orders'),
     path('order-items/<int:order_id>/', views.order_items, name='order_items'),
-    path('update-order-status/<int:orderItemId>/',views.update_order_status,name='update-order-status')
+    path('update-order-status/<int:orderItemId>/',views.update_order_status,name='update-order-status'),
+
+
+    # MAIN PROJECT
+
+    path('orders-per-day/',views.orders_per_day,name='orders_per_day'),
+    path('category-orders-per-day/',views.category_orders_by_day,name='category_orders_by_day')
+
 ]
 
 

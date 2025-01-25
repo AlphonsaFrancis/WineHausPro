@@ -18,7 +18,7 @@
 
 # ]
 from django.urls import path
-from .views import add_new_user, delete_user, get_all_users, edit_user, initiate_registration,user_login,google_sign_in, validate_otp_and_register
+from .views import add_new_user, daily_logged_in_users, delete_user, get_all_users, edit_user, initiate_registration,user_login,google_sign_in, validate_otp_and_register
 from .views import password_reset_request, password_reset_confirm,check_email_exists,disable_enable_user
 
 
@@ -35,6 +35,9 @@ urlpatterns = [
     path('update-user/<int:user_id>/', edit_user, name='update_user'),
     path('disable-enable-user/<int:pk>/', disable_enable_user, name='disable_enable_user'),
     path('users/check-email-exists/', check_email_exists, name='check_email_exists'),
+
+    # MAIN PROJECT
+    path('daily-logged-in-users/',daily_logged_in_users,name='daily_logged_in_users')
 
 ]
 
