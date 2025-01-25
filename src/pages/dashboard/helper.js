@@ -91,4 +91,20 @@ export  const getMadeofById = (id, data) => {
   
 
 
+export const  formatBarGraphData = (data) => {
+  return data.map(item => ({
+    date: item.date,
+    value: item.order_count
+  }));
+};
+
+export const  formatActiveUsersBarGraphData = (data) => {
+  return data.map(item => ({
+    date: item.date,
+    value: item.logged_in_users_count
+  }));
+};
+
+
+
   

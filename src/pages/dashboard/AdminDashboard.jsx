@@ -15,6 +15,7 @@ import AllStaffsDashboard from "./admin/AllStaffs";
 import Welcome from "./admin/Welcome";
 import AllOrdersDashboard from "./admin/AllOrders";
 import { useLocation } from "react-router-dom";
+import AdminHome from "./admin/AdminHome";
 
 function AdminDashboard() {
   const location = useLocation();
@@ -28,6 +29,10 @@ function AdminDashboard() {
     if (path[2] === "products") {
       setSelectedMenu("allProducts");
     }
+
+    // if(path[path.length-1]==="admin"){
+    //   setSelectedMenu("dashboard");
+    // }
   }, [location, path]);
 
   useEffect(() => {
@@ -92,6 +97,8 @@ function AdminDashboard() {
         <div className="content">
           {selectedMenu === "welcome" ? (
             <Welcome />
+          ) : selectedMenu === "dashboard" ? (
+            <AdminHome />
           ) : selectedMenu === "allProducts" ? (
             <ProductDashboard />
           ) : selectedMenu === "brands" ? (
