@@ -10,7 +10,7 @@ import OrderTracker from "../../components/OrderTracker";
 import WriteProductReview from "../../components/WriteProductReview";
 import { timeStampToLocalString } from "../dashboard/helper";
 import UserReviewBox from "../../components/UserReviewBox";
-import { getReviewForOrder } from "./utils";
+import { getReviewForOrder, getReviewById } from "./utils";
 
 const BASE_URL = "http://127.0.0.1:8000";
 
@@ -18,10 +18,17 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+
   const [userSummaries, setUserSummaries] = useState();
   const [isEditReview, setIsEditReview] = useState(false);
+  const [addMoreReview, setAddMoreReview] = useState(false);
 
   const userId = localStorage.getItem("userId");
+
+  console.log("userSummaries", userSummaries);
+  console.log("isEditReview",isEditReview)
+
 
   useEffect(() => {
     axios
@@ -32,7 +39,7 @@ const OrdersPage = () => {
       .catch((err) => {
         console.error(err);
       });
-  }, [userId]);
+  }, [userId,selectedReviewId]);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -198,6 +205,11 @@ const OrdersPage = () => {
                 const productReview =
                   products_reviewed[item.product_id.product_id];
 
+                const reviewsForOrder = getReviewForOrder(
+                  item?.order_id,
+                  userSummaries
+                );
+
                 return (
                   <li key={item.order_item_id} className="order-item">
                     <div className="order-content-wrapper">
@@ -224,23 +236,56 @@ const OrdersPage = () => {
                           {productReview?.has_review &&
                           productReview?.order_id === item?.order_id ? (
                             <div className="review-box-container">
-                              <UserReviewBox
-                                reviewData={
-                                  userSummaries
-                                    ? getReviewForOrder(
-                                        item?.order_id,
-                                        userSummaries
-                                      )
-                                    : []
-                                }
-                              />
+                              {reviewsForOrder.length > 0 ? (
+                                reviewsForOrder.map((review) => (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                    }}
+                                  >
+                                    <div style={{ width: "70%" }}>
+                                      <UserReviewBox
+                                        key={review.id}
+                                        reviewData={review}
+                                      />
+                                    </div>
+
+                                    <div
+                                      style={{
+                                        width: "16%",
+                                        cursor: "pointer",
+                                        color:'#0652a7',
+                                        fontWeight:'bold',
+                                        fontSize:'11px',
+                                        display:'flex',
+                                        justifyContent:'center',
+                                        alignItems:'center'
+                                      }}
+                                      onClick={() => {
+                                        setIsEditReview(true);
+                                        setSelectedReviewId(review.id);
+                                        setSelectedOrderId(order.order_id)
+                                      }}
+                                    >
+                                      Edit review 
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <WriteProductReview
+                                  productId={item.product_id.product_id}
+                                  userId={order.user_id}
+                                  orderId={order.order_id}
+                                />
+                              )}
                               <button
                                 onClick={() => {
-                                  setIsEditReview(true);
+                                  setAddMoreReview(true);
                                   setSelectedOrderId(order?.order_id);
                                 }}
                               >
-                                Edit Review
+                                Add more review
                               </button>{" "}
                               {isEditReview &&
                                 selectedOrderId === order.order_id && (
@@ -248,10 +293,18 @@ const OrdersPage = () => {
                                     productId={item.product_id.product_id}
                                     userId={order.user_id}
                                     orderId={order.order_id}
-                                    existingReview={getReviewForOrder(
-                                      order?.order_id,
+                                    existingReview={getReviewById(
+                                      selectedReviewId,
                                       userSummaries
                                     )}
+                                  />
+                                )}
+                              {addMoreReview &&
+                                selectedOrderId === order.order_id && (
+                                  <WriteProductReview
+                                    productId={item.product_id.product_id}
+                                    userId={order.user_id}
+                                    orderId={order.order_id}
                                   />
                                 )}
                             </div>

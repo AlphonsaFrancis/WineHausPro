@@ -4,6 +4,9 @@
     gap: 12px;
     padding: 8px;
     max-width: 200px;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
   .review-card {
@@ -60,6 +63,7 @@
   
   .rating {
     display: flex;
+    align-items: center;
     align-items: center;
     gap: 2px;
   }

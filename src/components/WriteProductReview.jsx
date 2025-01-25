@@ -19,6 +19,9 @@ const WriteProductReview = ({ productId, orderId, existingReview }) => {
       setComment(existingReview.comment || "");
     }
   }, [existingReview]);
+  console.log("existingReview",existingReview)
+
+  console.log("wwwwwwwwwwwwwwwwww")
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +32,7 @@ const WriteProductReview = ({ productId, orderId, existingReview }) => {
     try {
       const response = await fetch(
         existingReview
-          ? `${config.BASE_URL}api/v1/products/edit-review/order/${orderId}/user/${user.id}/`
+          ? `${config.BASE_URL}api/v1/products/edit-review/${existingReview.id}/user/${user.id}/`
           : `${config.BASE_URL}api/v1/products/reviews/create/`,
         {
           method: existingReview ? "PUT" : "POST",

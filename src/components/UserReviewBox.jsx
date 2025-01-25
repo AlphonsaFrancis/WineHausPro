@@ -48,7 +48,7 @@ function UserReviewBox({ reviewData }) {
         </div>
         <div className="emoji">{getSentimentIcon(rating)}</div>
         <div className="rating">
-          <strong>Comment:</strong> {comment || "No comments provided."}
+          <div style={{fontSize:'13px', fontWeight:'bold'}}>Comment: {' '}</div> {comment || "No comments provided."}
         </div>
       </div>
     </div>
