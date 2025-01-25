@@ -46,7 +46,7 @@ urlpatterns = [
     path('reviews/create/', views.create_review, name='create_review'),
     path('<int:product_id>/review-summary/', product_review_sentiment_summary, name='product_sentiment_summary'),
     path('<int:user_id>/user-review-summary/', list_reviews_by_user, name='user_sentiment_summary'),
-    path('edit-review/order/<int:order_id>/user/<int:user_id>/', edit_review, name='edit_review'),
+    path('edit-review/<int:review_id>/user/<int:user_id>/', edit_review, name='edit_review'),
 
 
 ]

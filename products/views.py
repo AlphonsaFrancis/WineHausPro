@@ -600,22 +600,22 @@ def create_review(request):
 
 
 @api_view(['PUT'])
-def edit_review(request, order_id, user_id):
+def edit_review(request, review_id, user_id):
     try:
         # Fetch the user and order items to validate
         user = User.objects.get(id=user_id)
-        order_item = OrderItems.objects.filter(order_id=order_id, user=user).first()
+        # order_item = OrderItems.objects.filter(order_id=order_id, user=user).first()
 
-        if not order_item:
-            return Response({
-                "success": "False",
-                "message": "Order not found or does not belong to the user",
-                "error": "Invalid order or user",
-                "status": status.HTTP_404_NOT_FOUND
-            }, status=status.HTTP_404_NOT_FOUND)
+        # if not order_item:
+        #     return Response({
+        #         "success": "False",
+        #         "message": "Order not found or does not belong to the user",
+        #         "error": "Invalid order or user",
+        #         "status": status.HTTP_404_NOT_FOUND
+        #     }, status=status.HTTP_404_NOT_FOUND)
 
         # Fetch the review associated with the order and user
-        review = Review.objects.filter(order_id=order_id, user=user).first()
+        review = Review.objects.filter(id=review_id, user=user).first()
         if not review:
             return Response({
                 "success": "False",
