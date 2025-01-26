@@ -12,13 +12,20 @@ from django.http import JsonResponse
 from textblob import TextBlob
 from django.db.models import Avg, Count
 
-# product function based views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import status
 from .models import Product
 from .serializers import ProductSerializer
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
+from .models import Product, Category, Brand
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
 
 @api_view(['GET'])
 def product_filter(request):
@@ -760,3 +767,77 @@ def list_reviews_by_user(request, user_id):
             "error": "User does not exist",
             "status": status.HTTP_404_NOT_FOUND 
         })
+
+@api_view(["GET"])
+def get_similar_products(request):
+    try:
+        category_id = request.GET.get('category', None)
+        brand_id = request.GET.get('brand', None)
+        product_id = request.GET.get('product', None)
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+
+        if not category_id and not brand_id:
+            return JsonResponse({
+                'error': 'Provide either category or brand parameter'
+            }, status=400)
+
+        # Base query excluding the current product
+        base_query = Product.objects.filter(is_active=True)
+        if product_id:
+            base_query = base_query.exclude(product_id=product_id)
+
+        # Filter by category
+        if category_id:
+            category = get_object_or_404(Category, pk=category_id)
+            category_products = base_query.filter(category=category)
+        else:
+            category_products = Product.objects.none()
+
+        # Filter by brand
+        if brand_id:
+            brand = get_object_or_404(Brand, pk=brand_id)
+            brand_products = base_query.filter(brand=brand)
+        else:
+            brand_products = Product.objects.none()
+
+        # Combine products, removing duplicates
+        all_products = list(set(category_products) | set(brand_products))
+        all_products.sort(key=lambda x: x.created_at, reverse=True)
+
+        # Pagination
+        paginator = Paginator(all_products, per_page)
+        
+        try:
+            paginated_products = paginator.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            paginated_products = paginator.page(1)
+
+        # Serialize products
+        product_list = [{
+            'product_id': product.product_id,
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'stock_quantity': product.stock_quantity,
+            'image': product.image.url if product.image else None,
+            'brand': product.brand.name,
+            'category': product.category.name
+        } for product in paginated_products]
+
+        return JsonResponse({
+            'products': product_list,
+            'total_products': len(all_products),
+            'total_pages': paginator.num_pages,
+            'current_page': paginated_products.number
+        })
+
+    except (Category.DoesNotExist, Brand.DoesNotExist):
+        return JsonResponse({
+            'error': 'Invalid category or brand'
+        }, status=404)
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
