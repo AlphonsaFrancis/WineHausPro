@@ -9,6 +9,7 @@ function ProductCard({
   addToWishlist,
   addToCart,
 }) {
+  console.log("products",products)
   return (
     <>
       {products?.map((product) => (

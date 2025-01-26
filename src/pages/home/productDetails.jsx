@@ -357,7 +357,7 @@ useEffect(()=>{
           {!user?.is_superuser && !user?.is_staff && (
             <div className="product-review-container">
               <h2>Similar Products</h2>
-              <div className="reviews-grid">
+              <div className="similar-products-grid-container">
                 <ProductCard
                   products={similarProducts?.products}
                   feedbackSummaries={[]}
