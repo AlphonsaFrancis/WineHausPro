@@ -7,17 +7,22 @@ body {
     background-color: #F5F5F5;
     display: flex;
     gap: 20px;
+    position: relative;
 }
 
 .sidebar-main-container {
-    flex-basis: 24%;
-    height: 100vh;
-    overflow-y: scroll;
+    flex-basis: 26%;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    
 }
 
 .content-container {
-    flex-basis: 73%;
+    position: relative;
+    flex-basis: 69%;
     height: 100vh;
+    /* margin-left: 15%; */
 }
 
 .content{

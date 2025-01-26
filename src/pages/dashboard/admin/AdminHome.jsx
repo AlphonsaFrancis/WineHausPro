@@ -4,12 +4,17 @@ import BarGraph from "../../../components/Graphs/BarGraph";
 import axios from "axios";
 import config from "../../../config/config";
 import { formatActiveUsersBarGraphData, formatBarGraphData } from "../helper";
+import DonutChart from "../../../components/Graphs/DonutChart";
 
 function AdminHome() {
-  const [ordersOverTimeFilter, setOrderOverTimeFilter] = useState("7");
+  const [ordersOverTimeFilter, setOrderOverTimeFilter] = useState("1");
   const [ordersPerDay, setOrderPerDay] = useState();
-  const [activeUsersFilter, setActiveUsersFilter] = useState("7");
+  const [activeUsersFilter, setActiveUsersFilter] = useState("1");
   const [activeUsers, setActiveUsers] = useState();
+  const [categoryFilter, setCategoryFilter] = useState("7");
+  const [category, setCategory] = useState();
+  const [productFilter, setProductFilter] = useState("7");
+  const [product, setProduct] = useState();
 
   const fetchOrdersOverTime = async () => {
     const url = new URL(`${config.BASE_URL}api/v1/orders/orders-per-day/`);
@@ -38,6 +43,34 @@ function AdminHome() {
     }
   };
 
+  const fetchCategorySalesByTime = async () => {
+    const url = new URL(
+      `${config.BASE_URL}api/v1/orders/category-orders-per-day/`
+    );
+    const params = new URLSearchParams();
+    params.append("days", categoryFilter);
+    url.search = params.toString();
+
+    try {
+      const response = await axios.get(url.toString());
+      setCategory(response.data);
+    } catch (err) {}
+  };
+
+  const fetchProductSalesByTime = async () => {
+    const url = new URL(
+      `${config.BASE_URL}api/v1/orders/product-orders-by-day/`
+    );
+    const params = new URLSearchParams();
+    params.append("days", productFilter);
+    url.search = params.toString();
+
+    try {
+      const response = await axios.get(url.toString());
+      setProduct(response.data);
+    } catch (err) {}
+  };
+
   useEffect(() => {
     fetchOrdersOverTime();
   }, [ordersOverTimeFilter]);
@@ -45,6 +78,14 @@ function AdminHome() {
   useEffect(() => {
     fetchActiveUsersOverTime();
   }, [activeUsersFilter]);
+
+  useEffect(() => {
+    fetchCategorySalesByTime();
+  }, [categoryFilter]);
+
+  useEffect(() => {
+    fetchProductSalesByTime();
+  }, [productFilter]);
 
   return (
     <div>
@@ -77,6 +118,7 @@ function AdminHome() {
                 barWidth={10}
                 legendLabel="Number Of Orders"
                 yAxisLabel="Orders"
+                barColor="#0948c6"
               />
             </div>
           </div>
@@ -114,13 +156,44 @@ function AdminHome() {
       <div className="graph-container">
         <div className="graph-box">
           <div className="graph-box-content">
-            <div className="graph-box-content-title">
-              Sales by Product Category
+            <div className="graph-box-content-title">Sales by Product</div>
+            <div className="graph-quick-filters">
+              {["1", "7", "30", "90"].map((filter) => (
+                <div
+                  key={filter}
+                  className={`graph-filter ${
+                    productFilter === filter ? "active" : ""
+                  }`}
+                  onClick={() => setProductFilter(filter)}
+                >
+                  {filter === "1" ? "Today" : `${filter} Days`}
+                </div>
+              ))}
             </div>
-            <div className="graph-box-content-graph"></div>
+            <div className="graph-box-content-graph">
+              <DonutChart data={product ?? []} />
+            </div>
           </div>
         </div>
-        <div className="graph-box"></div>
+        <div className="graph-box">
+          <div className="graph-box-content-title">Sales by Category</div>
+          <div className="graph-quick-filters">
+            {["1", "7", "30", "90"].map((filter) => (
+              <div
+                key={filter}
+                className={`graph-filter ${
+                  categoryFilter === filter ? "active" : ""
+                }`}
+                onClick={() => setCategoryFilter(filter)}
+              >
+                {filter === "1" ? "Today" : `${filter} Days`}
+              </div>
+            ))}
+          </div>
+          <div className="graph-box-content-graph">
+            <DonutChart data={category ?? []} />
+          </div>
+        </div>
       </div>
     </div>
   );

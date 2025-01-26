@@ -20,6 +20,7 @@ const BarGraph = ({
   barColor = "#ff6b6b",
 }) => {
   const getMaxValue = (data) => {
+    if(data)
     return Math.max(...data?.map((item) => item.value)) + 1;
   };
   return (
