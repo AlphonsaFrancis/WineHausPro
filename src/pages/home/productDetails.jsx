@@ -30,9 +30,48 @@ const ProductDetail = () => {
   const [materials, setMaterials] = useState({});
   const [reviews, setReviews] = useState([]);
   const [reviewSummary, setReviewSummary] = useState([]);
+  const [similarProducts, setSimilarProducts]=useState()
   const userId = localStorage.getItem("userId");
+  const getSimilarProducts = (product) => {
+    if (!product) {
+      console.error("Product is null or undefined");
+      return; 
+    }
+  
+    const baseUrl = `${config.BASE_URL}api/v1/products/get-similar-products/`;
+    const params = new URLSearchParams();
+  
+  
+    if (product.category) {
+      params.append("category", product.category);
+    }
+    if (product.brand) {
+      params.append("brand", product.brand);
+    }
+    if (product.product_id) {
+      params.append("product", product.product_id);
+    }
+  
+    const url = `${baseUrl}?${params.toString()}`;
+  
+    if (product.category || product.brand) {
+      axios
+        .get(url)
+        .then((response) => {
+          setSimilarProducts(response.data); 
+        })
+        .catch((err) => {
+          console.error("Error fetching similar products:", err);
+        });
+    } else {
+      console.warn("No valid category or brand to fetch similar products");
+    }
+  };
+  
 
-console.log("product",product)
+useEffect(()=>{
+  getSimilarProducts(product)
+},[product])
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
@@ -320,7 +359,7 @@ console.log("product",product)
               <h2>Similar Products</h2>
               <div className="reviews-grid">
                 <ProductCard
-                  products={[]}
+                  products={similarProducts?.products}
                   feedbackSummaries={[]}
                   addToWishlist={addToWishlist}
                   addToCart={addToCart}
