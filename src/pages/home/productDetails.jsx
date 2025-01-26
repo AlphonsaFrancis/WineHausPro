@@ -32,6 +32,7 @@ const ProductDetail = () => {
   const [reviewSummary, setReviewSummary] = useState([]);
   const userId = localStorage.getItem("userId");
 
+console.log("product",product)
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {

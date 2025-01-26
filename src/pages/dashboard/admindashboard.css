@@ -12,9 +12,10 @@ body {
 
 .sidebar-main-container {
     flex-basis: 26%;
+    width: 18%;
     height: 100%;
     overflow-y: auto;
-    position: relative;
+    position: fixed;
     
 }
 
@@ -22,7 +23,7 @@ body {
     position: relative;
     flex-basis: 69%;
     height: 100vh;
-    /* margin-left: 15%; */
+    margin-left: 22%;
 }
 
 .content{

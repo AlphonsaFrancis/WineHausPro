@@ -45,9 +45,7 @@ function AllUsersDashboard() {
       .get(`${config.BASE_URL}api/v1/auth/users/`)
       .then((response) => {
         setUsersResponse(response.data);
-        console.log("response.data---", response.data);
         const transformedData = transformUsersData(response.data);
-        console.log("transformedData", transformedData);
         setUsers(transformedData);
       })
       .catch((error) => {

@@ -4,13 +4,38 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     padding: 20px;
-    border: 1px solid red;
 }
 
 .admin-home-quick-info-box {
     width: 100%;
     height: 160px;
-    border: 2px solid green;
+    border-radius: 6px;
+    padding: 18px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(90deg, #70e1f5 10%, #ffd194 94%);
+
+}
+
+.admin-home-quick-info-box-title{
+    font-size: 28px;
+    color: black;
+    font-weight: 900;
+}
+
+.admin-home-quick-info-box-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    font-size: 50px;
+    color: #4CAF50;
+    font-weight: 900;
+}
+
+
+.admin-home-quick-info-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 .graph-container {
     width: 100%;
@@ -25,8 +50,10 @@
     width: 100%;
     height: 400px;
     padding: 10px;
-    /* border: 1px solid blue; */
+    border: 0.2px solid gray;
+    border-radius: 6px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
 }
 
 .graph-box-content-title{
@@ -61,7 +88,7 @@
 }
 
 .graph-filter.active {
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
 }
 
@@ -77,3 +104,34 @@
 /* .recharts-surface{
     padding: 40px !important;
 } */
+
+
+.export-button-container{
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding: 10;
+    padding-right: 20px;
+    margin-bottom: 10px;
+}
+
+.export-button{
+    width: auto;
+    height: 70%;
+    padding: 4px 16px;
+    background: #4CAF50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+
+}
+
+.export-button:hover{
+    background: #2b96f4;
+}
