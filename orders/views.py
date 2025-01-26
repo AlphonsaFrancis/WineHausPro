@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from orders.utils import generate_dynamic_colors
 from products.serializers import ReviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -1057,7 +1058,6 @@ def orders_per_day(request):
         )
     
 
-
 @api_view(['GET'])
 def category_orders_by_day(request):
     try:
@@ -1094,17 +1094,14 @@ def category_orders_by_day(request):
         
         total_orders = sum(item['order_count'] for item in category_order_counts)
         
+        # Generate dynamic colors based on number of categories
+        dynamic_colors = generate_dynamic_colors(len(category_order_counts)) 
+        
         chart_data = {
             'labels': [],
             'datasets': [{
                 'data': [],
-                'backgroundColor': [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)'
-                ],
+                'backgroundColor': dynamic_colors,
                 'borderWidth': 1,
                 'borderColor': '#fff'
             }],
@@ -1127,6 +1124,76 @@ def category_orders_by_day(request):
     except Exception as e:
         print(str(e))
         
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def product_orders_by_day(request):
+    try:
+        try:
+            days = int(request.GET.get('days', 7))
+            if days <= 0:
+                return Response(
+                    {"error": "Days must be a positive integer"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {"error": "Invalid days parameter. Must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        start_date = timezone.now().date() - timedelta(days=days)
+
+        product_order_counts = (
+            OrderItems.objects
+            .filter(
+                created_at__date__gte=start_date,
+                is_active=True
+            )
+            .values('product_id__name')
+            .annotate(order_count=Count('order_item_id', distinct=True))
+        )
+
+        if not product_order_counts:
+            return Response(
+                {"message": "No order data found for the specified period"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        total_orders = sum(item['order_count'] for item in product_order_counts)
+
+        # Generate dynamic colors based on number of products
+        dynamic_colors = generate_dynamic_colors(len(product_order_counts))
+
+        chart_data = {
+            'labels': [],
+            'datasets': [{
+                'data': [],
+                'backgroundColor': dynamic_colors,
+                'borderWidth': 1,
+                'borderColor': '#fff'
+            }],
+            'formatted_labels': []
+        }
+
+        for index, item in enumerate(product_order_counts):
+            product_name = item['product_id__name']
+            order_count = item['order_count']
+            percentage = (order_count / total_orders) * 100
+
+            chart_data['labels'].append(product_name)
+            chart_data['datasets'][0]['data'].append(order_count)
+            chart_data['formatted_labels'].append(
+                f"{product_name}: {percentage:.1f}%"
+            )
+
+        return Response(chart_data)
+
+    except Exception as e:
+        print(str(e))
         return Response(
             {"error": f"An unexpected error occurred: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -46,7 +46,9 @@ urlpatterns = [
     # MAIN PROJECT
 
     path('orders-per-day/',views.orders_per_day,name='orders_per_day'),
-    path('category-orders-per-day/',views.category_orders_by_day,name='category_orders_by_day')
+    path('category-orders-per-day/',views.category_orders_by_day,name='category_orders_by_day'),
+    path('product-orders-by-day/',views.product_orders_by_day,name='product_orders_by_day')
+
 
 ]
 
