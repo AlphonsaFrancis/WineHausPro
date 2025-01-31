@@ -11,11 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-# Copy the Django project
+# Copy start script and make it executable
+COPY start.sh /app/
+RUN chmod +x /app/start.sh
+
+# Copy the rest of the application
 COPY . /app/
 
 # Collect static files
@@ -23,9 +27,5 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-# Create start script
-RUN echo '#!/bin/bash\ngunicorn --bind 0.0.0.0:8000 winehauspro.wsgi:application' > /app/start.sh && \
-    chmod +x /app/start.sh
-
-# Use the start script as the command
-CMD ["/app/start.sh"]
+# Use bash to run the start script
+CMD ["bash", "/app/start.sh"]
