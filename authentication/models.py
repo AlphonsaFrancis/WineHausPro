@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 
@@ -32,6 +31,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     last_login=models.DateTimeField(null=True)
     is_delivery_agent = models.BooleanField(default=False)
+    is_supplier = models.BooleanField(default=False)
     updated_at=models.DateTimeField(auto_now=True)
     created_at=models.DateTimeField(auto_now_add=True)
 

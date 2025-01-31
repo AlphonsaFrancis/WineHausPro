@@ -48,9 +48,8 @@ urlpatterns = [
     path('<int:user_id>/user-review-summary/', list_reviews_by_user, name='user_sentiment_summary'),
     path('edit-review/<int:review_id>/user/<int:user_id>/', edit_review, name='edit_review'),
 
-    path('get-similar-products/',get_similar_products,name='get_similar_products')
-
-
+    path('get-similar-products/',get_similar_products,name='get_similar_products'),
+    path('search-by-image/', views.search_by_image, name='search_by_image'),
 ]
 
 if settings.DEBUG:
