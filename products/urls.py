@@ -2,9 +2,8 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import product_filter, product_review_sentiment_summary
-from .views import search_products
-
+from .views import edit_review, get_similar_products, list_reviews_by_user, product_filter, product_review_sentiment_summary
+from .views import search_products,user_review_sentiment_summary
 
 urlpatterns = [
     path('list/', views.list_products, name='list_products'),  # List all products
@@ -45,8 +44,11 @@ urlpatterns = [
 
     path('<int:product_id>/reviews/', views.list_reviews, name='list_reviews'),
     path('reviews/create/', views.create_review, name='create_review'),
-    path('<int:product_id>/review-summary/', product_review_sentiment_summary, name='product_sentiment_summary')
-    
+    path('<int:product_id>/review-summary/', product_review_sentiment_summary, name='product_sentiment_summary'),
+    path('<int:user_id>/user-review-summary/', list_reviews_by_user, name='user_sentiment_summary'),
+    path('edit-review/<int:review_id>/user/<int:user_id>/', edit_review, name='edit_review'),
+
+    path('get-similar-products/',get_similar_products,name='get_similar_products')
 
 
 ]

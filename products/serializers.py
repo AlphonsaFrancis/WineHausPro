@@ -50,6 +50,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "product",
+            "order_id",
             "rating",
             "comment",
             "created_at",
@@ -64,7 +65,7 @@ class GetReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ("id", "user", "rating", "comment", "updated_at")
+        fields = ("id", "user", "order_id", "product", "rating", "comment", "updated_at")
 
     def get_user(self, obj):
         return obj.user.name

@@ -12,13 +12,20 @@ from django.http import JsonResponse
 from textblob import TextBlob
 from django.db.models import Avg, Count
 
-# product function based views
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import status
 from .models import Product
 from .serializers import ProductSerializer
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
+from .models import Product, Category, Brand
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
 
 @api_view(['GET'])
 def product_filter(request):
@@ -553,6 +560,7 @@ def create_review(request):
     try:
         product_id = request.data['product_id']
         user_email = request.data['user_email']
+        order_id = request.data['order_id']
         product = Product.objects.get(product_id=product_id)
         user = User.objects.get(email=user_email)
 
@@ -595,6 +603,59 @@ def create_review(request):
             "error": "Product does not exist",
             "status": status.HTTP_404_NOT_FOUND
         })
+
+
+
+@api_view(['PUT'])
+def edit_review(request, review_id, user_id):
+    try:
+        # Fetch the user and order items to validate
+        user = User.objects.get(id=user_id)
+        # order_item = OrderItems.objects.filter(order_id=order_id, user=user).first()
+
+        # if not order_item:
+        #     return Response({
+        #         "success": "False",
+        #         "message": "Order not found or does not belong to the user",
+        #         "error": "Invalid order or user",
+        #         "status": status.HTTP_404_NOT_FOUND
+        #     }, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch the review associated with the order and user
+        review = Review.objects.filter(id=review_id, user=user).first()
+        if not review:
+            return Response({
+                "success": "False",
+                "message": "Review not found",
+                "error": "No review exists for this order and user",
+                "status": status.HTTP_404_NOT_FOUND
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the review
+        serializer = ReviewSerializer(review, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": "True",
+                "message": "Review updated successfully",
+                "data": serializer.data,
+                "status": status.HTTP_200_OK
+            })
+
+        return Response({
+            "success": "False",
+            "message": "Invalid data",
+            "error": serializer.errors,
+            "status": status.HTTP_400_BAD_REQUEST
+        })
+
+    except User.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "User not found",
+            "error": "User does not exist",
+            "status": status.HTTP_404_NOT_FOUND
+        }, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def list_reviews(request, product_id):
@@ -651,3 +712,132 @@ def product_review_sentiment_summary(request, product_id):
             "error": str(e),
             "status": status.HTTP_500_INTERNAL_SERVER_ERROR
         })
+    
+@api_view(['GET'])
+def user_review_sentiment_summary(request, order_id):
+    try:
+        average_rating = Review.objects.filter(order_id=order_id).aggregate(Avg('rating'))['rating__avg']
+        sentiments = SentimentAnalysis.objects.filter(review__order_id=order_id)
+        total_sentiments = sentiments.count()
+
+        sentiment_summary = sentiments.values('sentiment').annotate(count=Count('sentiment'))
+        average_score = sentiments.aggregate(Avg('score'))['score__avg']
+
+        sentiment_percentage = {
+            sentiment['sentiment']: f"{round((sentiment['count'] / total_sentiments) * 100, 2)}%"
+            for sentiment in sentiment_summary
+        } if total_sentiments > 0 else {}
+
+        response_data = {
+            "order_id": order_id,
+            "average_rating": round(average_rating, 2) if average_rating else 0,
+            "average_score": round(average_score, 2) if average_score else 0,
+            "sentiment_summary": sentiment_percentage
+        }
+        return Response({
+            "success": "True",
+            "message": "User review sentiment summary listed successfully",
+            "data": response_data,
+            "status": status.HTTP_200_OK
+        })
+    except Exception as e:
+        return Response({
+            "success": "False",
+            "message": "An error occurred",
+            "error": str(e),
+            "status": status.HTTP_500_INTERNAL_SERVER_ERROR
+        })
+
+
+@api_view(['GET'])
+def list_reviews_by_user(request, user_id):
+    try:
+        reviews = Review.objects.filter(user_id=user_id)
+        serializer = GetReviewSerializer(reviews, many=True)
+        return Response({
+            "success": "True",
+            "message": "Reviews listed successfully",
+            "data": serializer.data,
+            "status": status.HTTP_200_OK
+        })
+    except Review.DoesNotExist:
+        return Response({
+            "success": "False",
+            "message": "User not found",
+            "error": "User does not exist",
+            "status": status.HTTP_404_NOT_FOUND 
+        })
+
+@api_view(["GET"])
+def get_similar_products(request):
+    try:
+        category_id = request.GET.get('category', None)
+        brand_id = request.GET.get('brand', None)
+        product_id = request.GET.get('product', None)
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+
+        if not category_id and not brand_id:
+            return JsonResponse({
+                'error': 'Provide either category or brand parameter'
+            }, status=400)
+
+        # Base query excluding the current product
+        base_query = Product.objects.filter(is_active=True)
+        if product_id:
+            base_query = base_query.exclude(product_id=product_id)
+
+        # Filter by category
+        if category_id:
+            category = get_object_or_404(Category, pk=category_id)
+            category_products = base_query.filter(category=category)
+        else:
+            category_products = Product.objects.none()
+
+        # Filter by brand
+        if brand_id:
+            brand = get_object_or_404(Brand, pk=brand_id)
+            brand_products = base_query.filter(brand=brand)
+        else:
+            brand_products = Product.objects.none()
+
+        # Combine products, removing duplicates
+        all_products = list(set(category_products) | set(brand_products))
+        all_products.sort(key=lambda x: x.created_at, reverse=True)
+
+        # Pagination
+        paginator = Paginator(all_products, per_page)
+        
+        try:
+            paginated_products = paginator.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            paginated_products = paginator.page(1)
+
+        # Serialize products
+        product_list = [{
+            'product_id': product.product_id,
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'stock_quantity': product.stock_quantity,
+            'image': product.image.url if product.image else None,
+            'brand': product.brand.name,
+            'category': product.category.name
+        } for product in paginated_products]
+
+        return JsonResponse({
+            'products': product_list,
+            'total_products': len(all_products),
+            'total_pages': paginator.num_pages,
+            'current_page': paginated_products.number
+        })
+
+    except (Category.DoesNotExist, Brand.DoesNotExist):
+        return JsonResponse({
+            'error': 'Invalid category or brand'
+        }, status=404)
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)

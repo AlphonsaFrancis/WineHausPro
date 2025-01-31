@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from orders.utils import generate_dynamic_colors
 from products.serializers import ReviewSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,36 +10,12 @@ from .models import Order, OrderItems,Wishlist, WishlistItems,Cart, CartItems,Pa
 from .serializers import OrderSerializer, OrderItemsSerializer,WishlistSerializer, WishlistItemsSerializer
 from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,AddressSerializer,ShippingSerializer
 from products.models import Product, Review
-# order && order_item function based view
-
-# @api_view(['GET'])
-# def user_orders(request, user_id):
-#     try:
-#         orders = Order.objects.filter(user_id=user_id)
-#         serialized_orders = []
-
-#         for order in orders:
-#             order_serializer = OrderSerializer(order)
-#             order_items = OrderItems.objects.filter(order_id=order.order_id)
-#             order_items_serializer = OrderItemsSerializer(order_items, many=True)
-#             products_reviewed=[]
-#             for order_item in order_items:
-#                 products_reviewed[order_item.product_id.product_id] = Review.objects.filter(user=order_item.user,product=order_item.product_id.product_id)
-            
-#             serialized_orders.append({
-#                 'order': order_serializer.data,
-#                 'order_items': order_items_serializer.data,
-#                 'products_reviewed':products_reviewed
-#             })
-
-#         return Response(serialized_orders, status=status.HTTP_200_OK)
-
-#     except Order.DoesNotExist:
-#         return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+
+from django.db.models import Count
+from django.utils.timezone import now, timedelta
 
 @api_view(['GET'])
 def user_orders(request, user_id):
@@ -55,21 +32,31 @@ def user_orders(request, user_id):
             order_items = OrderItems.objects.filter(order_id=order.order_id)
             order_items_serializer = OrderItemsSerializer(order_items, many=True)
             
-            # Initialize products_reviewed as a dictionary instead of a list
+            # Initialize products_reviewed as a dictionary
             products_reviewed = {}
-            
+
             for order_item in order_items:
-                # Get the review if it exists
-                review = Review.objects.filter(
+                # Get all reviews for this product
+                reviews = Review.objects.filter(
                     user_id=user_id,
-                    product_id=order_item.product_id.product_id
-                ).first()
+                    product_id=order_item.product_id.product_id,
+                    order_id=order.order_id  # Filter by the current order's ID
+                )
+
+                product_id = str(order_item.product_id.product_id)
                 
-                # Add to products_reviewed dictionary
-                products_reviewed[str(order_item.product_id.product_id)] = {
-                    'has_review': bool(review),
-                }
-            
+                if reviews.exists():
+                    for review in reviews:
+                        products_reviewed[product_id] = {
+                            'has_review': True,
+                            'order_id': review.order_id
+                        }
+                else:
+                    products_reviewed[product_id] = {
+                        'has_review': False,
+                        'order_id': None
+                    }
+
             serialized_orders.append({
                 'order': order_serializer.data,
                 'order_items': order_items_serializer.data,
@@ -83,6 +70,7 @@ def user_orders(request, user_id):
             {'error': f'An error occurred: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
     
 @api_view(['GET'])
 def order_items(request, order_id):
@@ -1032,3 +1020,181 @@ def disable_enable_order(request,pk):
         print(f"ERROR: {e}")
         return Response({'message': f"An error occurred while processing your request"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# ORDERS PER DAY
+
+
+@api_view(['GET'])
+def orders_per_day(request):
+    try:
+        days_param = request.query_params.get('days', 7)
+        try:
+            days = int(days_param)
+            if days <= 0:
+                raise ValueError("Days parameter must be a positive integer.")
+        except ValueError as e:
+            return Response(
+                {"error": str(e), "message": "Invalid 'days' parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        end_date = now()
+        start_date = end_date - timedelta(days=days)
+
+        orders = (
+            Order.objects.filter(order_date__range=(start_date, end_date))
+            .extra(select={'date': "DATE(order_date)"})
+            .values('date')
+            .annotate(order_count=Count('order_id'))  # Use 'order_id' instead of 'id'
+            .order_by('date')
+        )
+
+        result = [{'date': entry['date'], 'order_count': entry['order_count']} for entry in orders]
+        return Response(result, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": "An unexpected error occurred.", "details": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
+@api_view(['GET'])
+def category_orders_by_day(request):
+    try:
+        try:
+            days = int(request.GET.get('days', 7))
+            if days <= 0:
+                return Response(
+                    {"error": "Days must be a positive integer"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {"error": "Invalid days parameter. Must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        start_date = timezone.now().date() - timedelta(days=days)
+        
+        category_order_counts = (
+            OrderItems.objects
+            .filter(
+                created_at__date__gte=start_date,
+                is_active=True
+            )
+            .values('product_id__category__name')
+            .annotate(order_count=Count('order_item_id', distinct=True))
+        )
+        
+        if not category_order_counts:
+            return Response(
+                {"message": "No order data found for the specified period"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        total_orders = sum(item['order_count'] for item in category_order_counts)
+        
+        # Generate dynamic colors based on number of categories
+        dynamic_colors = generate_dynamic_colors(len(category_order_counts)) 
+        
+        chart_data = {
+            'labels': [],
+            'datasets': [{
+                'data': [],
+                'backgroundColor': dynamic_colors,
+                'borderWidth': 1,
+                'borderColor': '#fff'
+            }],
+            'formatted_labels': []      
+        }
+        
+        for index, item in enumerate(category_order_counts):
+            category_name = item['product_id__category__name']
+            order_count = item['order_count']
+            percentage = (order_count / total_orders) * 100
+            
+            chart_data['labels'].append(category_name)
+            chart_data['datasets'][0]['data'].append(order_count)
+            chart_data['formatted_labels'].append(
+                f"{category_name}: {percentage:.1f}%"  
+            )
+        
+        return Response(chart_data)
+    
+    except Exception as e:
+        print(str(e))
+        
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def product_orders_by_day(request):
+    try:
+        try:
+            days = int(request.GET.get('days', 7))
+            if days <= 0:
+                return Response(
+                    {"error": "Days must be a positive integer"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {"error": "Invalid days parameter. Must be an integer"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        start_date = timezone.now().date() - timedelta(days=days)
+
+        product_order_counts = (
+            OrderItems.objects
+            .filter(
+                created_at__date__gte=start_date,
+                is_active=True
+            )
+            .values('product_id__name')
+            .annotate(order_count=Count('order_item_id', distinct=True))
+        )
+
+        if not product_order_counts:
+            return Response(
+                {"message": "No order data found for the specified period"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        total_orders = sum(item['order_count'] for item in product_order_counts)
+
+        # Generate dynamic colors based on number of products
+        dynamic_colors = generate_dynamic_colors(len(product_order_counts))
+
+        chart_data = {
+            'labels': [],
+            'datasets': [{
+                'data': [],
+                'backgroundColor': dynamic_colors,
+                'borderWidth': 1,
+                'borderColor': '#fff'
+            }],
+            'formatted_labels': []
+        }
+
+        for index, item in enumerate(product_order_counts):
+            product_name = item['product_id__name']
+            order_count = item['order_count']
+            percentage = (order_count / total_orders) * 100
+
+            chart_data['labels'].append(product_name)
+            chart_data['datasets'][0]['data'].append(order_count)
+            chart_data['formatted_labels'].append(
+                f"{product_name}: {percentage:.1f}%"
+            )
+
+        return Response(chart_data)
+
+    except Exception as e:
+        print(str(e))
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

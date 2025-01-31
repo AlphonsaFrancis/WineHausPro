@@ -14,11 +14,19 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.utils import timezone
 from django.template.loader import render_to_string
 from .serializers import PasswordResetRequestSerializer,PasswordResetConfirmSerializer
 from allauth.socialaccount.models import SocialAccount
 from django.http import JsonResponse
 import random
+
+from django.utils.timezone import now, timedelta
+from django.http import JsonResponse
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+from rest_framework.exceptions import APIException
+from django.core.exceptions import ValidationError
 
 def generate_otp(email):
     try:
@@ -140,6 +148,8 @@ def user_login(request):
         
         if user is not None:
             if user.is_active:
+                user.last_login = timezone.now()
+                user.save(update_fields=['last_login'])
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
@@ -284,6 +294,9 @@ def google_sign_in(request):
                 password=None
             )
 
+        user.last_login = timezone.now()
+        user.save(update_fields=['last_login'])
+
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
@@ -398,3 +411,43 @@ def check_email_exists(request):
     email = request.GET.get('email')
     exists = User.objects.filter(email=email).exists()
     return JsonResponse({'exists': exists})
+
+
+# API FOR GETTING NUMBER OF LOGGED IN USERS PER DAY
+
+
+@api_view(['GET'])
+def daily_logged_in_users(request):
+    try:
+        days_param = request.GET.get('days', 7)
+        try:
+            days = int(days_param)
+            if days <= 0:
+                raise ValueError("The number of days must be a positive integer.")
+        except (ValueError, TypeError) as e:
+            return JsonResponse({'error': "Invalid 'days' parameter. Must be a positive integer."}, status=400)
+
+        start_date = now() - timedelta(days=days)
+        print("start-date",start_date)
+
+        # Aggregate the number of users logged in per day
+        daily_counts = (
+            User.objects.filter(last_login__gte=start_date)
+            .annotate(date=TruncDate('last_login'))
+            .values('date')
+            .annotate(count=Count('id'))
+            .order_by('date')
+        )
+
+        data = [{'date': entry['date'], 'logged_in_users_count': entry['count']} for entry in daily_counts]
+
+        return JsonResponse({'days': days, 'data': data}, status=200)
+
+    except ValidationError as ve:
+        return JsonResponse({'error': f"Validation error occurred.{str(ve)}"}, status=400)
+
+    except APIException as api_exception:
+        return JsonResponse({'error': f"An error occurred while processing your request, {str(api_exception)}"}, status=500)
+
+    except Exception as e:
+        return JsonResponse({'error': f"An unexpected error occurred. Please try again later. {str(e)}"}, status=500)
