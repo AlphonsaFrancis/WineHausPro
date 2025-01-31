@@ -37,18 +37,3 @@ class StockAlert(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_resolved = models.BooleanField(default=False)
-
-class StockRequest(models.Model):
-    STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('APPROVED', 'Approved'),
-        ('REJECTED', 'Rejected')
-    )
-    
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    requested_quantity = models.IntegerField()
-    current_quantity = models.IntegerField()
-    request_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
-    admin_notes = models.TextField(null=True, blank=True)
