@@ -6,6 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=winehauspro.settings
 ENV DJANGO_SECRET_KEY="django-insecure-m787wmo#61d-+3-n7e30t!%rex=qd=x)i9fcfub3ilwairai32"
+
 # Set work directory
 WORKDIR /app
 
@@ -13,6 +14,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     nginx \
+    postgresql \
+    postgresql-contrib \
+    libpq-dev \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -32,4 +37,4 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 80 443
 
 # Start Nginx and Gunicorn
-CMD service nginx start && gunicorn your_project.wsgi:application --bind 0.0.0.0:8000
+CMD service nginx start && gunicorn winehauspro.wsgi:application --bind 0.0.0.0:8000
