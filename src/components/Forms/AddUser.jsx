@@ -14,7 +14,6 @@ const AddUserForm = ({ onCancel, onConfirm }) => {
     isSuperUser:"no",
     isProfileCompleted: "no",
     lastLogin: "",
-    isSupplier: "no",
   });
 
   const [errors, setErrors] = useState({});
@@ -248,33 +247,6 @@ const AddUserForm = ({ onCancel, onConfirm }) => {
               onChange={handleInputChange}
             />
             <label htmlFor="admin_no">No</label>
-          </div>
-        </div>
-
-        <div className="radio-group">
-          <label>
-            <b>Is Supplier</b>
-          </label>
-          <div className="options">
-            <input
-              type="radio"
-              id="supplier_yes"
-              name="isSupplier"
-              value="yes"
-              checked={userData.isSupplier === "yes"}
-              onChange={handleInputChange}
-            />
-            <label htmlFor="supplier_yes">Yes</label>
-
-            <input
-              type="radio"
-              id="supplier_no"
-              name="isSupplier"
-              value="no"
-              checked={userData.isSupplier === "no"}
-              onChange={handleInputChange}
-            />
-            <label htmlFor="supplier_no">No</label>
           </div>
         </div>
 

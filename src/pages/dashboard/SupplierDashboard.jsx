@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Row, Col, Table, Alert, Spin, Button, Modal, Form, Input, message } from 'antd';
+import { Card, Row, Col, Table, Alert, Spin } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import config from '../../config/config';
 import './SupplierDashboard.css';
@@ -9,15 +9,10 @@ const SupplierDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [products, setProducts] = useState([]);
-    const [requestModalVisible, setRequestModalVisible] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [form] = Form.useForm();
-    const supplierId = localStorage.getItem('userId');
+    const supplierId = localStorage.getItem('supplierId'); // Get from auth
 
     useEffect(() => {
         fetchDashboardData();
-        fetchProducts();
     }, []);
 
     const fetchDashboardData = async () => {
@@ -34,72 +29,8 @@ const SupplierDashboard = () => {
         }
     };
 
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get(`${config.BASE_URL}api/v1/products/list/`);
-            setProducts(response.data);
-        } catch (error) {
-            message.error('Failed to fetch products');
-        }
-    };
-
-    const handleRequestStock = (product) => {
-        setSelectedProduct(product);
-        setRequestModalVisible(true);
-        form.setFieldsValue({
-            current_quantity: product.stock_quantity,
-            requested_quantity: ''
-        });
-    };
-
-    const handleSubmitRequest = async (values) => {
-        try {
-            await axios.post(`${config.BASE_URL}api/v1/supplier/request-stock/`, {
-                supplier_id: supplierId,
-                product_id: selectedProduct.id,
-                current_quantity: values.current_quantity,
-                requested_quantity: values.requested_quantity
-            });
-            message.success('Stock request submitted successfully');
-            setRequestModalVisible(false);
-        } catch (error) {
-            message.error('Failed to submit stock request');
-        }
-    };
-
     if (loading) return <Spin size="large" />;
     if (error) return <Alert type="error" message={error} />;
-
-    const columns = [
-        {
-            title: 'Product Name',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Current Stock',
-            dataIndex: 'stock_quantity',
-            key: 'stock',
-            render: (stock) => (
-                <span style={{ color: stock < 10 ? 'red' : 'green' }}>
-                    {stock}
-                </span>
-            ),
-        },
-        {
-            title: 'Actions',
-            key: 'actions',
-            render: (_, record) => (
-                <Button 
-                    type="primary"
-                    onClick={() => handleRequestStock(record)}
-                    disabled={record.stock_quantity >= 10}
-                >
-                    Request Stock
-                </Button>
-            ),
-        },
-    ];
 
     return (
         <div className="supplier-dashboard">
@@ -173,52 +104,6 @@ const SupplierDashboard = () => {
                     </Card>
                 </Col>
             </Row>
-
-            <Card title="Stock Management">
-                <Table 
-                    dataSource={products}
-                    columns={columns}
-                    loading={loading}
-                    rowKey="id"
-                />
-            </Card>
-
-            <Modal
-                title="Request Stock"
-                open={requestModalVisible}
-                onCancel={() => setRequestModalVisible(false)}
-                footer={null}
-            >
-                <Form
-                    form={form}
-                    onFinish={handleSubmitRequest}
-                    layout="vertical"
-                >
-                    <Form.Item
-                        name="current_quantity"
-                        label="Current Stock"
-                    >
-                        <Input disabled />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="requested_quantity"
-                        label="Requested Quantity"
-                        rules={[
-                            { required: true, message: 'Please input requested quantity!' },
-                            { type: 'number', min: 1, message: 'Quantity must be greater than 0!' }
-                        ]}
-                    >
-                        <Input type="number" />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Submit Request
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
         </div>
     );
 };
