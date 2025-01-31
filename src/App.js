@@ -21,6 +21,8 @@ import StaffProtectedRoute from './pages/authentication/StaffProtectedRoute';
 import OrderItemsList from './components/OrderItemList';
 import DeliveryAgentProtectedRoute from './pages/authentication/DeliveryAgentProtectedRoute';
 import DeliveryAgentDashboard from './pages/dashboard/DeliveryAgentDashboard';
+import SupplierDashboard from './pages/dashboard/SupplierDashboard';
+
 function App() {
 
   return (
@@ -57,6 +59,7 @@ function App() {
           <Route path="/address" element={<ProtectedRoute element={<AddressSelection />} />} />
           <Route path="/payment" element={<ProtectedRoute element={<PaymentPage />} />} />
           <Route path="/userorder" element={<ProtectedRoute element={<UserOrder />} />} />
+          <Route path="/supplier" element={<ProtectedRoute element={<SupplierDashboard />} allowedRoles={['supplier']} />} />
           <Route path="*" element={<NotFound />} />
 
         </Routes>
