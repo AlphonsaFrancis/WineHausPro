@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -25,7 +25,16 @@ from django.shortcuts import get_object_or_404
 from .models import Product, Category, Brand
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
+import cv2
+from PIL import Image
+from sklearn.metrics.pairwise import cosine_similarity
+import io
+from rest_framework.parsers import MultiPartParser, FormParser
+import numpy as np
+import os
+import pytesseract
+from Levenshtein import ratio
+import re
 
 @api_view(['GET'])
 def product_filter(request):
@@ -841,3 +850,115 @@ def get_similar_products(request):
         return JsonResponse({
             'error': str(e)
         }, status=500)
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def search_by_image(request):
+    try:
+        if 'image' not in request.FILES:
+            return Response({
+                'error': 'No image file provided'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        uploaded_image = request.FILES['image']
+        
+        try:
+            # Convert uploaded image to OpenCV format
+            image_bytes = np.frombuffer(uploaded_image.read(), np.uint8)
+            img = cv2.imdecode(image_bytes, cv2.IMREAD_COLOR)
+            
+            # Enhanced image preprocessing for text detection
+            # Resize while maintaining aspect ratio
+            height = 1000  # Increased height for better text detection
+            aspect_ratio = img.shape[1] / img.shape[0]
+            width = int(height * aspect_ratio)
+            img = cv2.resize(img, (width, height))
+
+            # Convert to grayscale
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            
+            # Apply adaptive thresholding
+            binary = cv2.adaptiveThreshold(
+                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                cv2.THRESH_BINARY, 11, 2
+            )
+
+            # Denoise
+            denoised = cv2.fastNlMeansDenoising(binary)
+            
+            # Apply dilation to make text more prominent
+            kernel = np.ones((2,2), np.uint8)  # Increased kernel size
+            dilated = cv2.dilate(denoised, kernel, iterations=1)
+
+            # Configure Tesseract parameters for better text detection
+            custom_config = r'--oem 3 --psm 11'
+            
+            # Extract text using Tesseract with custom configuration
+            extracted_text = pytesseract.image_to_string(dilated, config=custom_config)
+            
+            # Clean and process the extracted text
+            cleaned_text = ' '.join(re.findall(r'\b\w+\b', extracted_text.lower()))
+            words = [word for word in cleaned_text.split() if len(word) > 2]
+            cleaned_text = ' '.join(words)
+
+            print(f"Extracted text: {cleaned_text}")  # Debug print
+
+            # First try exact name matches
+            exact_matches = Product.objects.filter(
+                Q(name__iexact=cleaned_text) |
+                Q(name__icontains=cleaned_text)
+            ).distinct()
+
+            if exact_matches.exists():
+                print("Found exact matches")
+                top_products = list(exact_matches[:6])
+            else:
+                print("No exact matches, trying word matching")
+                # If no exact matches, try matching individual words
+                words = cleaned_text.split()
+                similar_products = []
+
+                for product in Product.objects.all():
+                    # Calculate similarity with product name
+                    name_similarity = ratio(cleaned_text, product.name.lower())
+                    
+                    # Check if any word from the extracted text appears in the product name
+                    word_match = any(word in product.name.lower() for word in words if len(word) > 2)
+                    
+                    if name_similarity > 0.5 or word_match:  # Increased threshold for better precision
+                        similar_products.append((product, name_similarity))
+                        print(f"Match found: {product.name} (Score: {name_similarity})")
+
+                # Sort by similarity score
+                similar_products.sort(key=lambda x: x[1], reverse=True)
+                top_products = [product for product, _ in similar_products[:6]]
+
+                # If still no matches, try broader search
+                if not top_products:
+                    print("No similar matches, trying broader search")
+                    q_objects = Q()
+                    for word in words:
+                        if len(word) > 2:
+                            q_objects |= Q(name__icontains=word)
+                    products = Product.objects.filter(q_objects).distinct()[:6]
+                    top_products = list(products)
+
+            serializer = ProductSerializer(top_products, many=True)
+            
+            return Response({
+                'success': True,
+                'extracted_text': cleaned_text,
+                'products': serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error processing image: {str(e)}")
+            return Response({
+                'error': 'Error processing image'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        print(f"Server error: {str(e)}")
+        return Response({
+            'error': 'Internal server error'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
