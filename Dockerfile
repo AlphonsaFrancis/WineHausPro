@@ -1,11 +1,8 @@
-# Use an official Python runtime as a parent image
 FROM python:3.13.1-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set the working directory in the container
 WORKDIR /app
 
 # Install system dependencies
@@ -16,16 +13,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python dependencies
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
-# Copy the Django project into the container
+# Copy the Django project
 COPY . /app/
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_project_name.wsgi:application"]
+# Create start script
+RUN echo '#!/bin/bash\ngunicorn --bind 0.0.0.0:8000 winehauspro.wsgi:application' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Use the start script as the command
+CMD ["/app/start.sh"]
