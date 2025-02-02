@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from authentication.models import User
+from authentication.models import Transactions, User, UserWallet
 from .models import Order, OrderItems,Wishlist, WishlistItems,Cart, CartItems,Payment,Address,Shipping
 from .serializers import OrderSerializer, OrderItemsSerializer,WishlistSerializer, WishlistItemsSerializer
 from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,AddressSerializer,ShippingSerializer
@@ -204,10 +204,38 @@ def order_item_detail(request, pk):
 def update_order_status(request, orderItemId):
     try:
         order_status = request.data.get('order_status')
+        userId = request.data.get('userId')
         order_item = OrderItems.objects.get(order_item_id=orderItemId)
+        user = User.objects.get(id=userId)
         if order_item:
             order_item.order_status = order_status
             order_item.save()
+
+        if order_status == 'cancelled':
+            print("Order amount is transfering to wallet")
+            try:
+                wallet = UserWallet.objects.get(user=user)
+                wallet.wallet_amount += order_item.price
+                wallet.save()
+            except UserWallet.DoesNotExist:
+                UserWallet.objects.create(
+                    user = user,
+                    wallet_amount = order_item.price
+                )
+
+            try:
+                Transactions.objects.create(
+                    user = user,
+                    transaction_id = f"TRA_ORD {str(order_item.order_item_id)}",
+                    transaction_status = 'success',
+                    transaction_amount = order_item.price,
+                    transaction_type='credit',
+                    transaction_desc = f"Refund of order id : {str(order_item.order_item_id)}"
+                )
+            except Exception as e:
+                print(e)
+                pass
+            
 
         return Response({
             "success":True,

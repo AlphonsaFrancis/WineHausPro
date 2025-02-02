@@ -110,3 +110,25 @@ class TempUser(models.Model):
     
     def _str_(self):
         return self.email
+    
+class UserWallet(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    wallet_amount=models.FloatField(default=0)
+    updated_at=models.DateTimeField(auto_now=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return self.user.first_name
+    
+class Transactions(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    transaction_id=models.CharField(max_length=255)
+    transaction_amount=models.FloatField(default=0)
+    transaction_status=models.CharField(max_length=255)
+    transaction_type = models.CharField(max_length=255)
+    transaction_desc = models.CharField(max_length=255,null=True, default=None)
+    updated_at=models.DateTimeField(auto_now=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return self.user.username
