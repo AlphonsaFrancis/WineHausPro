@@ -36,6 +36,16 @@ import pytesseract
 from Levenshtein import ratio
 import re
 
+from rest_framework.views import APIView
+import pandas as pd
+from django.db.models import Q
+from django.core.files.storage import default_storage
+from django.core.files import File
+import os
+import requests
+from urllib.parse import urlparse
+from django.core.files.temp import NamedTemporaryFile
+
 @api_view(['GET'])
 def product_filter(request):
     category = request.query_params.get('category')
@@ -79,15 +89,21 @@ def list_products(request):
     # Get the search query parameter
     search_query = request.GET.get('search', '')
 
+    products = Product.objects.filter(approved=True)
     if search_query:
-        # Filter products based on search query
-        products = Product.objects.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
-    else:
-        # If no search query, return all products
-        products = Product.objects.all()
+        products = products.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
 
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)  
+
+@api_view(['GET'])
+def list_notapproved_products(request):
+    products = Product.objects.filter(approved=False)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
 
 def search_products(request):
     query = request.GET.get('q', '')
@@ -850,6 +866,7 @@ def get_similar_products(request):
         return JsonResponse({
             'error': str(e)
         }, status=500)
+    
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
@@ -867,83 +884,110 @@ def search_by_image(request):
             image_bytes = np.frombuffer(uploaded_image.read(), np.uint8)
             img = cv2.imdecode(image_bytes, cv2.IMREAD_COLOR)
             
-            # Enhanced image preprocessing for text detection
-            # Resize while maintaining aspect ratio
-            height = 1000  # Increased height for better text detection
+            # Wine label specific preprocessing pipeline
+            # 1. Resize while maintaining aspect ratio
+            target_width = 1200  # Optimal size for wine label text
             aspect_ratio = img.shape[1] / img.shape[0]
-            width = int(height * aspect_ratio)
-            img = cv2.resize(img, (width, height))
+            target_height = int(target_width / aspect_ratio)
+            img = cv2.resize(img, (target_width, target_height), interpolation=cv2.INTER_CUBIC)
 
-            # Convert to grayscale
+            # 2. Create multiple processing channels
+            processed_images = []
+            
+            # Channel 1: Enhanced contrast grayscale
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+            contrast_enhanced = clahe.apply(gray)
+            processed_images.append(contrast_enhanced)
             
-            # Apply adaptive thresholding
-            binary = cv2.adaptiveThreshold(
-                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                cv2.THRESH_BINARY, 11, 2
-            )
+            # Channel 2: Color-based text extraction (for dark text)
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            # Adjust saturation to make text more prominent
+            hsv[:,:,1] = cv2.multiply(hsv[:,:,1], 1.5)
+            # Convert back to BGR and then to grayscale
+            enhanced_color = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+            enhanced_gray = cv2.cvtColor(enhanced_color, cv2.COLOR_BGR2GRAY)
+            processed_images.append(enhanced_gray)
+            
+            # Channel 3: Edge-enhanced
+            edges = cv2.Canny(gray, 100, 200)
+            kernel = np.ones((2,2), np.uint8)
+            dilated_edges = cv2.dilate(edges, kernel, iterations=1)
+            processed_images.append(255 - dilated_edges)  # Invert for OCR
 
-            # Denoise
-            denoised = cv2.fastNlMeansDenoising(binary)
+            # Configure Tesseract for wine label text
+            custom_config = r'''--oem 3 
+                              --psm 11
+                              -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ&
+                              -c tessedit_do_invert=0
+                              -c textord_heavy_nr=1
+                              -c textord_min_linesize=3
+                              -c segment_penalty_dict_case=0.5
+                              -c segment_penalty_garbage=1.0
+                              -c language_model_penalty_case=0.5
+                              -c language_model_penalty_font=0.5
+                              -c language_model_penalty_spacing=0.05
+                              -c tessedit_pageseg_mode=11'''
             
-            # Apply dilation to make text more prominent
-            kernel = np.ones((2,2), np.uint8)  # Increased kernel size
-            dilated = cv2.dilate(denoised, kernel, iterations=1)
-
-            # Configure Tesseract parameters for better text detection
-            custom_config = r'--oem 3 --psm 11'
+            all_text = []
             
-            # Extract text using Tesseract with custom configuration
-            extracted_text = pytesseract.image_to_string(dilated, config=custom_config)
+            # Process each channel
+            for processed_img in processed_images:
+                # Apply threshold to create binary image
+                _, binary = cv2.threshold(processed_img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                
+                # Try different threshold values
+                thresholds = [
+                    cv2.threshold(processed_img, 127, 255, cv2.THRESH_BINARY)[1],
+                    cv2.adaptiveThreshold(processed_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2),
+                    binary
+                ]
+                
+                for thresh in thresholds:
+                    text = pytesseract.image_to_string(thresh, config=custom_config)
+                    if text.strip():
+                        all_text.append(text.strip())
             
-            # Clean and process the extracted text
-            cleaned_text = ' '.join(re.findall(r'\b\w+\b', extracted_text.lower()))
-            words = [word for word in cleaned_text.split() if len(word) > 2]
+            # Combine and clean results
+            extracted_text = ' '.join(all_text)
+            
+            # Enhanced text cleaning for wine labels
+            # Remove special characters but keep '&'
+            cleaned_text = re.sub(r'[^A-Z&\s]', '', extracted_text.upper())
+            # Normalize spaces
+            cleaned_text = ' '.join(cleaned_text.split())
+            # Remove very short words except '&'
+            words = [word for word in cleaned_text.split() if len(word) > 1 or word == '&']
             cleaned_text = ' '.join(words)
-
+            
             print(f"Extracted text: {cleaned_text}")  # Debug print
+            
+            # If no text was extracted, try OCR on the original image
+            if not cleaned_text:
+                original_text = pytesseract.image_to_string(img, config=custom_config)
+                cleaned_text = re.sub(r'[^A-Z&\s]', '', original_text.upper())
+                cleaned_text = ' '.join(cleaned_text.split())
+                print(f"Fallback extracted text: {cleaned_text}")
 
-            # First try exact name matches
-            exact_matches = Product.objects.filter(
-                Q(name__iexact=cleaned_text) |
-                Q(name__icontains=cleaned_text)
-            ).distinct()
-
-            if exact_matches.exists():
-                print("Found exact matches")
-                top_products = list(exact_matches[:6])
-            else:
-                print("No exact matches, trying word matching")
-                # If no exact matches, try matching individual words
+            # Product search logic
+            if cleaned_text:
                 words = cleaned_text.split()
-                similar_products = []
-
-                for product in Product.objects.all():
-                    # Calculate similarity with product name
-                    name_similarity = ratio(cleaned_text, product.name.lower())
-                    
-                    # Check if any word from the extracted text appears in the product name
-                    word_match = any(word in product.name.lower() for word in words if len(word) > 2)
-                    
-                    if name_similarity > 0.5 or word_match:  # Increased threshold for better precision
-                        similar_products.append((product, name_similarity))
-                        print(f"Match found: {product.name} (Score: {name_similarity})")
-
-                # Sort by similarity score
-                similar_products.sort(key=lambda x: x[1], reverse=True)
-                top_products = [product for product, _ in similar_products[:6]]
-
-                # If still no matches, try broader search
-                if not top_products:
-                    print("No similar matches, trying broader search")
-                    q_objects = Q()
-                    for word in words:
-                        if len(word) > 2:
-                            q_objects |= Q(name__icontains=word)
-                    products = Product.objects.filter(q_objects).distinct()[:6]
-                    top_products = list(products)
-
-            serializer = ProductSerializer(top_products, many=True)
+                q_objects = Q()
+                
+                # Add exact phrase match
+                q_objects |= Q(name__icontains=cleaned_text)
+                
+                # Add individual word matches
+                for word in words:
+                    if len(word) > 1 or word == '&':
+                        q_objects |= Q(name__icontains=word)
+                
+                products = Product.objects.filter(q_objects).distinct()[:6]
+            else:
+                # Fallback: return empty list if no text extracted
+                products = Product.objects.none()
+            
+            serializer = ProductSerializer(products, many=True)
             
             return Response({
                 'success': True,
@@ -954,11 +998,192 @@ def search_by_image(request):
         except Exception as e:
             print(f"Error processing image: {str(e)}")
             return Response({
-                'error': 'Error processing image'
+                'error': f'Error processing image: {str(e)}'
             }, status=status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
         print(f"Server error: {str(e)}")
         return Response({
-            'error': 'Internal server error'
+            'error': f'Internal server error: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+##################################################
+#### Stock manager API for update stock from excel
+##################################################
+    
+
+class ProductExcelImportView(APIView):
+    def get_or_create_related(self, model_class, name):
+        # Case-insensitive search
+        obj = model_class.objects.filter(name__iexact=name).first()
+        if not obj:
+            obj = model_class.objects.create(
+                name=name,
+                description=f"Auto-created from Excel import for {name}"
+            )
+        return obj
+
+    def handle_image_url(self, image_url):
+        """
+        Handle both remote URLs and local file paths for images
+        Returns the path where the image is saved or None if failed
+        """
+        if not image_url or pd.isna(image_url):
+            return None
+
+        try:
+            # Parse the URL to get the filename
+            parsed_url = urlparse(image_url)
+            image_name = os.path.basename(parsed_url.path)
+
+            # If it's a URL (starts with http or https)
+            if image_url.startswith(('http://', 'https://')):
+                # Download the image
+                response = requests.get(image_url, stream=True)
+                if response.status_code == 200:
+                    # Create a temporary file
+                    img_temp = NamedTemporaryFile(delete=True)
+                    img_temp.write(response.content)
+                    img_temp.flush()
+
+                    # Save to default storage (your media folder)
+                    path = default_storage.save(
+                        f'product_images/{image_name}',
+                        File(img_temp)
+                    )
+                    return path
+                    
+            # If it's a local file path
+            elif os.path.exists(image_url):
+                with open(image_url, 'rb') as f:
+                    path = default_storage.save(
+                        f'product_images/{image_name}',
+                        File(f)
+                    )
+                    return path
+
+        except Exception as e:
+            print(f"Error processing image {image_url}: {str(e)}")
+            return None
+
+        return None
+
+    def update_or_create_product(self, row, category, made_of, country, brand, image_path):
+        """
+        Helper method to update existing product or create new one
+        """
+        try:
+            product = Product.objects.filter(pid=row['pid']).first()
+            
+            product_data = {
+                'name': row['name'],
+                'description': row['description'],
+                'price': float(row['price']),
+                'quantity': row['quantity'],
+                'brand': brand,
+                'country': country,
+                'made_of': made_of,
+                'category': category,
+                'stock_quantity': int(row['stock']),
+            }
+            
+            if image_path:
+                product_data['image'] = image_path
+
+            if product:
+                # Update existing product
+                for key, value in product_data.items():
+                    setattr(product, key, value)
+                product.save()
+                return product, 'updated'
+            else:
+                # Create new product
+                product_data['pid'] = row['pid']
+                product = Product.objects.create(**product_data)
+                return product, 'created'
+
+        except Exception as e:
+            raise Exception(f"Error processing product with PID {row['pid']}: {str(e)}")
+
+    def post(self, request):
+        try:
+            file = request.FILES.get('file')
+            if not file:
+                return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Read Excel file
+            df = pd.read_excel(file)
+            required_columns = ['pid', 'name', 'category', 'made-of', 'country', 
+                              'description', 'price', 'stock', 'quantity']
+            
+            if not all(col in df.columns for col in required_columns):
+                return Response({'error': 'Missing required columns'}, 
+                              status=status.HTTP_400_BAD_REQUEST)
+
+            products_processed = []
+            errors = []
+            image_errors = []
+
+            for index, row in df.iterrows():
+                try:
+                    # Get or create related objects
+                    category = self.get_or_create_related(Category, row['category'])
+                    made_of = self.get_or_create_related(MadeOf, row['made-of'])
+                    country = self.get_or_create_related(Country, row['country'])
+                    brand = self.get_or_create_related(Brand, row.get('brand', 'Default Brand'))
+
+                    try:
+                        stock_quantity = int(row['stock'])
+                    except ValueError:
+                        errors.append(f"Error in row {index + 2}: Invalid stock quantity '{row['stock']}'")
+                        continue
+
+                    if not isinstance(category, Category):
+                        errors.append(f"Invalid category for product {row['name']}: {row['category']}")
+                        continue
+
+                    image_path = None
+                    if 'image_url' in row and row['image_url']:
+                        image_path = self.handle_image_url(row['image_url'])
+                        if not image_path:
+                            image_errors.append(
+                                f"Failed to process image for product {row['name']}"
+                            )
+
+                    # Update or create product
+                    product, action = self.update_or_create_product(
+                        row, category, made_of, country, brand, image_path
+                    )
+                    
+                    products_processed.append({
+                        'name': product.name,
+                        'pid': product.pid,
+                        'action': action,
+                        'image_status': 'Image processed successfully' if image_path 
+                                      else 'No image or failed to process'
+                    })
+                    
+                except Exception as e:
+                    errors.append(f"Error in row {index + 2}: {str(e)}")
+
+            # Prepare response summary
+            created_count = sum(1 for p in products_processed if p['action'] == 'created')
+            updated_count = sum(1 for p in products_processed if p['action'] == 'updated')
+            
+            response_data = {
+                'message': f'Successfully processed {len(products_processed)} products '
+                          f'({created_count} created, {updated_count} updated)',
+                'products_processed': products_processed
+            }
+            
+            if errors:
+                response_data['errors'] = errors
+            if image_errors:
+                response_data['image_errors'] = image_errors
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            print("ERROR::", str(e))
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

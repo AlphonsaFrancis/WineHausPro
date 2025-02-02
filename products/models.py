@@ -53,6 +53,7 @@ class Brand(models.Model):
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
+    pid = models.CharField(max_length=255,unique=True,null=True, default=None)
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.FloatField()
@@ -66,6 +67,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    approved=models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

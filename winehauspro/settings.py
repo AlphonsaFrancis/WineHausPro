@@ -27,15 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECRET_KEY = 'django-insecure-m787wmo#61d-+3-n7e30t!%rex=qd=x)i9fcfub3ilwairai32'
+SECRET_KEY = 'django-insecure-m787wmo#61d-+3-n7e30t!%rex=qd=x)i9fcfub3ilwairai32'
 
-# DEBUG = True
+DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+# SECRET_KEY = config('SECRET_KEY')
+# DEBUG = config('DEBUG', default=False, cast=bool)
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
 
 # Application definition

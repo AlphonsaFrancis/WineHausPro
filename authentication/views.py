@@ -344,6 +344,9 @@ def add_new_user(request):
     is_active = data.get('isActive') == "true"
     is_superuser = data.get('isSuperUser') == "true"
     is_profile_completed = data.get('isProfileCompleted') == "true"
+    is_delivery_agent = data.get('isDeliveryAgent') == "true"
+    is_supplier = data.get('isSupplier') == "true"
+
     last_login = data.get('lastLogin')
 
     user = User(
@@ -353,7 +356,9 @@ def add_new_user(request):
         is_active=is_active,
         is_superuser=is_superuser,
         is_profile_completed=is_profile_completed,
-        last_login=last_login
+        last_login=last_login,
+        is_delivery_agent=is_delivery_agent,
+        is_supplier=is_supplier
     )
     user.set_password(password)  
     user.save()
@@ -379,6 +384,9 @@ def edit_user(request, user_id):
     user.is_active = data.get('isActive') == True if 'isActive' in data else user.is_active
     user.is_superuser = data.get('isSuperUser') == True if 'isSuperUser' in data else user.is_superuser
     user.is_profile_completed = data.get('isProfileCompleted') == True if 'isProfileCompleted' in data else user.is_profile_completed
+    user.is_delivery_agent = data.get('isDeliveryAgent') == True if 'isDeliveryAgent' in data else user.is_delivery_agent
+    user.is_supplier = data.get('isSupplier') == True if 'isSupplier' in data else user.is_supplier
+
     user.last_login = data.get('lastLogin', user.last_login)
 
     # Save the changes

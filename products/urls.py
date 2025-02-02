@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import edit_review, get_similar_products, list_reviews_by_user, product_filter, product_review_sentiment_summary
+from .views import ProductExcelImportView, edit_review, get_similar_products, list_notapproved_products, list_reviews_by_user, product_filter, product_review_sentiment_summary
 from .views import search_products,user_review_sentiment_summary
 
 urlpatterns = [
@@ -50,6 +50,13 @@ urlpatterns = [
 
     path('get-similar-products/',get_similar_products,name='get_similar_products'),
     path('search-by-image/', views.search_by_image, name='search_by_image'),
+
+    # Update stock from excel
+
+    path('import-products/', ProductExcelImportView.as_view(), name="update-stock-from-excel"),
+    path('list-not-approved-products/', list_notapproved_products, name="list-not-approved-products")
+
+
 ]
 
 if settings.DEBUG:
