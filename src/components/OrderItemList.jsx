@@ -28,6 +28,7 @@ const OrderItemsList = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const storedUser = localStorage.getItem("user");
   const user = JSON.parse(storedUser);
+  console.log("user",user)
 
   const statusOptions = [
     "placed",
@@ -115,7 +116,7 @@ const OrderItemsList = () => {
         `${config.BASE_URL}api/v1/orders/update-order-status/${parseInt(
           selectedItem
         )}/`,
-        { order_status: newStatus }
+        { order_status: newStatus, userId:user.id }
       );
 
       // Update local state immediately

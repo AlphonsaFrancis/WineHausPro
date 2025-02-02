@@ -40,7 +40,7 @@ function AdminNavbar() {
         <FaUser  style={{fontSize:'24px'}}/>
         {isDropdownOpen && (
           <div className="admin-nav-user-menu">
-            <div className="admin-nav-user-menu-item">Edit Profile</div>
+            {/* <div className="admin-nav-user-menu-item">Edit Profile</div> */}
             <div className="admin-nav-user-menu-item" onClick={handleLogout}>
               Logout
             </div>

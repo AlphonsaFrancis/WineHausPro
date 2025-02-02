@@ -37,6 +37,8 @@ function StaffDashboard() {
       setSelectedMenu("countries");
     }if (path[path.length - 1] === "madeOf") {
       setSelectedMenu("madeOf");
+    }if (path[path.length - 1] === "allOrders") {
+      setSelectedMenu("orders");
     }
   }, [location, path]);
 
@@ -100,6 +102,8 @@ function StaffDashboard() {
     if (menu === "categories") navigate("/staff/categories");
     if (menu === "countries") navigate("/staff/countries");
     if (menu === "madeOf") navigate("/staff/madeOf");
+    if (menu === "allOrders") navigate("/staff/orders");
+
   }
 
 

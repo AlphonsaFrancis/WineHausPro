@@ -46,6 +46,8 @@ function App() {
           <Route path="/staff/categories" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/countries" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/madeOf" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/orders" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+
 
 
           <Route path="/order-delivery" element={<DeliveryAgentProtectedRoute element={<DeliveryAgentDashboard />} />} />
