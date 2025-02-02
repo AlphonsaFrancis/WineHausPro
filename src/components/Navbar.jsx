@@ -1,11 +1,8 @@
 import React, { useState, useRef } from 'react';
 import './Navbar.css';
 import logo from '../assets/logomain.png';
-import cart from '../assets/cart.png';
-import whishlist from '../assets/wishlist.png';
 import { Link } from 'react-router-dom';
 import Dropdown from './Dropdown';
-import user from '../assets/user.png';
 import { useNavigate } from 'react-router-dom';
 import { FaShoppingCart, FaHeart, FaUser, FaCamera, FaImage } from "react-icons/fa";
 import { Upload, Modal, message, Spin } from 'antd';
@@ -202,11 +199,11 @@ function Navbar() {
           </div>
         ) : (
           <>
-            {extractedText && (
+            {/* {extractedText && (
               <div className="extracted-text">
                 <p>Detected text: "{extractedText}"</p>
               </div>
-            )}
+            )} */}
             <div className="search-results-grid">
               {imageSearchResults.length > 0 ? (
                 imageSearchResults.map((product) => (

@@ -58,6 +58,8 @@ function AllUsersDashboard() {
         email: user.email,
         isSuperuser: user.is_superuser,
         isStaff: user.is_staff,
+        isDeliveryAgent: user.is_delivery_agent,
+        isSupplier: user.is_supplier,
         isActive: user.is_active,
         dateJoined: new Date(user.date_joined).toLocaleDateString(),
         lastLogin: user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never',
@@ -197,7 +199,8 @@ function AllUsersDashboard() {
         content={
           <AddUserForm onCancel={handleCloseForm} onConfirm={getAllUsers} />
         }
-        // customStyle={{ height: "87vh", overflowY: "scroll", marginTop: "0px" }}
+        // customStyle={{height:'90vh', overflowY:'auto'}}
+        
       />
 
       <BasicModal
@@ -210,7 +213,6 @@ function AllUsersDashboard() {
             user={selectedUser}
           />
         }
-        // customStyle={{ height: "87vh", overflowY: "scroll", marginTop: "0px" }}
       />
     </div>
   );

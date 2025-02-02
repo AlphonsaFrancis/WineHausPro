@@ -14,11 +14,12 @@ import AllStaffsDashboard from "./admin/AllStaffs";
 import Welcome from "./admin/Welcome";
 import AllOrdersDashboard from "./admin/AllOrders";
 import StaffSidebar from "../../components/StaffSidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function StaffDashboard() {
   const location = useLocation();
   const path = location.pathname.split("/");
+  const navigate = useNavigate()
   const [selectedMenu, setSelectedMenu] = useState("welcome");
 
   useEffect(() => {
@@ -27,6 +28,15 @@ function StaffDashboard() {
     }
     if (path[path.length - 1] === "products") {
       setSelectedMenu("allProducts");
+    }
+    if (path[path.length - 1] === "brands") {
+      setSelectedMenu("brands");
+    }if (path[path.length - 1] === "categories") {
+      setSelectedMenu("categories");
+    }if (path[path.length - 1] === "countries") {
+      setSelectedMenu("countries");
+    }if (path[path.length - 1] === "madeOf") {
+      setSelectedMenu("madeOf");
     }
   }, [location, path]);
 
@@ -81,11 +91,22 @@ function StaffDashboard() {
         console.log(error);
       });
   }, []);
+  
+
+  const handleSelectedMenu = (menu)=>{
+    setSelectedMenu(menu)
+    if(menu === "allProducts") navigate("/staff/products");
+    if (menu === "brands") navigate("/staff/brands");
+    if (menu === "categories") navigate("/staff/categories");
+    if (menu === "countries") navigate("/staff/countries");
+    if (menu === "madeOf") navigate("/staff/madeOf");
+  }
+
 
   return (
     <div className="dashboard-main-container">
       <div className="sidebar-main-container">
-        <StaffSidebar setSelectedMenu={setSelectedMenu} />
+        <StaffSidebar setSelectedMenu={handleSelectedMenu} />
       </div>
       <div className="content-container">
         <AdminNavbar />

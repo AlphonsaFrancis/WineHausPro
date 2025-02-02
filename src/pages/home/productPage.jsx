@@ -104,12 +104,9 @@ const ProductPage = () => {
     fetchFeedbackSummaries();
   }, [products]);
 
-  console.log("feedbackSummaries---", feedbackSummaries);
-  console.log("products--", products);
 
   const addToCart = (productId, quantity = 1) => {
     const userId = localStorage.getItem("userId");
-    console.log("UserId---", userId);
     if (!userId) {
       alert("Please log in first to add items to the cart.");
       return;

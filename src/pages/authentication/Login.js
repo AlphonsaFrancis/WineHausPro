@@ -110,7 +110,9 @@ const Login = ({ setIslogin }) => {
               navigate("/staff");
             } else if (response.data.user.is_delivery_agent) {
               navigate("/order-delivery");
-            } else {
+            } else  if (response.data.user.is_supplier){
+              navigate("/stocks")
+            }else{
               navigate("/");
             }
           }

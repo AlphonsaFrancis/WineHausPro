@@ -16,28 +16,37 @@ import config from "../../../config/config";
 import AddProductForm from "../../../components/Forms/AddProductFrom";
 import EditProductForm from "../../../components/Forms/EditProductForm";
 import { useNavigate } from "react-router-dom";
+import ProductManagement from "../../../components/Forms/ProductManagement";
 
 function ProductDashboard() {
   const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
+  const [notApprovedProducts, setNotApprovedProducts] = useState([]);
+  const [showNotApprovedProduct, setShowNotApprovedProducts]=useState(false)
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [productResponse, setProductResponse] = useState([]);
-  const brands = JSON.parse(localStorage.getItem("brands"));
-  const categories = JSON.parse(localStorage.getItem("categories"));
-  const countries = JSON.parse(localStorage.getItem("countries"));
-  const madeOf = JSON.parse(localStorage.getItem("madeOf"));
   const [selectedProduct, setSelectedProduct] = useState();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isShowForm, setIsShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const outOfStockItems = findOutOfStockItems(productResponse);
   const inactiveItems = findInactiveItems(productResponse);
-  const [searchTerm, setSearchTerm] = useState("");
+
+  const brands = JSON.parse(localStorage.getItem("brands"));
+  const categories = JSON.parse(localStorage.getItem("categories"));
+  const countries = JSON.parse(localStorage.getItem("countries"));
+  const madeOf = JSON.parse(localStorage.getItem("madeOf"));
+
   const storedUser = localStorage.getItem("user");
   const user = JSON.parse(storedUser);
 
   useEffect(() => {
     getAllProducts();
+    getNotApprovedProducts()
+
   }, []);
 
   useEffect(() => {
@@ -59,6 +68,12 @@ function ProductDashboard() {
     }
   }, [searchTerm, products]);
 
+  // useEffect(()=>{
+  //   // if(user?.is_supplier){
+  //     getNotApprovedProducts()
+  //   // }
+  // },[user])
+
   const getAllProducts = () => {
     axios
       .get(`${config.BASE_URL}api/v1/products/list/`)
@@ -66,7 +81,19 @@ function ProductDashboard() {
         setProductResponse(response.data);
         const transformedData = transformProductData(response.data);
         setProducts(transformedData);
-        setFilteredProducts(transformedData); // Set initial filtered products
+        setFilteredProducts(transformedData); 
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getNotApprovedProducts = () => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/list-not-approved-products/`)
+      .then((response) => {
+        const transformedData = transformProductData(response.data);
+        setNotApprovedProducts(transformedData);
       })
       .catch((error) => {
         console.log(error);
@@ -86,6 +113,7 @@ function ProductDashboard() {
       madeof: getMadeofById(product.made_of, madeOf)?.name,
       stock: product.stock_quantity,
       isActive: product.is_active,
+      approved:product.approved
     }));
   };
 
@@ -176,8 +204,15 @@ function ProductDashboard() {
       {
         Header: "Status",
         accessor: "isActive",
-        Cell: ({ value }) => (value ? "Active" : "Inactive"),
-      },
+        Cell: ({ row }) => {
+          const isActive = row.original.isActive;
+          const isApproved = row.original.approved;
+          
+          return isActive ? 
+            `${isApproved ? 'Approved' : 'Not Approved'} - Active` : 
+            `${isApproved ? 'Approved' : 'Not Approved'} - Inactive`;
+        }
+      }
     ],
     []
   );
@@ -185,9 +220,13 @@ function ProductDashboard() {
   return (
     <div className="product-main-container">
       <div className="short-infos">
-        <div className="info">
-          <div className="info-title">Total Products</div>
+        <div className="info" onClick={()=>setShowNotApprovedProducts(false)} style={{cursor:'pointer'}}>
+          <div className="info-title">Approved Products</div>
           <div className="info-value success">{products?.length}</div>
+        </div>
+        <div className="info" onClick={()=>setShowNotApprovedProducts(true)} style={{cursor:'pointer'}}>
+          <div className="info-title">Not Approved Products</div>
+          <div className="info-value error-text">{notApprovedProducts?.length}</div>
         </div>
         <div className="info">
           <div className="info-title">Out of stock</div>
@@ -215,12 +254,15 @@ function ProductDashboard() {
       <div className="product-table">
         <DataTable
           columns={columns}
-          data={filteredProducts ?? []}
+          data={showNotApprovedProduct ? notApprovedProducts: filteredProducts ?? []}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onToggleStatus={handleDisableProduct}
+          onToggleStatus={ handleDisableProduct}
           showViewMoreIcon={true}
           onShowMoreDetails={showMoreDetails}
+          // hideActiveButton={user?.is_staff}
+          showDeleteIcon={!user?.is_staff}
+          
         />
       </div>
       <BasicModal
@@ -237,10 +279,14 @@ function ProductDashboard() {
           open={isShowForm}
           setOpen={handleCloseForm}
           content={
-            <AddProductForm
-              onCancel={handleCloseForm}
-              onConfirm={getAllProducts}
-            />
+            user?.is_supplier ? (
+              <ProductManagement />
+            ) : (
+              <AddProductForm
+                onCancel={handleCloseForm}
+                onConfirm={getAllProducts}
+              />
+            )
           }
           customStyle={{
             height: "87vh",

@@ -23,6 +23,8 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const storedUser = localStorage.getItem("user");
+  const user = JSON.parse(storedUser);
 
   useEffect(()=>{
     axios.get(`${config.BASE_URL}api/v1/products/brand-list/`)
@@ -132,6 +134,8 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       }
     });
 
+    user?.is_supplier ? formData.append('approved',true)  :formData.append('approved',false)
+
     axios
       .post(`${config.BASE_URL}api/v1/products/create/`, formData, {
         headers: {
@@ -146,6 +150,7 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       .catch((error) => {
         console.error("Error creating product:", error.response.data);
       });
+      
   };
 
 

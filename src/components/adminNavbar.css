@@ -7,12 +7,31 @@ body {
     height: 60px;
     display: flex;
     align-items: center;
-    justify-items: space-between;
+    justify-content: space-between;
     position: relative;
 
 }
+
+.admin-nav-right-section{
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+    gap: 10px;
+}
+
+.admin-nav-user-role{
+    font-weight: 600;
+    color: #898989dc;
+}
+
+.admin-nav-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    margin-right: 10px;
+}
 .admin-nav-user-icon {
-    position: absolute;
+    /* position: absolute; */
     right: 5px;
     cursor: pointer;
 }

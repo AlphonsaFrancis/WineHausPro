@@ -1,0 +1,160 @@
+.product-management-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .tabs-container {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: white;
+    padding: 20px;
+  }
+  
+  .tabs-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .tab-button {
+    padding: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .tab-button.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+  }
+  
+  .tab-button:hover:not(.active) {
+    color: #334155;
+  }
+  
+  .tab-content {
+    display: none;
+    padding: 20px 0;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
+  /* Excel Upload Styles */
+  .excel-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .info-alert {
+    background-color: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  
+  .info-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .info-alert-title {
+    font-weight: 600;
+    color: #1e40af;
+  }
+  
+  .info-alert-content {
+    color: #334155;
+    font-size: 14px;
+  }
+  
+  .file-input-container {
+    margin: 20px 0;
+  }
+  
+  .file-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+  }
+  
+  .upload-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .upload-button:hover:not(:disabled) {
+    background-color: #1d4ed8;
+  }
+  
+  .upload-button:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+  }
+  
+  .success-message {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+  }
+  
+  .success-message ul {
+    margin-top: 8px;
+    padding-left: 20px;
+  }
+  
+  .success-message li {
+    margin-bottom: 4px;
+  }
+  
+  /* Error list styles */
+  .error-list {
+    margin-top: 8px;
+    color: #dc2626;
+  }
+  
+  .error-list ul {
+    padding-left: 20px;
+  }
+  
+  .error-list li {
+    margin-bottom: 4px;
+  }

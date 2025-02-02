@@ -21,6 +21,8 @@ import StaffProtectedRoute from './pages/authentication/StaffProtectedRoute';
 import OrderItemsList from './components/OrderItemList';
 import DeliveryAgentProtectedRoute from './pages/authentication/DeliveryAgentProtectedRoute';
 import DeliveryAgentDashboard from './pages/dashboard/DeliveryAgentDashboard';
+import StockManagerProtected from './pages/authentication/StockManagerProtected';
+import SupplierDashboard from './pages/dashboard/SupplierDashboard';
 function App() {
 
   return (
@@ -40,11 +42,25 @@ function App() {
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/orders" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
           <Route path="/staff/products" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/brands" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/categories" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/countries" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
+          <Route path="/staff/madeOf" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
 
 
           <Route path="/order-delivery" element={<DeliveryAgentProtectedRoute element={<DeliveryAgentDashboard />} />} />
 
+          <Route path="/stocks" element={<StockManagerProtected element={<SupplierDashboard />} />} />
+          <Route path="/stocks/products" element={<StockManagerProtected element={<SupplierDashboard />} />} />
+          <Route path="/stocks/brands" element={<StockManagerProtected element={<SupplierDashboard />} />} />
+          <Route path="/stocks/categories" element={<StockManagerProtected element={<SupplierDashboard />} />} />
+          <Route path="/stocks/countries" element={<StockManagerProtected element={<SupplierDashboard />} />} />
+          <Route path="/stocks/madeOf" element={<StockManagerProtected element={<SupplierDashboard />} />} />
 
+
+
+
+          
 
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<ProductDetail />} />

@@ -38,6 +38,11 @@ body {
     color: #4CAF50; 
 }
 
+.error-text {
+    color: #ee1111; 
+}
+
+
 .warning {
     color: #FF9800; 
 }

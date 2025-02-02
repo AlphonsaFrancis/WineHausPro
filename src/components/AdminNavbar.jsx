@@ -7,7 +7,8 @@ import { FaUser } from "react-icons/fa";
 function AdminNavbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'))
+  const storedUser = localStorage.getItem("user");
+  const user = JSON.parse(storedUser);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -18,6 +19,14 @@ function AdminNavbar() {
     console.log("Logged out");
 
   };
+  const getUserRole =()=>{
+    if(user?.is_staff) return 'STAFF';
+    if(user?.is_supplier) return 'STOCK-MANAGER';
+    if(user?.is_delivery_agent) return 'DELIVERY-PARTNER';
+    if(user?.is_admin) return 'ADMIN'
+  }
+
+  const userRole = getUserRole()
 
  
   return (
@@ -25,17 +34,22 @@ function AdminNavbar() {
       <div className="user-info">
         <span style={{color:'green'}}>Hi,</span> {user?.email}
       </div>
-   <div className="admin-nav-user-icon" onClick={toggleDropdown}>
-      <FaUser  style={{fontSize:'24px'}}/>
-      {isDropdownOpen && (
-        <div className="admin-nav-user-menu">
-          <div className="admin-nav-user-menu-item">Edit Profile</div>
-          <div className="admin-nav-user-menu-item" onClick={handleLogout}>
-            Logout
+      <div className="admin-nav-right-section">
+        <div className="admin-nav-user-role">{userRole}</div>
+        <div className="admin-nav-user-icon" onClick={toggleDropdown}>
+        <FaUser  style={{fontSize:'24px'}}/>
+        {isDropdownOpen && (
+          <div className="admin-nav-user-menu">
+            <div className="admin-nav-user-menu-item">Edit Profile</div>
+            <div className="admin-nav-user-menu-item" onClick={handleLogout}>
+              Logout
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      </div>
+  
      
     </div>
   );

@@ -264,6 +264,10 @@ useEffect(()=>{
             <>
               <a href="/staff">Home</a> / <a href="/staff/products">Products</a>
             </>
+          ) : user?.is_supplier ? (
+            <>
+              <a href="/stocks">Home</a> / <a href="/stocks/products">Products</a>
+            </>
           ) : (
             <>
               <a href="/products">Products</a> / {product.name}

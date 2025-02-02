@@ -1,111 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, Row, Col, Table, Alert, Spin } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import config from '../../config/config';
-import './SupplierDashboard.css';
+import React, { useEffect, useState } from "react";
+import "./admindashboard.css";
+import AdminNavbar from "../../components/AdminNavbar";
+import ProductDashboard from "../../pages/dashboard/admin/ProductDashboard";
+import Brands from "../../pages/dashboard/admin/Brands";
+import config from "../../config/config";
 
-const SupplierDashboard = () => {
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const supplierId = localStorage.getItem('supplierId'); // Get from auth
+import axios from "axios";
+import CategoryDashboard from "./admin/CategoryDashboard";
+import CountryDashboard from "./admin/CountryDashboard";
+import MadeofDashboard from "./admin/MadeofDashboard";
+import Welcome from "./admin/Welcome";
+import { useLocation, useNavigate } from "react-router-dom";
+import SupplierSidebar from "../../components/SupplierSidebar";
 
-    useEffect(() => {
-        fetchDashboardData();
-    }, []);
+function SupplierDashboard() {
+  const location = useLocation();
+  const path = location.pathname.split("/");
+  const navigate = useNavigate()
+  const [selectedMenu, setSelectedMenu] = useState("welcome");
 
-    const fetchDashboardData = async () => {
-        try {
-            const response = await axios.get(
-                `${config.BASE_URL}api/v1/supplier/dashboard/${supplierId}/`
-            );
-            setDashboardData(response.data);
-        } catch (err) {
-            setError('Failed to fetch dashboard data');
-            console.error(err);
-        } finally {
-            setLoading(false);
+  useEffect(() => {
+    
+    if (path[path.length - 1] === "products") {
+      setSelectedMenu("allProducts");
+    }
+    if (path[path.length - 1] === "brands") {
+      setSelectedMenu("brands");
+    }if (path[path.length - 1] === "categories") {
+      setSelectedMenu("categories");
+    }if (path[path.length - 1] === "countries") {
+      setSelectedMenu("countries");
+    }if (path[path.length - 1] === "madeOf") {
+      setSelectedMenu("madeOf");
+    }
+  }, [location, path]);
+
+  useEffect(() => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/category-list/`)
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem("categories", JSON.stringify(response.data));
         }
-    };
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-    if (loading) return <Spin size="large" />;
-    if (error) return <Alert type="error" message={error} />;
+  useEffect(() => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/brand-list/`)
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem("brands", JSON.stringify(response.data));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-    return (
-        <div className="supplier-dashboard">
-            <h1>Supplier Dashboard</h1>
-            
-            <Row gutter={[16, 16]}>
-                <Col span={8}>
-                    <Card title="Low Stock">
-                        <h2>{dashboardData.low_stock_count}</h2>
-                        <p>Products running low</p>
-                    </Card>
-                </Col>
-                <Col span={8}>
-                    <Card title="Out of Stock">
-                        <h2>{dashboardData.out_of_stock_count}</h2>
-                        <p>Products out of stock</p>
-                    </Card>
-                </Col>
-                <Col span={8}>
-                    <Card title="Active Alerts">
-                        <h2>{dashboardData.active_alerts_count}</h2>
-                        <p>Requires attention</p>
-                    </Card>
-                </Col>
-            </Row>
+  useEffect(() => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/country-list/`)
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem("countries", JSON.stringify(response.data));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-            <Row className="chart-section">
-                <Col span={24}>
-                    <Card title="Monthly Supply Statistics">
-                        <BarChart width={800} height={300} data={dashboardData.monthly_stats}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="total_quantity" fill="#8884d8" name="Total Quantity" />
-                            <Bar dataKey="total_products" fill="#82ca9d" name="Total Products" />
-                        </BarChart>
-                    </Card>
-                </Col>
-            </Row>
+  useEffect(() => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/madeof-list/`)
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem("madeOf", JSON.stringify(response.data));
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
-            <Row className="table-section">
-                <Col span={24}>
-                    <Card title="Low Stock Products">
-                        <Table 
-                            dataSource={dashboardData.low_stock_products}
-                            columns={[
-                                {
-                                    title: 'Product Name',
-                                    dataIndex: ['product', 'name'],
-                                    key: 'name',
-                                },
-                                {
-                                    title: 'Current Stock',
-                                    dataIndex: ['product', 'stock_quantity'],
-                                    key: 'stock',
-                                },
-                                {
-                                    title: 'Supply Price',
-                                    dataIndex: 'supply_price',
-                                    key: 'price',
-                                },
-                                {
-                                    title: 'Last Supply Date',
-                                    dataIndex: 'last_supply_date',
-                                    key: 'date',
-                                },
-                            ]}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+
+
+  const handleSelectedMenu = (menu)=>{
+    setSelectedMenu(menu)
+    if(menu === "allProducts") navigate("/stocks/products");
+    if (menu === "brands") navigate("/stocks/brands");
+    if (menu === "categories") navigate("/stocks/categories");
+    if (menu === "countries") navigate("/stocks/countries");
+    if (menu === "madeOf") navigate("/stocks/madeOf");
+  }
+
+  return (
+    <div className="dashboard-main-container">
+      <div className="sidebar-main-container">
+        <SupplierSidebar setSelectedMenu={handleSelectedMenu} />
+      </div>
+      <div className="content-container">
+        <AdminNavbar />
+        <div className="content">
+          {selectedMenu === "welcome" ? (
+            <Welcome />
+          ) : selectedMenu === "allProducts" ? (
+            <ProductDashboard />
+          ) : selectedMenu === "brands" ? (
+            <Brands />
+          ) : selectedMenu === "categories" ? (
+            <CategoryDashboard />
+          ) : selectedMenu === "countries" ? (
+            <CountryDashboard />
+          ) : selectedMenu === "madeOf" ? (
+            <MadeofDashboard />
+          ) : (
+            "No Data Found"
+          )}
         </div>
-    );
-};
+      </div>
+    </div>
+  );
+}
 
-export default SupplierDashboard; 
+export default SupplierDashboard;
