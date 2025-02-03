@@ -53,21 +53,19 @@ def product_filter(request):
     country = request.query_params.get('country')
     made_of = request.query_params.get('made_of')
     sort = request.query_params.get('sort')
-
-    # Building filters based on query parameters
+# Building filters based on query parameters
     filters = Q()
-    if category and category != 'all':
-        filters &= Q(category__name=category)
-    if brand and brand != 'all':
-        filters &= Q(brand__name=brand)
-    if country and country != 'all':
-        filters &= Q(country__name=country)
-    if made_of and made_of != 'all':
-        filters &= Q(made_of__name=made_of)
+    if category and category.strip().lower() != 'all':
+        filters &= Q(category__name=category.strip())
+    if brand and brand.strip().lower() != 'all':
+        filters &= Q(brand__name=brand.strip())
+    if country and country.strip().lower() != 'all':
+        filters &= Q(country__name=country.strip())
+    if made_of and made_of.strip().lower() != 'all':
+        filters &= Q(made_of__name=made_of.strip())
 
     # Applying the filters
-    products = Product.objects.filter(filters)
-
+    products = Product.objects.filter(filters).filter(approved=True, is_active=True)
     # Sorting logic
     if sort == 'price-asc':
         products = products.order_by('price')
@@ -629,7 +627,20 @@ def create_review(request):
             "status": status.HTTP_404_NOT_FOUND
         })
 
+@api_view(['POST'])
+def add_additional_review(request):
+    if request.method == 'POST':
+        try:
+            product_id = request.data['product_id']
+            user_email = request.data['user_email']
+            order_id = request.data['order_id']
+            product = Product.objects.get(product_id=product_id)
+            user = User.objects.get(email=user_email)
 
+        except Exception as e:
+            print(str(e))
+
+            
 
 @api_view(['PUT'])
 def edit_review(request, review_id, user_id):

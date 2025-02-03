@@ -82,7 +82,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_id = models.IntegerField(default=None)
-    rating = models.PositiveSmallIntegerField()  # 1 to 5
+    rating = models.PositiveSmallIntegerField(null=True)  # 1 to 5
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

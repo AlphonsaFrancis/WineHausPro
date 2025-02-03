@@ -79,6 +79,7 @@ def initiate_registration(request):
         data = request.data
         email = data.get('email')
         password = data.get('password')
+        name = data.get('name')
 
         if not email or not password:
             return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
@@ -98,7 +99,7 @@ def initiate_registration(request):
         otp = generate_otp(email)
         hashed_password = make_password(password)
         if otp:
-            temp_user = TempUser.objects.create(email=email, password=hashed_password)
+            temp_user = TempUser.objects.create(email=email, password=hashed_password,name=name)
         send_otp_email(email, otp)
         return Response({"message": "OTP sent to your email."}, status=status.HTTP_201_CREATED)
     return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -120,6 +121,7 @@ def validate_otp_and_register(request):
                 user = User.objects.create(
                     email=temp_user.email,
                     password=temp_user.password,
+                    name = temp_user.name,
                     is_active=True
                 )
                 temp_user.delete()  
