@@ -37,7 +37,7 @@ const ProductDetail = () => {
       console.error("Product is null or undefined");
       return; 
     }
-  
+
     const baseUrl = `${config.BASE_URL}api/v1/products/get-similar-products/`;
     const params = new URLSearchParams();
   

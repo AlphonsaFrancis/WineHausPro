@@ -19,10 +19,6 @@ const WriteProductReview = ({ productId, orderId, existingReview }) => {
       setComment(existingReview.comment || "");
     }
   }, [existingReview]);
-  console.log("existingReview",existingReview)
-
-  console.log("wwwwwwwwwwwwwwwwww")
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
