@@ -41,6 +41,7 @@ const ProductDetail = () => {
     const baseUrl = `${config.BASE_URL}api/v1/products/get-similar-products/`;
     const params = new URLSearchParams();
   
+    console.log("###user",user)
   
     if (product.category) {
       params.append("category", product.category);
@@ -252,7 +253,7 @@ useEffect(()=>{
 
   return (
     <div>
-{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) && <Navbar />}     
+{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent || user?.is_supplier) && <Navbar />}     
       <div className="product-detail-page">
         <nav className="product-detail-breadcrumb">
           {user?.is_superuser ? (
@@ -329,7 +330,7 @@ useEffect(()=>{
               </div>
             )}
 
-{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) &&
+{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent || user?.is_supplier) &&
 
             <div className="product-detail-actions">
               <button
@@ -361,7 +362,7 @@ useEffect(()=>{
             <ProductReviews reviews={reviews} />
           </div>
 
-          {!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) && (
+          {!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent || user?.is_supplier) && (
             <div className="product-review-container">
               <h2>Similar Products</h2>
               <div className="similar-products-grid-container">
