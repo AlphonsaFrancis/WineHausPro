@@ -819,7 +819,7 @@ def get_similar_products(request):
             }, status=400)
 
         # Base query excluding the current product
-        base_query = Product.objects.filter(is_active=True)
+        base_query = Product.objects.filter(is_active=True, approved=True, stock_quantity__gte=2)
         if product_id:
             base_query = base_query.exclude(product_id=product_id)
 
@@ -896,7 +896,6 @@ def search_by_image(request):
             img = cv2.imdecode(image_bytes, cv2.IMREAD_COLOR)
             
             # Wine label specific preprocessing pipeline
-            # 1. Resize while maintaining aspect ratio
             target_width = 1200  # Optimal size for wine label text
             aspect_ratio = img.shape[1] / img.shape[0]
             target_height = int(target_width / aspect_ratio)
