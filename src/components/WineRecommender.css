@@ -1,0 +1,38 @@
+.wine-recommender {
+    padding: 24px;
+}
+
+.filters {
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+}
+
+.recommendations {
+    margin-top: 24px;
+}
+
+.loading {
+    text-align: center;
+    padding: 48px;
+}
+
+.ant-card {
+    height: 100%;
+}
+
+.ant-card-cover img {
+    height: 300px;
+    object-fit: cover;
+}
+
+.price {
+    margin-top: 16px;
+    font-size: 18px;
+    color: #1890ff;
+}
+
+.recommendation-text {
+    margin-top: 8px;
+    color: #666;
+} 
