@@ -54,8 +54,11 @@ urlpatterns = [
     # Update stock from excel
 
     path('import-products/', ProductExcelImportView.as_view(), name="update-stock-from-excel"),
-    path('list-not-approved-products/', list_notapproved_products, name="list-not-approved-products")
+    path('list-not-approved-products/', list_notapproved_products, name="list-not-approved-products"),
 
+    path('recommendations/', views.get_wine_recommendations, name='wine-recommendations'),
+    path('events/', views.get_events, name='wine-events'),
+    path('food-pairings/', views.get_food_pairings, name='food-pairings'),
 
 ]
 

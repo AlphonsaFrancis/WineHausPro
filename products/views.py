@@ -5,8 +5,8 @@ from rest_framework import status
 
 from authentication.models import User
 from orders.models import Order, OrderItems
-from .models import Product,Category,MadeOf,Country,Brand, Review, SentimentAnalysis
-from .serializers import GetReviewSerializer, ProductSerializer,CategorySerializer,MadeOfSerializer,CountrySerializer,BrandSerializer, ReviewSerializer
+from .models import Product,Category,MadeOf,Country,Brand, Review, SentimentAnalysis, WineEvent, FoodPairing, WineRecommendation
+from .serializers import GetReviewSerializer, ProductSerializer,CategorySerializer,MadeOfSerializer,CountrySerializer,BrandSerializer, ReviewSerializer, WineEventSerializer, FoodPairingSerializer, WineRecommendationSerializer
 from django.db.models import Q
 from django.http import JsonResponse
 from textblob import TextBlob
@@ -1198,3 +1198,49 @@ class ProductExcelImportView(APIView):
         except Exception as e:
             print("ERROR::", str(e))
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_wine_recommendations(request):
+    event_id = request.GET.get('event')
+    food_id = request.GET.get('food')
+    
+    recommendations = WineRecommendation.objects.all()
+    
+    if event_id:
+        recommendations = recommendations.filter(events__id=event_id)
+    if food_id:
+        recommendations = recommendations.filter(food_pairings__id=food_id)
+    
+    # Add weighted scoring
+    if event_id and food_id:
+        recommendations = recommendations.order_by('-score', '-created_at')
+    else:
+        recommendations = recommendations.order_by('-score')
+    
+    recommendations = recommendations[:6]  # Limit to top 6
+    
+    serializer = WineRecommendationSerializer(recommendations, many=True)
+    
+    # Add additional context
+    response_data = {
+        'recommendations': serializer.data,
+        'total_count': recommendations.count(),
+        'filters_applied': {
+            'event': bool(event_id),
+            'food': bool(food_id)
+        }
+    }
+    
+    return Response(response_data)
+
+@api_view(['GET'])
+def get_events(request):
+    events = WineEvent.objects.filter(is_active=True)
+    serializer = WineEventSerializer(events, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_food_pairings(request):
+    food_pairings = FoodPairing.objects.filter(is_active=True)
+    serializer = FoodPairingSerializer(food_pairings, many=True)
+    return Response(serializer.data)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category, MadeOf, Country, Brand, Review, SentimentAnalysis
+from .models import Product, Category, MadeOf, Country, Brand, Review, SentimentAnalysis, WineEvent, FoodPairing, WineRecommendation
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -69,3 +69,25 @@ class GetReviewSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return obj.user.name
+
+
+class WineEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WineEvent
+        fields = '__all__'
+
+
+class FoodPairingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FoodPairing
+        fields = '__all__'
+
+
+class WineRecommendationSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    events = WineEventSerializer(many=True)
+    food_pairings = FoodPairingSerializer(many=True)
+
+    class Meta:
+        model = WineRecommendation
+        fields = '__all__'
