@@ -101,3 +101,35 @@ class SentimentAnalysis(models.Model):
 
     def __str__(self):
         return f" {str(self.review)} - {str(self.sentiment)}"
+
+
+class WineEvent(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class FoodPairing(models.Model):
+    name = models.CharField(max_length=255)
+    category = models.CharField(max_length=100)  # e.g., meat, seafood, dessert
+    description = models.TextField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class WineRecommendation(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    events = models.ManyToManyField(WineEvent)
+    food_pairings = models.ManyToManyField(FoodPairing)
+    recommendation_text = models.TextField()
+    score = models.FloatField(default=0)  # Recommendation score
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Recommendation for {self.product.name}"
