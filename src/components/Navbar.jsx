@@ -9,6 +9,7 @@ import { Upload, Modal, message, Spin } from 'antd';
 import axios from 'axios';
 import config from '../config/config';
 import Webcam from 'react-webcam';
+import WineRecommendationModal from './WineRecommendationModal';
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,14 +19,19 @@ function Navbar() {
   const [loading, setLoading] = useState(false);
   const [imageSearchResults, setImageSearchResults] = useState([]);
   const [extractedText, setExtractedText] = useState('');
+  const [showRecommendations, setShowRecommendations] = useState(false);
   const webcamRef = useRef(null);
 
   const username = '';
+  const navigate = useNavigate();
+  
+  // Check if user is logged in
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isLoggedIn = !!user; // Convert user object to boolean
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     navigate('/');
@@ -104,8 +110,6 @@ function Navbar() {
     setIsImageModalVisible(false);
     navigate(`/products/${product.product_id}`);
   };
-
-  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div className='navbar-container'>
@@ -229,6 +233,11 @@ function Navbar() {
           </>
         )}
       </Modal>
+
+      <WineRecommendationModal 
+        visible={showRecommendations}
+        onClose={() => setShowRecommendations(false)}
+      />
     </div>
   );
 }

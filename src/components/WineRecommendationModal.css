@@ -1,0 +1,159 @@
+.wine-recommendation-modal .ant-modal-content {
+    border-radius: 8px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.wine-recommendation-modal .ant-modal-header {
+    border-radius: 8px 8px 0 0;
+    background-color: #f8f9fa;
+    padding: 16px 24px;
+}
+
+.wine-recommendation-modal .ant-modal-title {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+}
+
+.recommendation-filters {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding: 0 20px;
+}
+
+.recommendations-grid {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 0 16px;
+}
+
+/* Standardize card sizes */
+.ant-card {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    cursor: pointer;
+}
+
+.ant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Standardize wine bottle image size */
+.ant-card-cover {
+    height: 300px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ant-card-cover img {
+    height: 280px;
+    width: auto;
+    object-fit: contain;
+    padding: 10px;
+    transition: transform 0.3s ease;
+}
+
+.ant-card:hover .ant-card-cover img {
+    transform: scale(1.05);
+}
+
+/* Card content styling */
+.ant-card-meta {
+    padding: 16px;
+}
+
+.ant-card-meta-title {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.ant-card:hover .ant-card-meta-title {
+    color: #1890ff;
+}
+
+.ant-card-meta-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.price {
+    margin-top: 12px;
+    font-size: 18px;
+    color: #1890ff;
+    font-weight: 600;
+    text-align: right;
+    padding: 0 16px 16px;
+}
+
+/* Loading state */
+.loading-spinner {
+    text-align: center;
+    padding: 48px;
+}
+
+/* No recommendations message */
+.no-recommendations {
+    text-align: center;
+    padding: 32px;
+    color: #666;
+    font-size: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .recommendation-filters {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ant-card-cover {
+        height: 250px;
+    }
+
+    .ant-card-cover img {
+        height: 230px;
+    }
+}
+
+/* Animation styles */
+.wine-recommendation-modal .ant-modal {
+    transform-origin: bottom right;
+    transition: all 0.3s ease !important;
+}
+
+.wine-recommendation-modal.ant-modal-wrap {
+    transition: all 0.3s ease !important;
+}
+
+.wine-recommendation-modal.ant-modal-enter .ant-modal {
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+.wine-recommendation-modal.ant-modal-enter-active .ant-modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.wine-recommendation-modal.ant-modal-leave .ant-modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.wine-recommendation-modal.ant-modal-leave-active .ant-modal {
+    transform: scale(0.5);
+    opacity: 0;
+} 

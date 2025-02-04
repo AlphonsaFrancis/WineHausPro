@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './home.css';
 import Navbar from '../../components/Navbar'
 import esthetic from '../../assets/main1ethinic.jpg';
@@ -21,6 +21,8 @@ import arriv2 from '../../assets/ArriRuinat(2).png';
 import arriv3 from '../../assets/ArriTrefethen(3).png';
 import arriv4 from '../../assets/ArriStella(4).png';
 import BasicModal from '../../components/BasicModal';
+import FloatingRecommendButton from '../../components/FloatingRecommendButton';
+import WineRecommendationModal from '../../components/WineRecommendationModal';
 
 
 function Home() {
@@ -30,6 +32,10 @@ function Home() {
     setShowAgeAlert(false)
     localStorage.setItem('isAgeVerified',true)
   }
+
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user'));
+
   return (
     <div>
       {/* Header */}
@@ -310,6 +316,18 @@ function Home() {
 
       {/* Footer Section */}
       <footer></footer>
+
+      {user && (
+        <>
+          <FloatingRecommendButton 
+            onClick={() => setShowRecommendations(true)} 
+          />
+          <WineRecommendationModal 
+            visible={showRecommendations}
+            onClose={() => setShowRecommendations(false)}
+          />
+        </>
+      )}
     </div>
   );
 }
