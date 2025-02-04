@@ -126,7 +126,8 @@ function ProductDashboard() {
   };
 
   const handleEdit = (row) => {
-    const selectedProduct = getItemById(row?.id, productResponse);
+    const selectedProduct = getItemById(row?.id, showNotApprovedProduct? notApprovedProducts: products);
+    console.log("selectedProduct",selectedProduct)
     setSelectedProduct(selectedProduct);
     setShowEditForm(true);
   };
@@ -186,9 +187,9 @@ function ProductDashboard() {
         Header: "Product",
         accessor: "name",
         Cell: ({ row }) => (
-          <div>
+          <div style={{width:'120px'}}>
             <strong>{row.original.name}</strong>
-            <div className="admin-table-subtext">
+            <div className="admin-table-subtext truncate-text" >
               {row.original.description}
             </div>
           </div>

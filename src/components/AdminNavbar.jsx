@@ -20,10 +20,10 @@ function AdminNavbar() {
 
   };
   const getUserRole =()=>{
-    if(user?.is_staff) return 'STAFF';
+    if(user?.is_superuser) return 'ADMIN';
     if(user?.is_supplier) return 'STOCK-MANAGER';
     if(user?.is_delivery_agent) return 'DELIVERY-PARTNER';
-    if(user?.is_admin) return 'ADMIN'
+    if(user?.is_staff) return 'STAFF'
   }
 
   const userRole = getUserRole()

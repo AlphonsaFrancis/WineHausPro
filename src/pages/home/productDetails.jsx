@@ -252,7 +252,7 @@ useEffect(()=>{
 
   return (
     <div>
-      <Navbar />
+{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) && <Navbar />}     
       <div className="product-detail-page">
         <nav className="product-detail-breadcrumb">
           {user?.is_superuser ? (
@@ -329,6 +329,8 @@ useEffect(()=>{
               </div>
             )}
 
+{!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) &&
+
             <div className="product-detail-actions">
               <button
                 onClick={() => addToCart(product.product_id, 1)}
@@ -344,6 +346,7 @@ useEffect(()=>{
                 <MdFavoriteBorder /> Wishlist
               </button>
             </div>
+}
 
             {isUnavailable && (
               <p className="product-unavailable-message">
@@ -358,7 +361,7 @@ useEffect(()=>{
             <ProductReviews reviews={reviews} />
           </div>
 
-          {!user?.is_superuser && !user?.is_staff && (
+          {!(user?.is_superuser || user?.is_staff || user?.is_delivery_agent) && (
             <div className="product-review-container">
               <h2>Similar Products</h2>
               <div className="similar-products-grid-container">

@@ -22,7 +22,8 @@ export const convertToDateInputFormat = (dateString) => {
 };
 
 export  const getItemById = (id, data) => {
-    return data.find((item) => item.product_id === id);
+  console.log("data---",id,data)
+    return data.find((item) => item.id === id);
   };
 
 export  const getProductById = (id, data) => {
