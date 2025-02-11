@@ -18,7 +18,7 @@
 
 # ]
 from django.urls import path
-from .views import add_new_user, daily_logged_in_users, delete_user, get_all_users, edit_user, initiate_registration,user_login,google_sign_in, validate_otp_and_register
+from .views import add_new_user, daily_logged_in_users, deduct_from_wallet, delete_user, get_all_users, edit_user, get_user_wallet, initiate_registration,user_login,google_sign_in, validate_otp_and_register
 from .views import password_reset_request, password_reset_confirm,check_email_exists,disable_enable_user
 
 
@@ -37,7 +37,9 @@ urlpatterns = [
     path('users/check-email-exists/', check_email_exists, name='check_email_exists'),
 
     # MAIN PROJECT
-    path('daily-logged-in-users/',daily_logged_in_users,name='daily_logged_in_users')
+    path('daily-logged-in-users/',daily_logged_in_users,name='daily_logged_in_users'),
+    path('get-user-wallet/<int:user_id>/', get_user_wallet, name='get-user-wallet'),
+    path('deduct-from-wallet/<int:user_id>/',deduct_from_wallet,name='deduct_from_wallet')
 
 ]
 
