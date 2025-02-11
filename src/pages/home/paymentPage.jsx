@@ -14,20 +14,47 @@ const PaymentPage = () => {
   const { selectedAddress, total } = location.state || {};
   const [paymentMethod, setPaymentMethod] = useState('online'); // Default to online payment
   const [cartId, setCartId] = useState(null); // State to store cart ID
+  const [userWalletAmount, setUserWalletAmount]=useState()
+  const [consumeUserWallet, setConsumeUserWallet]=useState(false)
+  const [totalAmount,setTotalAmount]=useState(0)
   const navigate=useNavigate();
+  const userId = localStorage.getItem('userId'); // Get the user ID from localStorage
+
   useEffect(() => {
     if (!selectedAddress || !total) {
       toast.error('Missing payment details. Please go back and try again.');
       return;
     }
     fetchCartDetails(); // Fetch the cart details
-    loadRazorpayScript(); // Load the Razorpay script when the component mounts
+    loadRazorpayScript();
+    setTotalAmount(total) // Load the Razorpay script when the component mounts
   }, [selectedAddress, total]);
+
+  useEffect(()=>{
+    axios.get(`${config.BASE_URL}api/v1/auth/get-user-wallet/${userId}/`)
+    .then((response)=>{
+      console.log("response",response)
+      setUserWalletAmount(response?.data?.balance)
+    })
+    .catch((err)=>{
+      console.log("err")
+    })
+  },[])
+
+  useEffect(() => {
+    if (consumeUserWallet) {
+      setTotalAmount(total - userWalletAmount);
+    } else {
+      setTotalAmount(total);
+    }
+  
+    console.log("Total amount:", total - (consumeUserWallet ? userWalletAmount : 0));
+  
+  }, [consumeUserWallet, total, userWalletAmount]);
 
   // Function to fetch the cart details for the logged-in user
   const fetchCartDetails = async () => {
     try {
-      const userId = localStorage.getItem('userId'); // Get the user ID from localStorage
       if (!userId) {
         toast.error('User is not logged in.');
         return;
@@ -72,14 +99,22 @@ const PaymentPage = () => {
   const handleCODPayment = () => {
     axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
       payment_method: 'cod',
-      amount: total,
+      amount: totalAmount,
       cart_id: cartId,
     })
     .then(response => {
       toast.success('Order placed successfully with Cash on Delivery!');
-      navigate('/userorder');
-      // Clear cart items after successful order
-      clearCartItems(cartId);
+      axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
+      .then((response)=>{
+        toast.success('Amount deducted from wallet successfully!');
+        clearCartItems(cartId);
+        navigate('/userorder');
+
+      })
+      .catch((error)=>{
+        console.log("Error",error)
+        toast.error('Failed to place order. Please try again.');
+      })
     })
     .catch(error => {
       console.error("COD Payment error:", error);
@@ -92,7 +127,7 @@ const PaymentPage = () => {
     try {
       const response = await axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
         payment_method: 'online',
-        amount: total,
+        amount: totalAmount,
         cart_id: cartId,
       });
 
@@ -137,11 +172,19 @@ const verifyPayment = async (paymentId, orderId) => {
       payment_id: paymentId,
       order_id: orderId,
     });
-    console.log('Payment verified successfully:', response.data);
-    toast.success('Payment verified successfully!');
+    axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
+    .then(response => {
+      console.log('Payment verified successfully:', response.data);
+      toast.success('Payment verified successfully!');
+  
+     clearCartItems();
+    })
+    .catch((err)=>{
+      toast.error('Payment verification failed. Please contact support.');
 
-    // Clear the cart after successful payment verification
-    await clearCartItems();
+    })
+
+   
 
   } catch (error) {
     console.error('Payment verification failed:', error);
@@ -164,31 +207,60 @@ const clearCartItems = async () => {
 
 
   return (
+   
     <div>
-      <Header />
-      <div className="payment-page">
-        <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} />
-        <h2>Payment Page</h2>
-        {selectedAddress && total ? (
-          <div>
-            <p>Proceeding to payment for total amount: ₹{total}</p>
-            <div className="payment-methods">
+    <Header />
+    <div className="payment-page">
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} />
+      <h2>Payment Page</h2>
+      {selectedAddress && total ? (
+        <div className="payment-content">
+          <p className="total-amount">Proceeding to payment for total amount: <strong>₹{totalAmount}</strong></p>
+          <div className="payment-methods">
+            <div className="wallet-option">
+              {userWalletAmount > 0 && 
               <label>
-                <input type="radio" value="online" checked={paymentMethod === 'online'} onChange={() => setPaymentMethod('online')} />
+              <input
+                type="checkbox"
+                checked={consumeUserWallet}
+                onChange={() => setConsumeUserWallet(!consumeUserWallet)}
+              />
+              <span className="checkmark"></span>
+              Use ₹{userWalletAmount} from your wallet
+            </label>
+            }
+              
+            </div>
+            <div className="payment-options">
+              <label className="payment-option">
+                <input
+                  type="radio"
+                  value="online"
+                  checked={paymentMethod === 'online'}
+                  onChange={() => setPaymentMethod('online')}
+                />
+                <span className="radio-checkmark"></span>
                 Online Payment
               </label>
-              <label>
-                <input type="radio" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
+              <label className="payment-option">
+                <input
+                  type="radio"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
+                />
+                <span className="radio-checkmark"></span>
                 Cash on Delivery
               </label>
             </div>
-            <button className="payment-btn" onClick={initiatePayment}>Proceed to Payment</button>
           </div>
-        ) : (
-          <p>Unable to proceed with payment due to missing details. Please go back and select an address.</p>
-        )}
-      </div>
+          <button className="payment-btn" onClick={initiatePayment}>Proceed to Payment</button>
+        </div>
+      ) : (
+        <p className="error-message">Unable to proceed with payment due to missing details. Please go back and select an address.</p>
+      )}
     </div>
+  </div>
   );
 };
 
