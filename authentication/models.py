@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 
@@ -113,13 +112,13 @@ class TempUser(models.Model):
         return self.email
     
 class UserWallet(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
-    wallet_amount=models.FloatField(default=0)
-    updated_at=models.DateTimeField(auto_now=True)
-    created_at=models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    wallet_amount = models.FloatField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
-        return self.user.first_name
+    def __str__(self):
+        return f"Wallet for {self.user.email}"
     
 class Transactions(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
