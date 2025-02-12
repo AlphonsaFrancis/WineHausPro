@@ -46,6 +46,8 @@ import requests
 from urllib.parse import urlparse
 from django.core.files.temp import NamedTemporaryFile
 
+from .utils import send_low_stock_notification
+
 @api_view(['GET'])
 def product_filter(request):
     category = request.query_params.get('category')
@@ -1243,3 +1245,26 @@ def get_food_pairings(request):
     food_pairings = FoodPairing.objects.filter(is_active=True)
     serializer = FoodPairingSerializer(food_pairings, many=True)
     return Response(serializer.data)
+
+def update_stock(request, product_id):
+    try:
+        product = Product.objects.get(product_id=product_id)
+        # ... your stock update logic ...
+        
+        if product.check_stock_level():
+            send_low_stock_notification(product)
+            
+        return Response({
+            'message': 'Stock updated successfully',
+            'current_stock': product.stock_quantity,
+            'is_low_stock': product.check_stock_level()
+        }, status=status.HTTP_200_OK)
+        
+    except Product.DoesNotExist:
+        return Response({
+            'error': 'Product not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

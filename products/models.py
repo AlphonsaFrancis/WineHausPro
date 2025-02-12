@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .utils import send_low_stock_notification
 
 from authentication.models import User
 
@@ -68,6 +71,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     approved=models.BooleanField(default=True)
+    
+    # Add minimum stock threshold
+    min_stock_threshold = models.IntegerField(default=10)
+    
+    def check_stock_level(self):
+        """Check if stock is below threshold"""
+        return self.stock_quantity <= self.min_stock_threshold
 
     def __str__(self):
         return self.name
@@ -133,3 +143,12 @@ class WineRecommendation(models.Model):
 
     def __str__(self):
         return f"Recommendation for {self.product.name}"
+
+
+@receiver(post_save, sender=Product)
+def product_stock_check(sender, instance, **kwargs):
+    """
+    Signal handler to check stock levels whenever a product is saved
+    """
+    if instance.check_stock_level():
+        send_low_stock_notification(instance)
