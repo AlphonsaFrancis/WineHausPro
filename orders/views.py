@@ -204,15 +204,14 @@ def order_item_detail(request, pk):
 def update_order_status(request, orderItemId):
     try:
         order_status = request.data.get('order_status')
-        userId = request.data.get('userId')
         order_item = OrderItems.objects.get(order_item_id=orderItemId)
-        user = User.objects.get(id=userId)
+        user = order_item.user
         if order_item:
             order_item.order_status = order_status
             order_item.save()
 
         if order_status == 'cancelled':
-            print("Order amount is transfering to wallet")
+            print("Order amount is transfering to wallet for user", user.email)
             try:
                 wallet = UserWallet.objects.get(user=user)
                 wallet.wallet_amount += order_item.price

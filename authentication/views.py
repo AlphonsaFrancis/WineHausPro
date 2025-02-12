@@ -128,7 +128,9 @@ def validate_otp_and_register(request):
                 otp_record = OtpRecord.objects.filter(email=email).delete()
                 serializer = UserSerializer(user)
                 try:
-                    UserWallet.objects.create(user=user, wallet_amount=0)
+                    user_wallet = UserWallet.objects.get(user=user)
+                    if not user_wallet:
+                             UserWallet.objects.create(user=user, wallet_amount=0)
                 except Exception as e:
                     print(e)
                     pass
@@ -308,7 +310,9 @@ def google_sign_in(request):
         access_token = str(refresh.access_token)
 
         try:
-            UserWallet.objects.create(user=user, wallet_amount=0)
+            user_wallet = UserWallet.objects.get(user=user)
+            if not user_wallet:
+                UserWallet.objects.create(user=user, wallet_amount=0)
         except Exception as e:
             print(e)
             pass
@@ -489,23 +493,64 @@ def get_user_wallet(request, user_id):
         return JsonResponse({'error': "An unexpected error occurred. Please try again later."}, status=500)
     
 
+from django.http import JsonResponse
+from django.db import transaction
+from decimal import Decimal
+from rest_framework.decorators import api_view
+from rest_framework import status
+
 @api_view(['POST'])
 def deduct_from_wallet(request, user_id):
     try:
         deducting_amount = request.data.get('amount')
-        userWallet = UserWallet.objects.get(user=user_id)
-        if userWallet:
-            if deducting_amount:
-                if userWallet.wallet_amount >= deducting_amount:
-                    userWallet.wallet_amount -= deducting_amount
-                    userWallet.save()
-                    return JsonResponse({"message":"Amount deducted successfully"})
-                
-                else:
-                    return JsonResponse({"error": "Insufficient balance"}, status=400)
-    except UserWallet.DoesNotExist:
-        print("Wallet doesnot existfor user")
-        return JsonResponse({'error': "Wallet does not exist for the user"}, status=404)
+        if not deducting_amount:
+            return JsonResponse(
+                {"error": "Amount is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            deducting_amount = Decimal(str(deducting_amount))
+            if deducting_amount <= 0:
+                return JsonResponse(
+                    {"error": "Amount must be greater than 0"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except (TypeError, ValueError):
+            return JsonResponse(
+                {"error": "Invalid amount format"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        with transaction.atomic():
+            try:
+                userWallet = UserWallet.objects.select_for_update().get(user=user_id)
+            except UserWallet.DoesNotExist:
+                return JsonResponse(
+                    {'error': "Wallet does not exist for the user"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            if userWallet.wallet_amount < deducting_amount:
+                return JsonResponse(
+                    {"error": "Insufficient balance"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            userWallet.wallet_amount -= deducting_amount
+            userWallet.save()
+
+            return JsonResponse({
+                "message": "Amount deducted successfully",
+                "new_balance": str(userWallet.wallet_amount)
+            })
+
     except Exception as e:
-        print("Error:",e)
-        return JsonResponse({'error': "An unexpected error occurred. Please try again later."}, status=500)
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in deduct_from_wallet for user {user_id}: {str(e)}")
+        
+        return JsonResponse(
+            {'error': "An unexpected error occurred. Please try again later."}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
