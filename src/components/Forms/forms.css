@@ -137,3 +137,18 @@ select{
     margin-bottom: 4px;
     display: block;
   }
+
+input[type="text"]::placeholder {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* Specific style for quantity input */
+input[name="quantity"] {
+  text-transform: lowercase; /* Ensures consistent unit format */
+}
+
+input[name="quantity"]:focus::placeholder {
+  opacity: 0.5;
+}

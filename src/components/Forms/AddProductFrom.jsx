@@ -79,9 +79,13 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
     if (!productData.price || isNaN(productData.price) || Number(productData.price) <= 0) {
       newErrors.price = "Price must be a positive number.";
     }
-    if (!productData.quantity || /^[0-9]+$/.test(productData.quantity)) {
-      newErrors.quantity = "Quantity must be with exact unit.";
+
+    // New quantity validation for format like "750 ml" or "1.5 L"
+    const quantityPattern = /^\d+(\.\d+)?\s*(ml|L)$/i;
+    if (!productData.quantity || !quantityPattern.test(productData.quantity.trim())) {
+      newErrors.quantity = "Quantity must be in format: '750 ml' or '1.5 L'";
     }
+
     if (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0) {
       newErrors.stock_quantity = "Stock quantity must be a non-negative number.";
     }
@@ -226,13 +230,14 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
           />
           {errors.price && <span className="error">{errors.price}</span>}
 
-          <label>Quantity</label>
+          <label>Quantity (e.g., 750 ml, 1.5 L)</label>
           <input
             type="text"
             id="quantity"
             name="quantity"
             value={productData.quantity}
             onChange={handleInputChange}
+            placeholder="e.g., 750 ml"
           />
           {errors.quantity && <span className="error">{errors.quantity}</span>}
 

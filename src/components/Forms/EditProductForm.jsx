@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./forms.css";
@@ -113,7 +112,18 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     const changedFields = getChangedFields();
 
     // Only validate fields that have been changed
-    if (changedFields.name && !productData.name.trim()) validationErrors.name = "Name is required.";
+    if (changedFields.name && !productData.name.trim()) {
+      validationErrors.name = "Name is required.";
+    }
+    
+    // Quantity validation for format like "750 ml" or "1.5 L"
+    if (changedFields.quantity) {
+      const quantityPattern = /^\d+(\.\d+)?\s*(ml|L)$/i;
+      if (!productData.quantity || !quantityPattern.test(productData.quantity.trim())) {
+        validationErrors.quantity = "Quantity must be in format: '750 ml' or '1.5 L'";
+      }
+    }
+
     if (changedFields.description && !productData.description.trim()) validationErrors.description = "Description is required.";
     if (changedFields.category && !productData.category) validationErrors.category = "Category is required.";
     if (changedFields.brand && !productData.brand) validationErrors.brand = "Brand is required.";
@@ -122,10 +132,6 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     
     if (changedFields.price && (!productData.price || isNaN(productData.price) || Number(productData.price) <= 0)) {
       validationErrors.price = "Price must be a positive number.";
-    }
-
-    if (changedFields.quantity && (!productData.quantity || !/^[0-9]+$/.test(productData.quantity))) {
-      validationErrors.quantity = "Quantity must be an exact unit.";
     }
 
     if (changedFields.stock_quantity && (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0)) {
@@ -248,12 +254,13 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
           />
           {errors.price && <span className="error">{errors.price}</span>}
 
-          <label>Quantity</label>
+          <label>Quantity (e.g., 750 ml, 1.5 L)</label>
           <input
             type="text"
             name="quantity"
             value={productData.quantity}
             onChange={handleInputChange}
+            placeholder="e.g., 750 ml"
           />
           {errors.quantity && <span className="error">{errors.quantity}</span>}
 
