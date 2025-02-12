@@ -52,15 +52,22 @@ const Dropdown = ({ toggleDropdown, username }) => {
     navigate('/userorder');
   }
 
+  const handleProfile = ()=>{
+    navigate('/profile')
+  }
+
   return (
     <div className="dropdown-container">
       <div className="dropdown-content">
+       
+        <button onClick={handleorders} className="logout-btn">Orders</button>
+        <button onClick={handleProfile} className="logout-btn">Profile</button>
         {userId ?
           <button onClick={handleLogout} className="logout-btn">Logout</button>
           :
           <button onClick={handleLogin} className="logout-btn">Login</button>
         }
-        <button onClick={handleorders} className="logout-btn">Orders</button>
+
 
       </div>
     </div>

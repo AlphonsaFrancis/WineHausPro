@@ -1,81 +1,165 @@
-/* Basic page styling */
+/* General styles */
 .payment-page {
-    max-width: 600px;
-    margin: 20px auto;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.payment-page h2 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Total amount styling */
+.total-amount {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.total-amount strong {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+/* Payment methods section */
+.payment-methods {
+  margin: 25px 0;
+  text-align: left;
+}
+
+.wallet-option {
+  margin-bottom: 20px;
+}
+
+.wallet-option label {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  position: relative;
+}
+
+.wallet-option input {
+  opacity: 0; /* Hide the default checkbox */
+  position: absolute;
+  cursor: pointer;
+}
+
+/* Custom checkbox */
+.checkmark {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #4CAF50;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  background-color: #fff;
+}
+
+.wallet-option input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #4CAF50;
+  font-size: 14px;
+}
+
+/* Payment options styling */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  position: relative;
+}
+
+.payment-option input {
+  opacity: 0; /* Hide the default radio button */
+  position: absolute;
+  cursor: pointer;
+}
+
+/* Custom radio button */
+.radio-checkmark {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #4CAF50;
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative;
+  background-color: #fff;
+}
+
+.payment-option input:checked + .radio-checkmark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+}
+
+/* Payment button styling */
+.payment-btn {
+  margin-top: 25px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.payment-btn:hover {
+  background-color: #45a049;
+}
+
+/* Error message styling */
+.error-message {
+  font-size: 16px;
+  color: #d9534f;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .payment-page {
+    width: 90%;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
-    text-align: center;
   }
-  
+
   .payment-page h2 {
-    margin-bottom: 20px;
     font-size: 24px;
-    color: #333;
   }
-  
-  /* Payment methods section */
-  .payment-methods {
-    margin: 20px 0;
-    text-align: left;
-  }
-  
-  .payment-methods label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #555;
-  }
-  
-  /* Radio button styling */
-  .payment-methods input[type="radio"] {
-    margin-right: 10px;
-  }
-  
-  /* Payment button styling */
+
   .payment-btn {
-    margin-top: 20px;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    width: 100%;
   }
-  
-  .payment-btn:hover {
-    background-color: #45a049;
-  }
-  
-  /* Error message styling */
-  .payment-page p {
-    font-size: 16px;
-    color: #d9534f;
-  }
-  
-  /* Toast container styling */
-  .Toastify__toast-container {
-    font-size: 14px;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 600px) {
-    .payment-page {
-      width: 90%;
-      padding: 15px;
-    }
-  
-    .payment-page h2 {
-      font-size: 20px;
-    }
-  
-    .payment-btn {
-      width: 100%;
-    }
-  }
-  
+}

@@ -23,6 +23,7 @@ import DeliveryAgentProtectedRoute from './pages/authentication/DeliveryAgentPro
 import DeliveryAgentDashboard from './pages/dashboard/DeliveryAgentDashboard';
 import StockManagerProtected from './pages/authentication/StockManagerProtected';
 import SupplierDashboard from './pages/dashboard/SupplierDashboard';
+import UserProfile from './pages/home/UserProfile';
 function App() {
 
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/admin/products" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
           <Route path="/admin/orders/:orderId" element={<OrderItemsList />} />
           <Route path="/orders/:orderId" element={<OrderItemsList />} />
+          <Route path="/profile" element={<UserProfile/>} />
 
 
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
@@ -60,21 +62,20 @@ function App() {
           <Route path="/stocks/madeOf" element={<StockManagerProtected element={<SupplierDashboard />} />} />
 
 
-
-
-          
-
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/admin/products/:id" element={<ProductDetail />} />
           <Route path="/staff/products/:id" element={<ProductDetail />} />
 
-\
+
           <Route path="/cart" element={<ProtectedRoute element={<CartPage />} />} />
           <Route path="/wishlist" element={<ProtectedRoute element={<WishlistPage />} />} />
           <Route path="/address" element={<ProtectedRoute element={<AddressSelection />} />} />
           <Route path="/payment" element={<ProtectedRoute element={<PaymentPage />} />} />
           <Route path="/userorder" element={<ProtectedRoute element={<UserOrder />} />} />
+
+
+
           <Route path="*" element={<NotFound />} />
 
         </Routes>

@@ -150,6 +150,7 @@ function Navbar() {
           <div className="nav-link">
             <Link to="/products"><b>Products</b></Link>
           </div>
+         
         </div>
 
         <div className="icon-links">
