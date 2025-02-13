@@ -21,8 +21,8 @@ const config = {
     deleteBrandApi:process.env.REACT_APP_DELETE_BRANDS_API,
 
     // BASE_URL: 'https://alphonsa.pythonanywhere.com/'
-    BASE_URL: 'http://localhost:8000/'
-    // BASE_URL: 'http://35.209.193.33/'
+    // BASE_URL: 'http://localhost:8000/'
+    BASE_URL: 'http://13.232.171.151/'
     
 
   };
