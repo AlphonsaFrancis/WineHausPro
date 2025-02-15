@@ -27,7 +27,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Copy Nginx configuration
+# Create necessary directories
+RUN mkdir -p /run/nginx
+
+# Modify Nginx configuration for development (without SSL)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Collect static files
@@ -35,6 +38,5 @@ RUN python manage.py collectstatic --noinput
 
 # Expose ports
 EXPOSE 80 443
-
 # Start Nginx and Gunicorn
 CMD service nginx start && gunicorn winehauspro.wsgi:application --bind 0.0.0.0:8000
