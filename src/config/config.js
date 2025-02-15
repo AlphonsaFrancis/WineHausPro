@@ -22,7 +22,7 @@ const config = {
 
     // BASE_URL: 'https://alphonsa.pythonanywhere.com/'
     // BASE_URL: 'http://localhost:8000/'
-    BASE_URL: 'http://13.232.171.151/'
+    BASE_URL: 'https://projects.winehaus-be.alphonsafrancis.com/'
     
 
   };
