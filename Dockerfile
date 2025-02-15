@@ -21,6 +21,14 @@ RUN apt-get update && apt-get install -y \
     # OpenCV dependencies
     libgl1-mesa-glx \
     libglib2.0-0 \
+    # Tesseract dependencies
+    tesseract-ocr \
+    libtesseract-dev \
+    # Add language packs if needed
+    tesseract-ocr-eng \
+    # Additional dependencies that might be needed
+    libleptonica-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Create necessary directories
@@ -30,7 +38,7 @@ RUN mkdir -p /run/nginx && \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt opencv-python-headless
+RUN pip install --no-cache-dir -r requirements.txt opencv-python-headless pytesseract
 
 # Copy project
 COPY . .
