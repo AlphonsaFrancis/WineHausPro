@@ -214,12 +214,12 @@ def update_order_status(request, orderItemId):
         if order_status == 'cancelled':
             print("Order amount is transfering to wallet")
             try:
-                wallet = UserWallet.objects.get(user=user)
+                wallet = UserWallet.objects.get(user=order_item.user)
                 wallet.wallet_amount += order_item.price
                 wallet.save()
             except UserWallet.DoesNotExist:
                 UserWallet.objects.create(
-                    user = user,
+                    user = order_item.user,
                     wallet_amount = order_item.price
                 )
 

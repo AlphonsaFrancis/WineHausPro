@@ -128,7 +128,9 @@ def validate_otp_and_register(request):
                 otp_record = OtpRecord.objects.filter(email=email).delete()
                 serializer = UserSerializer(user)
                 try:
-                    UserWallet.objects.create(user=user, wallet_amount=0)
+                    user_wallet = UserWallet.objects.get(user=user)
+                    if not user_wallet:
+                        UserWallet.objects.create(user=user, wallet_amount=0)
                 except Exception as e:
                     print(e)
                     pass
@@ -308,7 +310,9 @@ def google_sign_in(request):
         access_token = str(refresh.access_token)
 
         try:
-            UserWallet.objects.create(user=user, wallet_amount=0)
+            user_wallet = UserWallet.objects.get(user=user)
+            if not user_wallet:
+                UserWallet.objects.create(user=user, wallet_amount=0)
         except Exception as e:
             print(e)
             pass

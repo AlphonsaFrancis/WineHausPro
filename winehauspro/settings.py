@@ -98,7 +98,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:3000',
     'https://projects.winehaus-fe.alphonsafrancis.com',
-    'https://winehaus-fe-51761506033.us-central1.run.app/'
+    'https://winehaus-fe-51761506033.us-central1.run.app'
 ]
 
 CORS_ALLOW_METHODS = [
@@ -170,7 +170,7 @@ DATABASES = {
         'NAME': 'winehauspro',
         'USER': 'akhil',
         'PASSWORD': 'User@123',
-        'HOST': '13.232.227.133',  
+        'HOST': '13.201.228.242',  
         'PORT': '3306',  
     }
 }
