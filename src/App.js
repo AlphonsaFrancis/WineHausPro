@@ -38,7 +38,6 @@ function App() {
           <Route path="/admin/products" element={<AdminProtectedRoute element={<AdminDashboard />} />} />
           <Route path="/admin/orders/:orderId" element={<OrderItemsList />} />
           <Route path="/orders/:orderId" element={<OrderItemsList />} />
-          <Route path="/profile" element={<UserProfile/>} />
 
 
           <Route path="/staff" element={<StaffProtectedRoute element={<StaffDashboard />} />} />
@@ -73,6 +72,8 @@ function App() {
           <Route path="/address" element={<ProtectedRoute element={<AddressSelection />} />} />
           <Route path="/payment" element={<ProtectedRoute element={<PaymentPage />} />} />
           <Route path="/userorder" element={<ProtectedRoute element={<UserOrder />} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<UserProfile />} />} />
+
 
 
 
