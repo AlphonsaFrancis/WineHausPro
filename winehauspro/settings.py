@@ -23,13 +23,14 @@ pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+# Define BASE_URL after DEBUG is defined
+BASE_URL = 'http://localhost:8000' if DEBUG else 'https://your-production-domain.com'
 
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-m787wmo#61d-+3-n7e30t!%rex=qd=x)i9fcfub3ilwairai32'
-
-DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -95,10 +96,8 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'authentication.User'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:3000',
     'http://localhost:3000',
-    'https://projects.winehaus-fe.alphonsafrancis.com',
-    'https://winehaus-fe-51761506033.us-central1.run.app'
+    'http://127.0.0.1:3000',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -155,23 +154,23 @@ WSGI_APPLICATION = 'winehauspro.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'winehauspro',
-        'USER': 'akhil',
-        'PASSWORD': 'User@123',
-        'HOST': '13.127.255.36',  
-        'PORT': '3306',  
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'winehauspro',
+#         'USER': 'akhil',
+#         'PASSWORD': 'User@123',
+#         'HOST': '13.127.255.36',  
+#         'PORT': '3306',  
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 

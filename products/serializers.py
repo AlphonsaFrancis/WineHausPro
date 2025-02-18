@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from .models import Product, Category, MadeOf, Country, Brand, Review, SentimentAnalysis, WineEvent, FoodPairing, WineRecommendation
 from django.utils import timezone
+from django.conf import settings
 
 
 class ProductSerializer(serializers.ModelSerializer):
     is_new = serializers.SerializerMethodField()
     days_since_added = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -17,6 +19,11 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_days_since_added(self, obj):
         days = (timezone.now() - obj.created_at).days
         return days
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return f"{settings.BASE_URL}{obj.image.url}"
+        return None
 
 
 class CategorySerializer(serializers.ModelSerializer):
