@@ -47,6 +47,8 @@ from urllib.parse import urlparse
 from django.core.files.temp import NamedTemporaryFile
 
 from .utils import send_low_stock_notification
+from django.utils import timezone
+from datetime import timedelta
 
 @api_view(['GET'])
 def product_filter(request):
@@ -1267,4 +1269,27 @@ def update_stock(request, product_id):
     except Exception as e:
         return Response({
             'error': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_new_arrivals(request):
+    try:
+        # Get products added in the last 30 days
+        recent_date = timezone.now() - timedelta(days=30)
+        new_products = Product.objects.filter(
+            created_at__gte=recent_date,
+            is_active=True,
+            approved=True
+        ).order_by('-created_at')[:8]  # Get top 8 recent products
+        
+        serializer = ProductSerializer(new_products, many=True)
+        return Response({
+            'status': 'success',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

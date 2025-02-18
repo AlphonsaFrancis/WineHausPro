@@ -1,11 +1,22 @@
 from rest_framework import serializers
 from .models import Product, Category, MadeOf, Country, Brand, Review, SentimentAnalysis, WineEvent, FoodPairing, WineRecommendation
+from django.utils import timezone
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    is_new = serializers.SerializerMethodField()
+    days_since_added = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = "__all__"
+
+    def get_is_new(self, obj):
+        return obj.is_new_arrival()
+
+    def get_days_since_added(self, obj):
+        days = (timezone.now() - obj.created_at).days
+        return days
 
 
 class CategorySerializer(serializers.ModelSerializer):

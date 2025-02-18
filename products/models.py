@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .utils import send_low_stock_notification
+from django.utils import timezone
+from datetime import timedelta
 
 from authentication.models import User
 
@@ -79,8 +81,16 @@ class Product(models.Model):
         """Check if stock is below threshold"""
         return self.stock_quantity <= self.min_stock_threshold
 
+    def is_new_arrival(self):
+        """Check if product is added within last 30 days"""
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        return self.created_at >= thirty_days_ago
+
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-created_at']  # Default ordering by newest first
 
 
 # ############################

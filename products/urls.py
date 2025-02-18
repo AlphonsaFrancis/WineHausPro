@@ -60,6 +60,8 @@ urlpatterns = [
     path('events/', views.get_events, name='wine-events'),
     path('food-pairings/', views.get_food_pairings, name='food-pairings'),
 
+    path('new-arrivals/', views.get_new_arrivals, name='new-arrivals'),
+
 ]
 
 if settings.DEBUG:
