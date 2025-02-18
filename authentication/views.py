@@ -130,7 +130,7 @@ def validate_otp_and_register(request):
                 try:
                     user_wallet = UserWallet.objects.get(user=user)
                     if not user_wallet:
-                             UserWallet.objects.create(user=user, wallet_amount=0)
+                        UserWallet.objects.create(user=user, wallet_amount=0)
                 except Exception as e:
                     print(e)
                     pass
