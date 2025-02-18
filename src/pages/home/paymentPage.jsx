@@ -152,9 +152,18 @@ const PaymentPage = () => {
   
       // If user wants to use wallet balance
       if (consumeUserWallet) {
+        console.log("total charging amount",total)
+        console.log("total amount", totalAmount)
+        let amount = 0
+        if(userWalletAmount>total){
+          amount = total
+        }
+        else{
+          amount = userWalletAmount
+        }
         try {
           await axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`, {
-            amount: total,
+            amount: amount,
           });
           toast.success('Amount deducted from wallet successfully!');
         } catch (walletError) {
