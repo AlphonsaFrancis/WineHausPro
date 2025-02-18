@@ -23,6 +23,7 @@ import arriv4 from '../../assets/ArriStella(4).png';
 import BasicModal from '../../components/BasicModal';
 import FloatingRecommendButton from '../../components/FloatingRecommendButton';
 import WineRecommendationModal from '../../components/WineRecommendationModal';
+import NewArrivals from '../../components/NewArrivals';
 
 
 function Home() {
@@ -57,6 +58,9 @@ function Home() {
           <h1>Drink Wine Enjoy Life....</h1>
         </div>
       </section>
+
+      {/* Add New Arrivals section after the banner */}
+      <NewArrivals />
 
       {/* Category Section */}
       <section className="category-section">
