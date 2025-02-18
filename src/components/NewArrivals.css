@@ -109,4 +109,44 @@
     text-decoration: none;
     color: inherit;
     display: block;
+}
+
+.product-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    background: #fff;
+}
+
+.cart-btn, .wishlist-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.cart-btn {
+    background: #2ecc71;
+    color: white;
+}
+
+.cart-btn:hover {
+    background: #27ae60;
+}
+
+.cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.wishlist-btn {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.wishlist-btn:hover {
+    background: #e0e0e0;
 } 
