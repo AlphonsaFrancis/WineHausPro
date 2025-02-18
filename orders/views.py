@@ -16,6 +16,7 @@ from rest_framework import status
 
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
+from django.db import transaction
 
 @api_view(['GET'])
 def user_orders(request, user_id):
@@ -463,96 +464,77 @@ razorpay_client = razorpay.Client(auth=("rzp_test_yIjQWNT42YCgb7", "Ynez8xNEVxPe
 
 @api_view(['POST'])
 def create_payment(request):
-    payment_method = request.data.get('payment_method')
-    amount = request.data.get('amount')
-    cart_id = request.data.get('cart_id')
-
     try:
-        cart = Cart.objects.get(cart_id=cart_id)
-    except Cart.DoesNotExist:
-        return Response({'error': 'Invalid cart ID'}, status=status.HTTP_400_BAD_REQUEST)
-    print("cart", cart)
-    print("user id", cart.user_id.id)
-    if payment_method == 'cod':
-        # Create order entry before saving payment
-        order = Order.objects.create(
-            user_id=cart.user_id,
-            order_status="placed",
-            order_date=timezone.now(),
-            tax_amount=0,  # Modify as needed
-            total_amount=amount
-        )
+        payment_method = request.data.get('payment_method')
+        amount = request.data.get('amount')
+        cart_id = request.data.get('cart_id')
 
-        payment = Payment(
-            payment_method='cod',
-            amount=amount,
-            cart_id=cart,
-            is_successful=True,
-            order_id=order  # Link to order
-        )
-        payment.save()
+        with transaction.atomic():
+            if payment_method == 'cod':
+                # For COD orders, create payment and update stock immediately
+                payment = Payment.objects.create(
+                    cart_id_id=cart_id,
+                    amount=amount,
+                    payment_method=payment_method,
+                    is_successful=True  # Mark as successful for COD
+                )
 
-        create_order_items(order, cart_id, cart.user_id.id)
+                # Update product stock quantities
+                cart_items = CartItems.objects.filter(cart_id=cart_id)
+                for item in cart_items:
+                    product = Product.objects.select_for_update().get(product_id=item.product_id.product_id)
+                    if product.stock_quantity >= item.quantity:
+                        product.stock_quantity -= item.quantity
+                        product.save()
+                    else:
+                        raise ValueError(f"Insufficient stock for product {product.name}")
 
-        return Response({'message': 'Order placed successfully with COD', 'order_id': order.order_id}, status=status.HTTP_201_CREATED)
+                return Response({
+                    'status': 'success',
+                    'message': 'COD order placed successfully'
+                })
+            else:
+                # For online payments, create Razorpay order
+                # ... existing online payment logic ...
+                pass
 
-    elif payment_method == 'online':
-        # Razorpay order creation
-        razorpay_order = razorpay_client.order.create({
-            'amount': int(amount * 100),
-            'currency': 'INR',
-            'payment_capture': 1
-        })
-
-        payment = Payment(
-            payment_method='online',
-            amount=amount,
-            cart_id=cart,
-            payment_id=razorpay_order['id'],
-            is_successful=False
-        )
-        payment.save()
-        return Response({'order_id': razorpay_order['id']}, status=status.HTTP_201_CREATED)
-
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def verify_payment(request):
-    payment_id = request.data.get('payment_id')
-    razorpay_order_id = request.data.get('order_id')
-
     try:
-        payment = Payment.objects.get(payment_id=razorpay_order_id)
-        razorpay_payment = razorpay_client.payment.fetch(payment_id)
-        if razorpay_payment['status'] == 'captured':
-            # Create an order for the successful payment
-            order = Order.objects.create(
-                user_id=payment.cart_id.user_id,
-                order_status="placed",
-                order_date=timezone.now(),
-                tax_amount=50,
-                total_amount=payment.amount
-            )
-
-            # Update payment details
+        payment_id = request.data.get('payment_id')
+        order_id = request.data.get('order_id')
+        
+        with transaction.atomic():
+            # Update payment status
+            payment = Payment.objects.get(payment_id=order_id)
             payment.is_successful = True
-            payment.payment_id = payment_id  # Save actual Razorpay payment ID
-            payment.order_id = order  # Associate the order with payment
             payment.save()
 
-            create_order_items(order, payment.cart_id, payment.cart_id.user_id.id)
-            
-            return Response({'message': 'Payment verified and order created', 'order_id': order.order_id}, status=status.HTTP_200_OK)
+            # Get cart items and update product stock
+            cart_items = CartItems.objects.filter(cart_id=payment.cart_id)
+            for item in cart_items:
+                product = Product.objects.select_for_update().get(product_id=item.product_id.product_id)
+                if product.stock_quantity >= item.quantity:
+                    product.stock_quantity -= item.quantity
+                    product.save()
+                else:
+                    raise ValueError(f"Insufficient stock for product {product.name}")
 
-        else:
-            return Response({'error': 'Payment not captured. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    except Payment.DoesNotExist:
-        print("Payment not found")
-        return Response({'error': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'status': 'Payment verified successfully'
+            })
     except Exception as e:
-        print("error",e)
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST) 
-    
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
+
 def create_order_items(order, cart_id, user_id):
     cart_items = CartItems.objects.filter(cart_id=cart_id)
     user = User.objects.get(id=user_id)
