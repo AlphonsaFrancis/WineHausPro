@@ -129,11 +129,11 @@ def validate_otp_and_register(request):
                 serializer = UserSerializer(user)
                 try:
                     user_wallet = UserWallet.objects.get(user=user)
-                    if not user_wallet:
-                        UserWallet.objects.create(user=user, wallet_amount=0)
+                except UserWallet.DoesNotExist:
+                    print("Creating new user wallet for user")
+                    UserWallet.objects.create(user=user, wallet_amount=0)
                 except Exception as e:
                     print(e)
-                    pass
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
@@ -311,11 +311,11 @@ def google_sign_in(request):
 
         try:
             user_wallet = UserWallet.objects.get(user=user)
-            if not user_wallet:
-                UserWallet.objects.create(user=user, wallet_amount=0)
+        except UserWallet.DoesNotExist:
+            print("Creating new user wallet for user")
+            UserWallet.objects.create(user=user, wallet_amount=0)
         except Exception as e:
             print(e)
-            pass
 
         return Response({
             'access_token': access_token,
@@ -498,11 +498,13 @@ from django.db import transaction
 from decimal import Decimal
 from rest_framework.decorators import api_view
 from rest_framework import status
+from decimal import Decimal
 
 @api_view(['POST'])
 def deduct_from_wallet(request, user_id):
     try:
         deducting_amount = request.data.get('amount')
+        print("Deducting amount from wallet", deducting_amount)
         if not deducting_amount:
             return JsonResponse(
                 {"error": "Amount is required"}, 
@@ -531,14 +533,16 @@ def deduct_from_wallet(request, user_id):
                     status=status.HTTP_404_NOT_FOUND
                 )
 
-            if userWallet.wallet_amount < deducting_amount:
+            if userWallet.wallet_amount < float(deducting_amount):  # Convert Decimal to float for comparison
                 return JsonResponse(
                     {"error": "Insufficient balance"}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            userWallet.wallet_amount -= deducting_amount
+            # Convert Decimal to float before subtraction
+            userWallet.wallet_amount -= float(deducting_amount)
             userWallet.save()
+            print("amount deducted")
 
             return JsonResponse({
                 "message": "Amount deducted successfully",
