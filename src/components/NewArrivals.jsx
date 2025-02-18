@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../utils/config';
 import './NewArrivals.css';
+import { useNavigate } from 'react-router-dom';
 
 const NewArrivals = () => {
     const [newProducts, setNewProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchNewArrivals = async () => {
@@ -24,6 +26,10 @@ const NewArrivals = () => {
         fetchNewArrivals();
     }, []);
 
+    const handleViewDetails = (productId) => {
+        navigate(`/products/${productId}`);
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -38,21 +44,26 @@ const NewArrivals = () => {
                 {newProducts.map((product) => (
                     <div key={product.product_id} className="new-arrival-card">
                         <div className="new-badge">NEW</div>
-                        <img 
-                            src={`${BASE_URL}${product.image}`} 
-                            alt={product.name} 
-                            className="product-image"
-                        />
-                        <div className="product-info">
-                            <h3>{product.name}</h3>
-                            <p className="price">₹{product.price}</p>
-                            <p className="days-ago">
-                                {product.days_since_added === 0 
-                                    ? 'Added today' 
-                                    : `Added ${product.days_since_added} days ago`}
-                            </p>
-                            <button className="view-details">View Details</button>
-                        </div>
+                        <a href={`/products/${product.product_id}`} className="product-link">
+                            <img 
+                                src={product.image_url || `${BASE_URL}${product.image}`} 
+                                alt={product.name} 
+                                className="product-image"
+                                style={{ cursor: 'pointer' }}
+                            />
+                            <div className="product-info">
+                                <h3>{product.name}</h3>
+                                <p className="price">₹{product.price}</p>
+                                <p className="days-ago">
+                                    {product.days_since_added === 0 
+                                        ? 'Added today' 
+                                        : `Added ${product.days_since_added} days ago`}
+                                </p>
+                                <button className="view-details">
+                                    View Details
+                                </button>
+                            </div>
+                        </a>
                     </div>
                 ))}
             </div>
