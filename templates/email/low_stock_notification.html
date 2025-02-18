@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low Stock Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .email-container {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2ecc71;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2ecc71;
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .product-details {
+            margin-bottom: 20px;
+        }
+        .product-name {
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .stock-info {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .action-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .login-link {
+            display: inline-block;
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .login-link:hover {
+            background-color: #27ae60;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>WineHaus Stock Alert</h1>
+        </div>
+        
+        <div class="content">
+            <div class="product-details">
+                <p>Dear Supplier,</p>
+                <p>This is to inform you that the following product is running low on stock:</p>
+                <p class="product-name">{{ product.name }}</p>
+                <p class="stock-info">Current Stock: {{ product.stock_quantity }} units</p>
+            </div>
+
+            <div class="action-button">
+                <a href="http://localhost:3000/login" class="login-link">
+                    Login to Update Stock
+                </a>
+            </div>
+
+            <p>Please take immediate action to replenish the stock to ensure uninterrupted service to our customers.</p>
+            
+            <p>Additional Product Details:</p>
+            <ul>
+                <li>Category: {{ product.category.name }}</li>
+                <li>Brand: {{ product.brand.name }}</li>
+                <li>Price: ₹{{ product.price }}</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message from WineHaus Inventory Management System.</p>
+            <p>If you have any questions, please contact our support team.</p>
+        </div>
+    </div>
+</body>
+</html> 
