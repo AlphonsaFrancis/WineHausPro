@@ -94,16 +94,22 @@ const PaymentPage = () => {
       return;
     }
 
-    if(userWalletAmount>=total){
+    if(consumeUserWallet&& userWalletAmount>=total){
+      setPaymentMethod('cod')
       handleCODPayment()
 
     }
+    else{
 
-    if (paymentMethod === 'cod') {
-      handleCODPayment();
-    } else {
-      handleOnlinePayment();
+      if (paymentMethod === 'cod') {
+        handleCODPayment();
+      } else {
+        handleOnlinePayment();
+      }
+
     }
+
+   
   };
 
   // const handleCODPayment = () => {
