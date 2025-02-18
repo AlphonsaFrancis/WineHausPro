@@ -10,6 +10,7 @@ import config from "../../config/config";
 const UserProfile = () => {
 const storedUser = localStorage.getItem("user");
 const user = JSON.parse(storedUser);
+console.log("user",user)
   
   const [name, setName] = useState(user.name);
   const [walletBalance, setWalletBalance] = useState(1000);

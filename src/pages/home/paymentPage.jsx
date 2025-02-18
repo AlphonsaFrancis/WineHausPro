@@ -43,14 +43,19 @@ const PaymentPage = () => {
 
   useEffect(() => {
     if (consumeUserWallet) {
-      setTotalAmount(total - userWalletAmount);
+      if (userWalletAmount >= total) {
+        setTotalAmount(0); // Wallet covers full amount
+        setPaymentMethod('')
+      } else {
+        setTotalAmount(total - userWalletAmount); // Deduct wallet amount
+      }
     } else {
-      setTotalAmount(total);
+      setTotalAmount(total); // No wallet deduction
     }
+  }, [consumeUserWallet, userWalletAmount, total]);
   
     console.log("Total amount:", total - (consumeUserWallet ? userWalletAmount : 0));
   
-  }, [consumeUserWallet, total, userWalletAmount]);
 
   // Function to fetch the cart details for the logged-in user
   const fetchCartDetails = async () => {
@@ -89,6 +94,11 @@ const PaymentPage = () => {
       return;
     }
 
+    if(userWalletAmount>=total){
+      handleCODPayment()
+
+    }
+
     if (paymentMethod === 'cod') {
       handleCODPayment();
     } else {
@@ -96,38 +106,73 @@ const PaymentPage = () => {
     }
   };
 
-  const handleCODPayment = () => {
-    axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
-      payment_method: 'cod',
-      amount: totalAmount,
-      cart_id: cartId,
-    })
-    .then(response => {
+  // const handleCODPayment = () => {
+  //   axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
+  //     payment_method: 'cod',
+  //     amount: totalAmount,
+  //     cart_id: cartId,
+  //   })
+  //   .then(response => {
+  //     toast.success('Order placed successfully with Cash on Delivery!');
+  //     if(consumeUserWallet){
+  //       axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
+  //     .then((response)=>{
+  //       toast.success('Amount deducted from wallet successfully!');
+  //       clearCartItems(cartId);
+  //       navigate('/userorder');
+
+  //     })
+  //     .catch((error)=>{
+  //       console.log("Error",error)
+  //       toast.error('Failed to place order. Please try again.');
+  //     })
+
+
+  //     }
+  //     clearCartItems(cartId);
+  //     navigate('/userorder');
+      
+  //   })
+  //   .catch(error => {
+  //     console.error("COD Payment error:", error);
+  //     toast.error('Failed to place order. Please try again.');
+  //   });
+  // };
+
+  const handleCODPayment = async () => {
+    try {
+      // Create order with COD
+      const orderResponse = await axios.post(`${config.BASE_URL}api/v1/orders/payments/create/`, {
+        payment_method: 'cod',
+        amount: totalAmount,
+        cart_id: cartId,
+      });
+  
       toast.success('Order placed successfully with Cash on Delivery!');
-      if(consumeUserWallet){
-        axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
-      .then((response)=>{
-        toast.success('Amount deducted from wallet successfully!');
-        clearCartItems(cartId);
-        navigate('/userorder');
-
-      })
-      .catch((error)=>{
-        console.log("Error",error)
-        toast.error('Failed to place order. Please try again.');
-      })
-
-
+  
+      // If user wants to use wallet balance
+      if (consumeUserWallet) {
+        try {
+          await axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`, {
+            amount: total,
+          });
+          toast.success('Amount deducted from wallet successfully!');
+        } catch (walletError) {
+          console.error("Wallet deduction error:", walletError);
+          toast.error('Failed to deduct amount from wallet. Please check your wallet balance.');
+        }
       }
+  
+      // Clear cart and navigate after successful order & wallet deduction
       clearCartItems(cartId);
       navigate('/userorder');
-      
-    })
-    .catch(error => {
-      console.error("COD Payment error:", error);
+  
+    } catch (orderError) {
+      console.error("COD Payment error:", orderError);
       toast.error('Failed to place order. Please try again.');
-    });
+    }
   };
+  
 
   // Handle online payment with Razorpay
   const handleOnlinePayment = async () => {
@@ -173,41 +218,75 @@ const PaymentPage = () => {
 
   // Verify payment after successful Razorpay transaction
 
+// const verifyPayment = async (paymentId, orderId) => {
+//   try {
+//     const response = await axios.post(`${config.BASE_URL}api/v1/orders/payments/verify/`, {
+//       payment_id: paymentId,
+//       order_id: orderId,
+//     });
+
+//     if(consumeUserWallet){
+
+//       axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
+//       .then(response => {
+//         console.log('Payment verified successfully:', response.data);
+//         toast.success('Payment verified successfully!');
+    
+//        clearCartItems();
+//       })
+//       .catch((err)=>{
+//         toast.error('Payment verification failed. Please contact support.');
+  
+//       })
+
+//     }
+//     toast.success('Payment verified successfully!');
+    
+//     clearCartItems();
+
+   
+
+   
+
+//   } catch (error) {
+//     console.error('Payment verification failed:', error);
+//     toast.error('Payment verification failed. Please contact support.');
+//   }
+// };
+
+
 const verifyPayment = async (paymentId, orderId) => {
   try {
+    // Verify the payment
     const response = await axios.post(`${config.BASE_URL}api/v1/orders/payments/verify/`, {
       payment_id: paymentId,
       order_id: orderId,
     });
 
-    if(consumeUserWallet){
-
-      axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`,{amount:userWalletAmount})
-      .then(response => {
-        console.log('Payment verified successfully:', response.data);
-        toast.success('Payment verified successfully!');
-    
-       clearCartItems();
-      })
-      .catch((err)=>{
-        toast.error('Payment verification failed. Please contact support.');
-  
-      })
-
-    }
     toast.success('Payment verified successfully!');
-    
+
+    // If user wants to use wallet balance
+    if (consumeUserWallet) {
+      try {
+        await axios.post(`${config.BASE_URL}api/v1/auth/deduct-from-wallet/${userId}/`, {
+          amount: total,
+        });
+        toast.success('Amount deducted from wallet successfully!');
+      } catch (walletError) {
+        console.error("Wallet deduction error:", walletError);
+        toast.error('Wallet deduction failed. Please check your wallet balance.');
+      }
+    }
+
+    // Clear cart after successful verification and wallet deduction
     clearCartItems();
-
-   
-
-   
 
   } catch (error) {
     console.error('Payment verification failed:', error);
     toast.error('Payment verification failed. Please contact support.');
   }
 };
+
 
 // Function to clear cart items after order is placed
 const clearCartItems = async () => {
@@ -243,7 +322,7 @@ const clearCartItems = async () => {
                 onChange={() => setConsumeUserWallet(!consumeUserWallet)}
               />
               <span className="checkmark"></span>
-              Use ₹{userWalletAmount} from your wallet
+              Use ₹{userWalletAmount > total ? total : userWalletAmount} from your wallet
             </label>
             }
               
@@ -255,6 +334,7 @@ const clearCartItems = async () => {
                   value="online"
                   checked={paymentMethod === 'online'}
                   onChange={() => setPaymentMethod('online')}
+                  disabled={consumeUserWallet&&userWalletAmount>=total}
                 />
                 <span className="radio-checkmark"></span>
                 Online Payment
@@ -265,6 +345,7 @@ const clearCartItems = async () => {
                   value="cod"
                   checked={paymentMethod === 'cod'}
                   onChange={() => setPaymentMethod('cod')}
+                  disabled={consumeUserWallet&&userWalletAmount>=total}
                 />
                 <span className="radio-checkmark"></span>
                 Cash on Delivery
