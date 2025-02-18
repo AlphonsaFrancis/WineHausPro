@@ -68,3 +68,138 @@
     background-color: #0056b3;
   }
   
+.profile-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  background: #2ecc71;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  margin: 0 auto 1rem;
+}
+
+.profile-header h1 {
+  color: #333;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.profile-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  color: #2ecc71;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.info-text {
+  flex: 1;
+}
+
+.info-text label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.info-text span {
+  display: block;
+  color: #333;
+  font-size: 1rem;
+}
+
+.wallet-amount {
+  font-size: 2.5rem;
+  color: #2ecc71;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.currency {
+  font-size: 2rem;
+  margin-right: 0.25rem;
+}
+
+.wallet-description {
+  text-align: center;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .profile-header h1 {
+    font-size: 1.5rem;
+  }
+}
