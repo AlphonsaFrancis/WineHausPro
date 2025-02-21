@@ -173,10 +173,11 @@
 
 .search-icon {
   cursor: pointer;
-  color: #666;
-  font-size: 20px;
-  padding: 4px;
-  transition: color 0.3s;
+  color: #423e3e;
+  /* font-size: 20px; */
+  height: 35px;
+  /* padding: 4px;
+  transition: color 0.3s; */
 }
 
 .search-icon:hover {

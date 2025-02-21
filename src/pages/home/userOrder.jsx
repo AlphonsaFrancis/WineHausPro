@@ -24,6 +24,9 @@ const OrdersPage = () => {
   const [isEditReview, setIsEditReview] = useState(false);
   const [addMoreReview, setAddMoreReview] = useState(false);
 
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
+
   const userId = localStorage.getItem("userId");
 
   console.log("userSummaries", userSummaries);
@@ -188,6 +191,50 @@ const OrdersPage = () => {
     toast.success("Receipt downloaded successfully.");
   };
 
+  const handleCancelOrder = (order) => {
+    setOrderToCancel(order);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancellation = async () => {
+    try {
+      await axios.post(
+        `${config.BASE_URL}api/v1/orders/cancel-user-order/${orderToCancel.order_id}/`,
+        { user_id: userId }
+      );
+      
+      // Update the orders list to reflect the cancellation
+      setOrders(orders.map(orderData => {
+        if (orderData.order.order_id === orderToCancel.order_id) {
+          return {
+            ...orderData,
+            order: {
+              ...orderData.order,
+              order_status: 'cancelled'
+            },
+            order_items: orderData.order_items.map(item => ({
+              ...item,
+              order_status: 'cancelled'
+            }))
+          };
+        }
+        return orderData;
+      }));
+
+      toast.success("Order cancelled successfully");
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      toast.error(error.response?.data?.error || "Failed to cancel the order");
+    }
+    setShowCancelModal(false);
+    setOrderToCancel(null);
+  };
+
+  const cancelCancellation = () => {
+    setShowCancelModal(false);
+    setOrderToCancel(null);
+  };
+
   return (
     <div>
       <Header />
@@ -348,6 +395,14 @@ const OrdersPage = () => {
             </ul>
 
             <div className="order-actions">
+              {['placed', 'processing'].includes(order.order_status) && (
+                <button
+                  className="cancel-order-button"
+                  onClick={() => handleCancelOrder(order)}
+                >
+                  Cancel Order
+                </button>
+              )}
               <button
                 className="delete-order-button"
                 onClick={() => handleDeleteOrder(order.order_id)}
@@ -381,6 +436,27 @@ const OrdersPage = () => {
                   </button>
                   <button onClick={cancelDeletion} className="cancel-btn">
                     No
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCancelModal && (
+          <div className="confirm-modal-overlay">
+            <div className="confirm-modal">
+              <div className="confirm-modal-content">
+                <h2>
+                  <span role="img" aria-label="warning">⚠️</span> Confirm Cancellation
+                </h2>
+                <p>Are you sure you want to cancel this order?</p>
+                <div className="modal-buttons">
+                  <button onClick={confirmCancellation} className="confirm-btn">
+                    Yes, Cancel Order
+                  </button>
+                  <button onClick={cancelCancellation} className="cancel-btn">
+                    No, Keep Order
                   </button>
                 </div>
               </div>

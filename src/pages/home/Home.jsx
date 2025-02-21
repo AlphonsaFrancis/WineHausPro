@@ -24,6 +24,7 @@ import BasicModal from '../../components/BasicModal';
 import FloatingRecommendButton from '../../components/FloatingRecommendButton';
 import WineRecommendationModal from '../../components/WineRecommendationModal';
 import NewArrivals from '../../components/NewArrivals';
+import BestSellers from '../../components/BestSellers';
 
 
 function Home() {
@@ -158,78 +159,7 @@ function Home() {
       </div>
 
       {/* Best Sellers Section */}
-      <section className="best-sellers">
-        <div className="head-seller">
-          <h2>Best Sellers</h2>
-        </div>
-        <div className="home-product-container">
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img
-                src={frat}
-                alt="Fratelli Cabernet Sauvignon"
-              />
-            </div>
-            <div className="home-product-info">
-              <h3>Fratelli Cabernet Sauvignon</h3>
-              <p>₹ 1300</p>
-              <div className="home-product-meta">
-                <span className="badge red">Red</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img src={best2} alt="Spade & Spar Rows Rose" />
-            </div>
-            <div className="home-product-info">
-              <h3>Spade & Spar Rows Rose</h3>
-              <p>₹ 2000</p>
-              <div className="home-product-meta">
-                <span className="badge rose">Rose</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img
-                src={best3}
-                alt="Chardonnay Kendall-Jackson"
-              />
-            </div>
-            <div className="home-product-info">
-              <h3>Chardonnay Kendall-Jackson</h3>
-              <p>₹ 900</p>
-              <div className="home-product-meta">
-                <span className="badge white">White</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img src={best4} alt="Zampa Soiree Brut" />
-            </div>
-            <div className="home-product-info">
-              <h3>Zampa Soiree Brut</h3>
-              <p>₹ 1800</p>
-              <div className="home-product-meta">
-                <span className="badge sparkling">Sparkling</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <BestSellers />
 
       {/* New Arrivals Section */}
       <section className="best-sellers">

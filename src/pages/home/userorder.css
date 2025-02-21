@@ -300,3 +300,37 @@
   .download-receipt-button:hover {
     background-color: #388e3c;
   }
+
+.cancel-order-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-order-button:hover {
+    background-color: #c82333;
+}
+
+.cancel-order-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.confirm-modal-content h2 {
+    color: #dc3545;
+}
+
+.confirm-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #c82333;
+}
