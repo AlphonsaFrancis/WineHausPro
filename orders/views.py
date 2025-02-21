@@ -469,57 +469,41 @@ def create_payment(request):
         amount = request.data.get('amount')
         cart_id = request.data.get('cart_id')
 
-        with transaction.atomic():
-            if payment_method == 'cod':
-                # For COD orders, create payment and update stock immediately
-                payment = Payment.objects.create(
-                    cart_id_id=cart_id,
-                    amount=amount,
-                    payment_method=payment_method,
-                    is_successful=True  # Mark as successful for COD
-                )
-
-                # Update product stock quantities
-                cart_items = CartItems.objects.filter(cart_id=cart_id)
-                for item in cart_items:
-                    product = Product.objects.select_for_update().get(product_id=item.product_id.product_id)
-                    if product.stock_quantity >= item.quantity:
-                        product.stock_quantity -= item.quantity
-                        product.save()
-                    else:
-                        raise ValueError(f"Insufficient stock for product {product.name}")
-
-                return Response({
-                    'status': 'success',
-                    'message': 'COD order placed successfully'
-                })
-            else:
-                # For online payments, create Razorpay order
-                # ... existing online payment logic ...
-                pass
-
-    except Exception as e:
-        return Response({
-            'status': 'error',
-            'message': str(e)
-        }, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['POST'])
-def verify_payment(request):
-    try:
-        payment_id = request.data.get('payment_id')
-        order_id = request.data.get('order_id')
+        cart = Cart.objects.get(cart_id=cart_id)
         
-        with transaction.atomic():
-            # Update payment status
-            payment = Payment.objects.get(payment_id=order_id)
-            payment.is_successful = True
-            payment.save()
+        if payment_method == 'cod':
+            # Create order first
+            order = Order.objects.create(
+                user_id=cart.user_id,
+                order_status="placed",
+                order_date=timezone.now(),
+                tax_amount=0,  # Modify as needed
+                total_amount=amount
+            )
 
-            # Get cart items and update product stock
-            cart_items = CartItems.objects.filter(cart_id=payment.cart_id)
+            # Create payment and link it to the order
+            payment = Payment.objects.create(
+                payment_method='cod',
+                amount=amount,
+                cart_id=cart,
+                is_successful=True,
+                order_id=order
+            )
+
+            # Create order items from cart items
+            cart_items = CartItems.objects.filter(cart_id=cart_id)
             for item in cart_items:
-                product = Product.objects.select_for_update().get(product_id=item.product_id.product_id)
+                # Create order item
+                OrderItems.objects.create(
+                    order_id=order,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.product_id.price,
+                    user=cart.user_id
+                )
+                
+                # Update product stock
+                product = item.product_id
                 if product.stock_quantity >= item.quantity:
                     product.stock_quantity -= item.quantity
                     product.save()
@@ -527,13 +511,93 @@ def verify_payment(request):
                     raise ValueError(f"Insufficient stock for product {product.name}")
 
             return Response({
-                'status': 'Payment verified successfully'
+                'message': 'Order placed successfully with COD', 
+                'order_id': order.order_id
+            }, status=status.HTTP_201_CREATED)
+
+        elif payment_method == 'online':
+            # Create Razorpay order
+            razorpay_order = razorpay_client.order.create({
+                'amount': int(amount * 100),
+                'currency': 'INR',
+                'payment_capture': 1
             })
+
+            # Create payment record
+            payment = Payment.objects.create(
+                payment_method='online',
+                amount=amount,
+                cart_id=cart,
+                payment_id=razorpay_order['id'],
+                is_successful=False
+            )
+            
+            return Response({'order_id': razorpay_order['id']}, status=status.HTTP_201_CREATED)
+
+    except Cart.DoesNotExist:
+        return Response({'error': 'Invalid cart ID'}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({
-            'status': 'error',
-            'message': str(e)
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def verify_payment(request):
+    try:
+        payment_id = request.data.get('payment_id')
+        razorpay_order_id = request.data.get('order_id')
+        
+        payment = Payment.objects.get(payment_id=razorpay_order_id)
+        razorpay_payment = razorpay_client.payment.fetch(payment_id)
+
+        if razorpay_payment['status'] == 'captured':
+            with transaction.atomic():
+                # Create order
+                order = Order.objects.create(
+                    user_id=payment.cart_id.user_id,
+                    order_status="placed",
+                    order_date=timezone.now(),
+                    tax_amount=0,  # Modify as needed
+                    total_amount=payment.amount
+                )
+
+                # Update payment details
+                payment.is_successful = True
+                payment.payment_id = payment_id
+                payment.order_id = order
+                payment.save()
+
+                # Create order items from cart items
+                cart_items = CartItems.objects.filter(cart_id=payment.cart_id)
+                for item in cart_items:
+                    # Create order item
+                    OrderItems.objects.create(
+                        order_id=order,
+                        product_id=item.product_id,
+                        quantity=item.quantity,
+                        price=item.product_id.price,
+                        user=payment.cart_id.user_id
+                    )
+                    
+                    # Update product stock
+                    product = item.product_id
+                    if product.stock_quantity >= item.quantity:
+                        product.stock_quantity -= item.quantity
+                        product.save()
+                    else:
+                        raise ValueError(f"Insufficient stock for product {product.name}")
+
+                return Response({
+                    'message': 'Payment verified and order created', 
+                    'order_id': order.order_id
+                }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'error': 'Payment not captured'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Payment.DoesNotExist:
+        return Response({'error': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 def create_order_items(order, cart_id, user_id):
     cart_items = CartItems.objects.filter(cart_id=cart_id)
@@ -1207,3 +1271,122 @@ def product_orders_by_day(request):
             {"error": f"An unexpected error occurred: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def best_sellers(request):
+    try:
+        # Get the most ordered products in the last 30 days
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        
+        best_selling_products = (
+            OrderItems.objects
+            .filter(created_at__gte=thirty_days_ago)
+            .values('product_id')
+            .annotate(total_ordered=Count('product_id'))
+            .order_by('-total_ordered')[:8]  # Get top 8 products
+        )
+
+        # Get the full product details
+        product_ids = [item['product_id'] for item in best_selling_products]
+        products = Product.objects.filter(product_id__in=product_ids)
+        
+        # Create a dictionary to store order counts
+        order_counts = {item['product_id']: item['total_ordered'] for item in best_selling_products}
+        
+        # Add order count to each product
+        product_list = []
+        for product in products:
+            product_data = {
+                'product_id': product.product_id,
+                'name': product.name,
+                'price': product.price,
+                'image': product.image.url if product.image else None,
+                'stock_quantity': product.stock_quantity,
+                'is_active': product.is_active,
+                'orders_count': order_counts.get(product.product_id, 0)
+            }
+            product_list.append(product_data)
+        
+        # Sort by order count
+        product_list.sort(key=lambda x: x['orders_count'], reverse=True)
+        
+        return Response({
+            'status': 'success',
+            'data': product_list
+        })
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def cancel_user_order(request, order_id):
+    try:
+        with transaction.atomic():  # Use transaction to ensure data consistency
+            order = Order.objects.get(order_id=order_id)
+            
+            # Check if order belongs to the requesting user
+            if str(order.user_id.id) != str(request.data.get('user_id')):
+                return Response({
+                    'error': 'Unauthorized to cancel this order'
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            # Only allow cancellation if order is in 'placed' or 'processing' status
+            if order.order_status not in ['placed', 'processing']:
+                return Response({
+                    'error': 'Order cannot be cancelled in its current status'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Update order status to cancelled
+            order.order_status = 'cancelled'
+            order.save()
+
+            # Get or create user wallet
+            try:
+                wallet = UserWallet.objects.get(user=order.user_id)
+            except UserWallet.DoesNotExist:
+                wallet = UserWallet.objects.create(
+                    user=order.user_id,
+                    wallet_amount=0
+                )
+
+            # Add order amount to wallet
+            wallet.wallet_amount += float(order.total_amount)
+            wallet.save()
+
+            # Create transaction record
+            Transactions.objects.create(
+                user=order.user_id,
+                transaction_id=f"REF_ORD_{order.order_id}",
+                transaction_status='success',
+                transaction_amount=order.total_amount,
+                transaction_type='credit',
+                transaction_desc=f"Refund for cancelled order #{order.order_id}"
+            )
+
+            # Restore product stock quantities
+            order_items = OrderItems.objects.filter(order_id=order)
+            for item in order_items:
+                product = item.product_id
+                product.stock_quantity += item.quantity
+                product.save()
+                
+                # Update the individual order item status
+                item.order_status = 'cancelled'
+                item.save()
+
+            return Response({
+                'message': 'Order cancelled successfully and amount refunded to wallet',
+                'refunded_amount': order.total_amount,
+                'new_wallet_balance': wallet.wallet_amount
+            }, status=status.HTTP_200_OK)
+
+    except Order.DoesNotExist:
+        return Response({
+            'error': 'Order not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            'error': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)

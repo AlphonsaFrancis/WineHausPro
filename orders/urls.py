@@ -42,12 +42,14 @@ urlpatterns = [
     path('order-items/<int:order_id>/', views.order_items, name='order_items'),
     path('update-order-status/<int:orderItemId>/',views.update_order_status,name='update-order-status'),
 
+    path('cancel-user-order/<int:order_id>/', views.cancel_user_order, name='cancel-user-order'),
 
     # MAIN PROJECT
 
     path('orders-per-day/',views.orders_per_day,name='orders_per_day'),
     path('category-orders-per-day/',views.category_orders_by_day,name='category_orders_by_day'),
-    path('product-orders-by-day/',views.product_orders_by_day,name='product_orders_by_day')
+    path('product-orders-by-day/',views.product_orders_by_day,name='product_orders_by_day'),
+    path('best-sellers/', views.best_sellers, name='best_sellers'),
 
 
 ]
