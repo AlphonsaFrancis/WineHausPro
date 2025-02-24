@@ -16,6 +16,8 @@ import {
   MdInventory,
 } from "react-icons/md";
 import ProductReviews from "../../components/ProductReviews";
+import FloatingRecommendButton from "../../components/FloatingRecommendButton";
+import WineRecommendationModal from "../../components/WineRecommendationModal";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -31,6 +33,8 @@ const ProductDetail = () => {
   const [reviews, setReviews] = useState([]);
   const [reviewSummary, setReviewSummary] = useState([]);
   const [similarProducts, setSimilarProducts]=useState()
+  const [showRecommendations, setShowRecommendations] = useState(false);
+
   const userId = localStorage.getItem("userId");
   const getSimilarProducts = (product) => {
     if (!product) {
@@ -41,7 +45,6 @@ const ProductDetail = () => {
     const baseUrl = `${config.BASE_URL}api/v1/products/get-similar-products/`;
     const params = new URLSearchParams();
   
-    console.log("###user",user)
   
     if (product.category) {
       params.append("category", product.category);
@@ -377,6 +380,17 @@ useEffect(()=>{
           )}
         </div>
       </div>
+      {user && (
+        <>
+          <FloatingRecommendButton
+            onClick={() => setShowRecommendations(true)}
+          />
+          <WineRecommendationModal
+            visible={showRecommendations}
+            onClose={() => setShowRecommendations(false)}
+          />
+        </>
+      )}
     </div>
   );
 };
