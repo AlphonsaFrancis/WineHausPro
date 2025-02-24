@@ -862,7 +862,9 @@ def get_similar_products(request):
             'stock_quantity': product.stock_quantity,
             'image': product.image.url if product.image else None,
             'brand': product.brand.name,
-            'category': product.category.name
+            'category': product.category.name,
+            'is_active':product.is_active,
+            'is_approved':product.approved
         } for product in paginated_products]
 
         return JsonResponse({
