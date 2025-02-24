@@ -852,7 +852,7 @@ def cart_detail(request, pk):
 def cart_items_list_create(request):
     print("Incoming request data:", request.data)
     user_id = request.data.get('user_id')
-    product_id = request.data.get('product_id')
+    # product_id = request.data.get('product_id')
     product_id = int(request.data.get('product_id'))
     quantity = request.data.get('quantity', 1)  # Default quantity to 1 if not provided
 

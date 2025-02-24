@@ -1473,13 +1473,15 @@ class WineRecommendationView(APIView):
                         'wine_1': {
                             'id': products[i].product_id,
                             'name': products[i].name,
+                            'percentage_1': round(ratio * 100, 2),  
+
                         },
                         'wine_2': {
                             'id': products[j].product_id,
                             'name': products[j].name,
+                            'percentage_2': round((1 - ratio) * 100, 2),  
+
                         },
-                        'percentage_1': round(ratio * 100, 2),  # Percentage of wine 1
-                        'percentage_2': round((1 - ratio) * 100, 2),  # Percentage of wine 2
                         'blend_taste': float(blended_features[0]),  # Convert to float
                         'blend_acidity': float(blended_features[1]),  # Convert to float
                         'blend_alcohol_content': float(blended_features[2]),  # Convert to float
