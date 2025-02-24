@@ -28,7 +28,6 @@ const OrderItemsList = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const storedUser = localStorage.getItem("user");
   const user = JSON.parse(storedUser);
-  console.log("user",user)
 
   const statusOptions = [
     "placed",

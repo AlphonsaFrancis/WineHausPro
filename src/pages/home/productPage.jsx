@@ -3,10 +3,11 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Filter from "../../components/Filters";
-import ProductCard from "../../components/ProductCard"
+import ProductCard from "../../components/ProductCard";
 import "./product.css";
 import config from "../../config/config";
-
+import FloatingRecommendButton from "../../components/FloatingRecommendButton";
+import WineRecommendationModal from "../../components/WineRecommendationModal";
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -28,6 +29,8 @@ const ProductPage = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("search") || "";
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -103,7 +106,6 @@ const ProductPage = () => {
 
     fetchFeedbackSummaries();
   }, [products]);
-
 
   const addToCart = (productId, quantity = 1) => {
     const userId = localStorage.getItem("userId");
@@ -235,7 +237,12 @@ const ProductPage = () => {
           <div className="hard-product-display">
             <div className="hard-products-grid">
               {products.length > 0 ? (
-                <ProductCard products={products} feedbackSummaries={feedbackSummaries} addToWishlist={addToWishlist} addToCart={addToCart}/>
+                <ProductCard
+                  products={products}
+                  feedbackSummaries={feedbackSummaries}
+                  addToWishlist={addToWishlist}
+                  addToCart={addToCart}
+                />
               ) : (
                 <p>No products found for "{searchQuery}"</p>
               )}
@@ -243,6 +250,17 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
+      {user && (
+        <>
+          <FloatingRecommendButton
+            onClick={() => setShowRecommendations(true)}
+          />
+          <WineRecommendationModal
+            visible={showRecommendations}
+            onClose={() => setShowRecommendations(false)}
+          />
+        </>
+      )}
     </div>
   );
 };

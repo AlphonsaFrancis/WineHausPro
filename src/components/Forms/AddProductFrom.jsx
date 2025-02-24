@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./forms.css";
-import {findActiveItems} from "../../pages/dashboard/helper"
+import { findActiveItems } from "../../pages/dashboard/helper";
 import config from "../../config/config";
 
 const AddProductForm = ({ onCancel, onConfirm }) => {
-  const [categories,setCategories] = useState();
-  const [brands, setBrands] = useState()
-  const [countries,setCountries] = useState()
-  const [madeOf,setMadeOfs]  = useState()
+  const [categories, setCategories] = useState();
+  const [brands, setBrands] = useState();
+  const [countries, setCountries] = useState();
+  const [madeOf, setMadeOfs] = useState();
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -20,80 +20,107 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
     made_of: null,
     stock_quantity: 1,
     image: null,
+    taste: null,
+    acidity: null,
+    alcohol_content: null,
   });
 
   const [errors, setErrors] = useState({});
   const storedUser = localStorage.getItem("user");
   const user = JSON.parse(storedUser);
 
-  useEffect(()=>{
-    axios.get(`${config.BASE_URL}api/v1/products/brand-list/`)
-    .then((response)=>{
-      if(response?.status === 200){
-        const activeBrands = findActiveItems(response?.data)
-        setBrands(activeBrands)
-      }
-    })
-    .catch((error)=>{
-      console.log(error)
-    })
+  useEffect(() => {
+    axios
+      .get(`${config.BASE_URL}api/v1/products/brand-list/`)
+      .then((response) => {
+        if (response?.status === 200) {
+          const activeBrands = findActiveItems(response?.data);
+          setBrands(activeBrands);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    axios.get(`${config.BASE_URL}api/v1/products/category-list/`)
-    .then((response)=>{
-      if(response?.status === 200){
-        const activeCategories = findActiveItems(response?.data)
-        setCategories(activeCategories)
-      }
-    })
-    .catch((error)=>{
-      console.log(error)
-    })
+    axios
+      .get(`${config.BASE_URL}api/v1/products/category-list/`)
+      .then((response) => {
+        if (response?.status === 200) {
+          const activeCategories = findActiveItems(response?.data);
+          setCategories(activeCategories);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    axios.get(`${config.BASE_URL}api/v1/products/country-list/`)
-    .then((response)=>{
-      if(response?.status === 200){
-        const activeCountries = findActiveItems(response?.data)
-        setCountries(activeCountries)
-      }
-    })
-    .catch((error)=>{
-      console.log(error)
-    })
+    axios
+      .get(`${config.BASE_URL}api/v1/products/country-list/`)
+      .then((response) => {
+        if (response?.status === 200) {
+          const activeCountries = findActiveItems(response?.data);
+          setCountries(activeCountries);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`)
-    .then((response)=>{
-      if(response?.status === 200){
-        const activeMadeOfs = findActiveItems(response?.data)
-        setMadeOfs(activeMadeOfs)
-      }
-    }).catch((error)=>{
-      console.log(error)
-    })
-  },[])
+    axios
+      .get(`${config.BASE_URL}api/v1/products/madeof-list/`)
+      .then((response) => {
+        if (response?.status === 200) {
+          const activeMadeOfs = findActiveItems(response?.data);
+          setMadeOfs(activeMadeOfs);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!productData.name) newErrors.name = "Name is required.";
-    if (!productData.description) newErrors.description = "Description is required.";
-    if (!productData.price || isNaN(productData.price) || Number(productData.price) <= 0) {
+    if (!productData.description)
+      newErrors.description = "Description is required.";
+    if (
+      !productData.price ||
+      isNaN(productData.price) ||
+      Number(productData.price) <= 0
+    ) {
       newErrors.price = "Price must be a positive number.";
     }
 
     // New quantity validation for format like "750 ml" or "1.5 L"
     const quantityPattern = /^\d+(\.\d+)?\s*(ml|L)$/i;
-    if (!productData.quantity || !quantityPattern.test(productData.quantity.trim())) {
+    if (
+      !productData.quantity ||
+      !quantityPattern.test(productData.quantity.trim())
+    ) {
       newErrors.quantity = "Quantity must be in format: '750 ml' or '1.5 L'";
     }
 
-    if (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0) {
-      newErrors.stock_quantity = "Stock quantity must be a non-negative number.";
+    if (
+      !productData.stock_quantity ||
+      isNaN(productData.stock_quantity) ||
+      Number(productData.stock_quantity) < 0
+    ) {
+      newErrors.stock_quantity =
+        "Stock quantity must be a non-negative number.";
     }
     if (!productData.category) newErrors.category = "Category is required.";
     if (!productData.brand) newErrors.brand = "Brand is required.";
     if (!productData.country) newErrors.country = "Country is required.";
     if (!productData.made_of) newErrors.made_of = "Material is required.";
     if (!productData.image) newErrors.image = "Product image is required.";
+    if (!productData.taste)
+      newErrors.taste = "Product sour taste scale is required.";
+    if (!productData.acidity)
+      newErrors.acidity = "Product acidity level is required.";
+    if (!productData.alcohol_content)
+      newErrors.alcohol_content = "Product alcohol content is required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -111,6 +138,9 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       made_of: null,
       stock_quantity: 1,
       image: null,
+      taste: null,
+      acidity: null,
+      alcohol_content: null,
     });
     setErrors({});
     onCancel();
@@ -138,7 +168,9 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       }
     });
 
-    user?.is_supplier ? formData.append('approved',true)  :formData.append('approved',false)
+    user?.is_supplier
+      ? formData.append("approved", true)
+      : formData.append("approved", false);
 
     axios
       .post(`${config.BASE_URL}api/v1/products/create/`, formData, {
@@ -154,11 +186,8 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
       .catch((error) => {
         console.error("Error creating product:", error.response.data);
       });
-      
   };
 
-
-  
   return (
     <div className="form-container">
       <h3>Add New Product</h3>
@@ -186,7 +215,9 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
             value={productData.description}
             onChange={handleInputChange}
           />
-          {errors.description && <span className="error">{errors.description}</span>}
+          {errors.description && (
+            <span className="error">{errors.description}</span>
+          )}
 
           <label>Category</label>
           <select
@@ -281,7 +312,39 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
             value={productData.stock_quantity}
             onChange={handleInputChange}
           />
-          {errors.stock_quantity && <span className="error">{errors.stock_quantity}</span>}
+          {errors.stock_quantity && (
+            <span className="error">{errors.stock_quantity}</span>
+          )}
+
+          <label>Sour Taste(1-5)</label>
+          <input
+            type="number"
+            id="taste"
+            name="taste"
+            value={productData.taste}
+            onChange={handleInputChange}
+          />
+          {errors.taste && <span className="error">{errors.taste}</span>}
+          <label>Acidity(1-5)</label>
+          <input
+            type="number"
+            id="acidity"
+            name="acidity"
+            value={productData.acidity}
+            onChange={handleInputChange}
+          />
+          {errors.acidity && <span className="error">{errors.acidity}</span>}
+          <label>Alcohol Content(%)</label>
+          <input
+            type="number"
+            id="alcohol_content"
+            name="alcohol_content"
+            value={productData.alcohol_content}
+            onChange={handleInputChange}
+          />
+          {errors.alcohol_content && (
+            <span className="error">{errors.alcohol_content}</span>
+          )}
 
           <label>Product Image</label>
           <input
@@ -312,4 +375,3 @@ const AddProductForm = ({ onCancel, onConfirm }) => {
 };
 
 export default AddProductForm;
-

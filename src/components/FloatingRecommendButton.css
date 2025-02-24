@@ -1,33 +1,156 @@
-.floating-recommend-button {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    width: 60px;
-    height: 60px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #1890ff;
-    border: none;
-    transition: all 0.3s ease;
+.floating-gemini-button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 8px;
+  overflow: visible;
 }
 
-.floating-recommend-button:hover {
-    transform: scale(1.1);
-    background-color: #40a9ff !important;
+.button-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
 }
 
-.floating-recommend-button .anticon {
-    font-size: 24px;
+.gemini-star {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Outer Ripple effect */
+.ripple-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 50%;
+  animation: ripple 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.ripple:nth-child(2) {
+  animation-delay: -0.5s;
+}
+
+.ripple:nth-child(3) {
+  animation-delay: -1s;
+}
+
+@keyframes ripple {
+  0% {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 250%;
+    height: 250%;
+    opacity: 0;
+  }
+}
+
+/* Inner floating dots */
+.inner-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+  animation: float 3s ease-in-out infinite;
+}
+
+.dot-1 {
+  top: 30%;
+  left: 30%;
+  animation-delay: 0s;
+}
+
+.dot-2 {
+  top: 30%;
+  right: 30%;
+  animation-delay: -0.5s;
+}
+
+.dot-3 {
+  bottom: 30%;
+  right: 30%;
+  animation-delay: -1s;
+}
+
+.dot-4 {
+  bottom: 30%;
+  left: 30%;
+  animation-delay: -1.5s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(2px, -2px);
+  }
+}
+
+.floating-gemini-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.floating-gemini-button:hover .gemini-star {
+  filter: brightness(1.1);
+}
+
+.floating-gemini-button:hover .ripple {
+  animation-duration: 1.5s;
 }
 
 @media (max-width: 768px) {
-    .floating-recommend-button {
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-    }
-} 
+  .floating-gemini-button {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .dot {
+    width: 4px;
+    height: 4px;
+  }
+}

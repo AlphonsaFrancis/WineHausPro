@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Select, Card, Row, Col, Typography, Spin } from 'antd';
+import { Modal, Select, Card, Row, Col, Typography, Spin, Tabs } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import config from '../config/config';
 import './WineRecommendationModal.css';
+import WineBlendRecommend from './WineBlendRecommend';
 
 const { Option } = Select;
 const { Text } = Typography;
+const { TabPane } = Tabs;
 
 const WineRecommendationModal = ({ visible, onClose }) => {
     const navigate = useNavigate();
@@ -79,68 +81,78 @@ const WineRecommendationModal = ({ visible, onClose }) => {
             footer={null}
             className="wine-recommendation-modal"
         >
-            <div className="recommendation-filters">
-                <Select
-                    placeholder="Select an Event"
-                    style={{ width: '45%' }}
-                    onChange={setSelectedEvent}
-                    allowClear
-                >
-                    {events.map(event => (
-                        <Option key={event.id} value={event.id}>{event.name}</Option>
-                    ))}
-                </Select>
+            <Tabs defaultActiveKey="1">
+                <TabPane tab="Choose Your Wine for an Occasion" key="1">
+                    <div className="recommendation-filters">
+                        <Select
+                            placeholder="Select an Event"
+                            style={{ width: '45%' }}
+                            onChange={setSelectedEvent}
+                            allowClear
+                        >
+                            {events.map(event => (
+                                <Option key={event.id} value={event.id}>{event.name}</Option>
+                            ))}
+                        </Select>
 
-                <Select
-                    placeholder="Select Food Pairing"
-                    style={{ width: '45%' }}
-                    onChange={setSelectedFood}
-                    allowClear
-                >
-                    {foodPairings.map(food => (
-                        <Option key={food.id} value={food.id}>{food.name}</Option>
-                    ))}
-                </Select>
-            </div>
+                        <Select
+                            placeholder="Select Food Pairing"
+                            style={{ width: '45%' }}
+                            onChange={setSelectedFood}
+                            allowClear
+                        >
+                            {foodPairings.map(food => (
+                                <Option key={food.id} value={food.id}>{food.name}</Option>
+                            ))}
+                        </Select>
+                    </div>
 
-            {loading ? (
-                <div className="loading-spinner">
-                    <Spin size="large" />
-                </div>
-            ) : (
-                <Row gutter={[16, 16]} className="recommendations-grid">
-                    {Array.isArray(recommendations) && recommendations.map(rec => (
-                        <Col xs={24} sm={12} key={rec.id}>
-                            <Card
-                                hoverable
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => handleProductClick(rec.product.product_id)}
-                                cover={
-                                    <img 
-                                        alt={rec.product.name} 
-                                        src={`${config.BASE_URL}${rec.product.image}`}
-                                    />
-                                }
-                            >
-                                <Card.Meta
-                                    title={rec.product.name}
-                                    description={rec.recommendation_text}
-                                />
-                                <div className="price">
-                                    <Text strong>₹{rec.product.price}</Text>
-                                </div>
-                            </Card>
-                        </Col>
-                    ))}
-                    {Array.isArray(recommendations) && recommendations.length === 0 && (
-                        <div className="no-recommendations">
-                            <Text>No recommendations found for the selected criteria.</Text>
+                    {loading ? (
+                        <div className="loading-spinner">
+                            <Spin size="large" />
                         </div>
+                    ) : (
+                        <Row gutter={[16, 16]} className="recommendations-grid">
+                            {Array.isArray(recommendations) && recommendations.map(rec => (
+                                <Col xs={24} sm={12} key={rec.id}>
+                                    <Card
+                                        hoverable
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => handleProductClick(rec.product.product_id)}
+                                        cover={
+                                            <img
+                                                alt={rec.product.name}
+                                                src={`${config.BASE_URL}${rec.product.image}`}
+                                            />
+                                        }
+                                    >
+                                        <Card.Meta
+                                            title={rec.product.name}
+                                            description={rec.recommendation_text}
+                                        />
+                                        <div className="price">
+                                            <Text strong>₹{rec.product.price}</Text>
+                                        </div>
+                                    </Card>
+                                </Col>
+                            ))}
+                            {Array.isArray(recommendations) && recommendations.length === 0 && (
+                                <div className="no-recommendations">
+                                    <Text>No recommendations found for the selected criteria.</Text>
+                                </div>
+                            )}
+                        </Row>
                     )}
-                </Row>
-            )}
+                </TabPane>
+                <TabPane tab="Choose Wine for Your Preference" key="2">
+                    <div>
+                        <h2>Choose Wine for Your Preference</h2>
+                        <WineBlendRecommend />
+                    </div>
+                </TabPane>
+            </Tabs>
         </Modal>
     );
 };
 
-export default WineRecommendationModal; 
+export default WineRecommendationModal;

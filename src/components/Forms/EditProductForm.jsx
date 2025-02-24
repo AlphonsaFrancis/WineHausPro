@@ -21,30 +21,37 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     made_of: "",
     stock_quantity: 1,
     image: null,
+    taste: null,
+    acidity: null,
+    alochol_content: null,
     approved: false,
   });
 
   const storedUser = localStorage.getItem("user");
   const user = JSON.parse(storedUser);
 
-  console.log("---User--",user)
-
+  console.log("---User--", user);
 
   // Fetch dropdown data
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const [brandsRes, categoriesRes, countriesRes, madeOfRes] = await Promise.all([
-          axios.get(`${config.BASE_URL}api/v1/products/brand-list/`),
-          axios.get(`${config.BASE_URL}api/v1/products/category-list/`),
-          axios.get(`${config.BASE_URL}api/v1/products/country-list/`),
-          axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`)
-        ]);
+        const [brandsRes, categoriesRes, countriesRes, madeOfRes] =
+          await Promise.all([
+            axios.get(`${config.BASE_URL}api/v1/products/brand-list/`),
+            axios.get(`${config.BASE_URL}api/v1/products/category-list/`),
+            axios.get(`${config.BASE_URL}api/v1/products/country-list/`),
+            axios.get(`${config.BASE_URL}api/v1/products/madeof-list/`),
+          ]);
 
-        if (brandsRes.status === 200) setBrands(findActiveItems(brandsRes.data));
-        if (categoriesRes.status === 200) setCategories(findActiveItems(categoriesRes.data));
-        if (countriesRes.status === 200) setCountries(findActiveItems(countriesRes.data));
-        if (madeOfRes.status === 200) setMadeOfs(findActiveItems(madeOfRes.data));
+        if (brandsRes.status === 200)
+          setBrands(findActiveItems(brandsRes.data));
+        if (categoriesRes.status === 200)
+          setCategories(findActiveItems(categoriesRes.data));
+        if (countriesRes.status === 200)
+          setCountries(findActiveItems(countriesRes.data));
+        if (madeOfRes.status === 200)
+          setMadeOfs(findActiveItems(madeOfRes.data));
       } catch (error) {
         console.error("Error fetching dropdown data:", error);
       }
@@ -55,12 +62,25 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
 
   // Set initial form data after dropdown data is fetched
   useEffect(() => {
-    if (initialProductData && brands.length > 0 && categories.length > 0 && countries.length > 0 && madeOf.length > 0) {
+    if (
+      initialProductData &&
+      brands.length > 0 &&
+      categories.length > 0 &&
+      countries.length > 0 &&
+      madeOf.length > 0
+    ) {
       // Find IDs for brand, category, country, and made_of
-      const brandId = brands.find((b) => b.name === initialProductData.brand)?.brand_id || "";
-      const categoryId = categories.find((c) => c.name === initialProductData.category)?.id || "";
-      const countryId = countries.find((c) => c.name === initialProductData.country)?.country_id || "";
-      const madeOfId = madeOf.find((m) => m.name === initialProductData.madeof)?.madeof_id || "";
+      const brandId =
+        brands.find((b) => b.name === initialProductData.brand)?.brand_id || "";
+      const categoryId =
+        categories.find((c) => c.name === initialProductData.category)?.id ||
+        "";
+      const countryId =
+        countries.find((c) => c.name === initialProductData.country)
+          ?.country_id || "";
+      const madeOfId =
+        madeOf.find((m) => m.name === initialProductData.madeof)?.madeof_id ||
+        "";
 
       setProductData({
         name: initialProductData.name || "",
@@ -73,7 +93,12 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
         made_of: madeOfId,
         stock_quantity: initialProductData.stock || 1,
         image: null,
-        approved: initialProductData.approved === "true" || initialProductData.approved === true,
+        taste: initialProductData.taste,
+        acidity: initialProductData.acidity,
+        alochol_content: initialProductData.alochol_content,
+        approved:
+          initialProductData.approved === "true" ||
+          initialProductData.approved === true,
       });
     }
   }, [initialProductData, brands, categories, countries, madeOf]);
@@ -81,7 +106,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
   const handleInputChange = (e) => {
     const { name, type, checked, value } = e.target;
     let processedValue;
-  
+
     if (type === "checkbox") {
       processedValue = checked;
     } else if (["category", "brand", "country", "made_of"].includes(name)) {
@@ -89,7 +114,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     } else {
       processedValue = value;
     }
-  
+
     setProductData((prev) => ({
       ...prev,
       [name]: processedValue,
@@ -103,7 +128,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
   const handleFileChange = (e) => {
     setProductData((prev) => ({
       ...prev,
-      image: e.target.files[0]
+      image: e.target.files[0],
     }));
   };
 
@@ -115,27 +140,53 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
     if (changedFields.name && !productData.name.trim()) {
       validationErrors.name = "Name is required.";
     }
-    
+
     // Quantity validation for format like "750 ml" or "1.5 L"
     if (changedFields.quantity) {
       const quantityPattern = /^\d+(\.\d+)?\s*(ml|L)$/i;
-      if (!productData.quantity || !quantityPattern.test(productData.quantity.trim())) {
-        validationErrors.quantity = "Quantity must be in format: '750 ml' or '1.5 L'";
+      if (
+        !productData.quantity ||
+        !quantityPattern.test(productData.quantity.trim())
+      ) {
+        validationErrors.quantity =
+          "Quantity must be in format: '750 ml' or '1.5 L'";
       }
     }
 
-    if (changedFields.description && !productData.description.trim()) validationErrors.description = "Description is required.";
-    if (changedFields.category && !productData.category) validationErrors.category = "Category is required.";
-    if (changedFields.brand && !productData.brand) validationErrors.brand = "Brand is required.";
-    if (changedFields.country && !productData.country) validationErrors.country = "Country is required.";
-    if (changedFields.made_of && !productData.made_of) validationErrors.made_of = "Material is required.";
-    
-    if (changedFields.price && (!productData.price || isNaN(productData.price) || Number(productData.price) <= 0)) {
+    if (changedFields.description && !productData.description.trim())
+      validationErrors.description = "Description is required.";
+    if (changedFields.category && !productData.category)
+      validationErrors.category = "Category is required.";
+    if (changedFields.brand && !productData.brand)
+      validationErrors.brand = "Brand is required.";
+    if (changedFields.country && !productData.country)
+      validationErrors.country = "Country is required.";
+    if (changedFields.made_of && !productData.made_of)
+      validationErrors.made_of = "Material is required.";
+    if (changedFields.taste && !productData.taste)
+      validationErrors.taste = "Sour taste scale is required.";
+    if (changedFields.acidity && !productData.acidity)
+      validationErrors.acidity = "Product acidity is required.";
+    if (changedFields.alochol_content && !productData.alochol_content)
+      validationErrors.alochol_content = "Alcohol content is required.";
+
+    if (
+      changedFields.price &&
+      (!productData.price ||
+        isNaN(productData.price) ||
+        Number(productData.price) <= 0)
+    ) {
       validationErrors.price = "Price must be a positive number.";
     }
 
-    if (changedFields.stock_quantity && (!productData.stock_quantity || isNaN(productData.stock_quantity) || Number(productData.stock_quantity) < 0)) {
-      validationErrors.stock_quantity = "Stock Quantity must be a non-negative number.";
+    if (
+      changedFields.stock_quantity &&
+      (!productData.stock_quantity ||
+        isNaN(productData.stock_quantity) ||
+        Number(productData.stock_quantity) < 0)
+    ) {
+      validationErrors.stock_quantity =
+        "Stock Quantity must be a non-negative number.";
     }
 
     setErrors(validationErrors);
@@ -144,7 +195,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
 
   const getChangedFields = () => {
     const changedFields = {};
-    Object.keys(productData).forEach(key => {
+    Object.keys(productData).forEach((key) => {
       if (initialProductData[key] !== productData[key]) {
         changedFields[key] = productData[key];
       }
@@ -176,7 +227,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
         `${config.BASE_URL}api/v1/products/update/${initialProductData.id}/`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
       alert("Product updated successfully!");
@@ -213,7 +264,9 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
             value={productData.description}
             onChange={handleInputChange}
           />
-          {errors.description && <span className="error">{errors.description}</span>}
+          {errors.description && (
+            <span className="error">{errors.description}</span>
+          )}
 
           <label>Category</label>
           <select
@@ -301,21 +354,49 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
             value={productData.stock_quantity}
             onChange={handleInputChange}
           />
-          {errors.stock_quantity && <span className="error">{errors.stock_quantity}</span>}
+          {errors.stock_quantity && (
+            <span className="error">{errors.stock_quantity}</span>
+          )}
 
-          {(user?.is_superuser || user?.is_supplier) &&
+          <label>Sour taste</label>
+          <input
+            type="number"
+            name="taste"
+            value={productData.taste}
+            onChange={handleInputChange}
+          />
+          {errors.taste && <span className="error">{errors.taste}</span>}
+          <label>Acidity</label>
+          <input
+            type="number"
+            name="acidity"
+            value={productData.acidity}
+            onChange={handleInputChange}
+          />
+          {errors.acidity && <span className="error">{errors.acidity}</span>}
+          <label>Alcohol Content (%)</label>
+          <input
+            type="number"
+            name="alcohol_content"
+            value={productData.alochol_content}
+            onChange={handleInputChange}
+          />
+          {errors.alochol_content && (
+            <span className="error">{errors.alochol_content}</span>
+          )}
 
-          <div className="checkbox-container">
-            <input
-              type="checkbox"
-              name="approved"
-              checked={productData.approved}
-              onChange={handleInputChange}
-              id="approved"
-            />
-            <label htmlFor="approved">Approved Product</label>
-          </div>
-          }
+          {(user?.is_superuser || user?.is_supplier) && (
+            <div className="checkbox-container">
+              <input
+                type="checkbox"
+                name="approved"
+                checked={productData.approved}
+                onChange={handleInputChange}
+                id="approved"
+              />
+              <label htmlFor="approved">Approved Product</label>
+            </div>
+          )}
 
           <label>Product Image</label>
           <input
@@ -329,11 +410,7 @@ const EditProductForm = ({ onCancel, onConfirm, initialProductData }) => {
             <button type="submit" className="save-btn">
               Update Product
             </button>
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={onCancel}
-            >
+            <button type="button" className="cancel-btn" onClick={onCancel}>
               Cancel
             </button>
           </div>

@@ -1,0 +1,92 @@
+.wine-preference-form {
+    padding: 20px;
+}
+
+.sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.submit-button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 48px;
+}
+
+.recommendation-results {
+    margin-top: 24px;
+}
+
+.wine-cards {
+    margin-top: 16px;
+}
+
+.wine-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.wine-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wine-card .ant-card-cover {
+    height: 200px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wine-card .ant-card-cover img {
+    height: 180px;
+    width: auto;
+    object-fit: contain;
+    padding: 10px;
+    transition: transform 0.3s ease;
+}
+
+.wine-card:hover .ant-card-cover img {
+    transform: scale(1.05);
+}
+
+.wine-card .ant-card-meta {
+    padding: 16px;
+}
+
+.wine-card .ant-card-meta-title {
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.wine-card:hover .ant-card-meta-title {
+    color: #1890ff;
+}
+
+.wine-card .ant-card-meta-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.add-to-cart-button {
+    width: 100%;
+    margin-top: 12px;
+}
