@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import ProductExcelImportView, edit_review, get_similar_products, list_notapproved_products, list_reviews_by_user, product_filter, product_review_sentiment_summary
+from .views import ProductExcelImportView, WineRecommendationView, edit_review, get_similar_products, list_notapproved_products, list_reviews_by_user, product_filter, product_review_sentiment_summary
 from .views import search_products,user_review_sentiment_summary
 
 urlpatterns = [
@@ -61,6 +61,7 @@ urlpatterns = [
     path('food-pairings/', views.get_food_pairings, name='food-pairings'),
 
     path('new-arrivals/', views.get_new_arrivals, name='new-arrivals'),
+    path('getWinePredict/',WineRecommendationView.as_view(),name='getWinePredict')
 
 ]
 

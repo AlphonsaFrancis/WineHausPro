@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from authentication.models import Transactions, User, UserWallet
-from .models import Order, OrderItems,Wishlist, WishlistItems,Cart, CartItems,Payment,Address,Shipping
+from .models import Order, OrderItems, OrderPaymentTransaction,Wishlist, WishlistItems,Cart, CartItems,Payment,Address,Shipping
 from .serializers import OrderSerializer, OrderItemsSerializer,WishlistSerializer, WishlistItemsSerializer
 from .serializers import CartSerializer, CartItemsSerializer,PaymentSerializer,AddressSerializer,ShippingSerializer
 from products.models import Product, Review
@@ -17,11 +17,68 @@ from rest_framework import status
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
 from django.db import transaction
+from django.core.exceptions import ValidationError
+
+# @api_view(['GET'])
+# def user_orders(request, user_id):
+#     try:
+#         orders = Order.objects.filter(user_id=user_id)
+        
+#         if not orders.exists():
+#             return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
+            
+#         serialized_orders = []
+
+#         for order in orders:
+#             order_serializer = OrderSerializer(order)
+#             order_items = OrderItems.objects.filter(order_id=order.order_id)
+#             order_items_serializer = OrderItemsSerializer(order_items, many=True)
+            
+#             # Initialize products_reviewed as a dictionary
+#             products_reviewed = {}
+
+#             for order_item in order_items:
+#                 # Get all reviews for this product
+#                 reviews = Review.objects.filter(
+#                     user_id=user_id,
+#                     product_id=order_item.product_id.product_id,
+#                     order_id=order.order_id  # Filter by the current order's ID
+#                 )
+
+#                 product_id = str(order_item.product_id.product_id)
+                
+#                 if reviews.exists():
+#                     for review in reviews:
+#                         products_reviewed[product_id] = {
+#                             'has_review': True,
+#                             'order_id': review.order_id
+#                         }
+#                 else:
+#                     products_reviewed[product_id] = {
+#                         'has_review': False,
+#                         'order_id': None
+#                     }
+
+#             serialized_orders.append({
+#                 'order': order_serializer.data,
+#                 'order_items': order_items_serializer.data,
+#                 'products_reviewed': products_reviewed
+#             })
+
+#         return Response(serialized_orders, status=status.HTTP_200_OK)
+
+#     except Exception as e:
+#         return Response(
+#             {'error': f'An error occurred: {str(e)}'}, 
+#             status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#         )
+
 
 @api_view(['GET'])
 def user_orders(request, user_id):
     try:
-        orders = Order.objects.filter(user_id=user_id)
+        # Add order_by('-created_at') to sort in descending order
+        orders = Order.objects.filter(user_id=user_id).order_by('-created_at')
         
         if not orders.exists():
             return Response({'error': 'No orders found for this user'}, status=status.HTTP_404_NOT_FOUND)
@@ -30,7 +87,8 @@ def user_orders(request, user_id):
 
         for order in orders:
             order_serializer = OrderSerializer(order)
-            order_items = OrderItems.objects.filter(order_id=order.order_id)
+            # Also sort order items by created_at in descending order
+            order_items = OrderItems.objects.filter(order_id=order.order_id).order_by('-created_at')
             order_items_serializer = OrderItemsSerializer(order_items, many=True)
             
             # Initialize products_reviewed as a dictionary
@@ -71,7 +129,6 @@ def user_orders(request, user_id):
             {'error': f'An error occurred: {str(e)}'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
     
 @api_view(['GET'])
 def order_items(request, order_id):
@@ -214,14 +271,20 @@ def update_order_status(request, orderItemId):
         if order_status == 'cancelled':
             print("Order amount is transfering to wallet for user", user.email)
             try:
-                wallet = UserWallet.objects.get(user=order_item.user)
-                wallet.wallet_amount += order_item.price
-                wallet.save()
-            except UserWallet.DoesNotExist:
-                UserWallet.objects.create(
-                    user = order_item.user,
-                    wallet_amount = order_item.price
-                )
+                order_payment_transaction = OrderPaymentTransaction.objects.get(order_id=order_item.order_id)
+                
+                try:
+                    wallet = UserWallet.objects.get(user=order_item.user)
+                    wallet.wallet_amount += order_payment_transaction.paymentfrom_wallet+order_payment_transaction.payment_from_cod+order_payment_transaction.payment_from_online
+                    wallet.save()
+                except UserWallet.DoesNotExist:
+                    UserWallet.objects.create(
+                        user=order_item.user,
+                        wallet_amount=order_payment_transaction.paymentfrom_wallet  
+                    )
+            except OrderPaymentTransaction.DoesNotExist:
+                print("No payment history found for this order")
+                pass
 
             try:
                 Transactions.objects.create(
@@ -269,83 +332,6 @@ def update_order_status(request, orderItemId):
 
 # Wishlist && wishlist_item function based view
     
-
-# @api_view(['GET', 'POST'])
-# def wishlist_list(request):
-#     if request.method == 'GET':
-#         wishlists = Wishlist.objects.all()
-#         serializer = WishlistSerializer(wishlists, many=True)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'POST':
-#         serializer = WishlistSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def wishlist_detail(request, pk):
-#     try:
-#         wishlist = Wishlist.objects.get(pk=pk)
-#     except Wishlist.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = WishlistSerializer(wishlist)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'PUT':
-#         serializer = WishlistSerializer(wishlist, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-#     elif request.method == 'DELETE':
-#         wishlist.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# @api_view(['GET', 'POST'])
-# def wishlist_items_list(request):
-#     if request.method == 'GET':
-#         wishlist_items = WishlistItems.objects.all()
-#         serializer = WishlistItemsSerializer(wishlist_items, many=True)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'POST':
-#         serializer = WishlistItemsSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def wishlist_item_detail(request, pk):
-#     try:
-#         wishlist_item = WishlistItems.objects.get(pk=pk)
-#     except WishlistItems.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = WishlistItemsSerializer(wishlist_item)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'PUT':
-#         serializer = WishlistItemsSerializer(wishlist_item, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-#     elif request.method == 'DELETE':
-#         wishlist_item.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-# Wishlist && wishlist_item function based view
 
 @api_view(['GET', 'POST'])
 def wishlist_list_create(request):
@@ -469,6 +455,12 @@ def create_payment(request):
         amount = request.data.get('amount')
         cart_id = request.data.get('cart_id')
 
+        paymentfrom_wallet= request.data.get('paymentfrom_wallet')
+        payment_from_cod=request.data.get('payment_from_cod')
+        payment_from_online=request.data.get('payment_from_online')
+
+
+
         cart = Cart.objects.get(cart_id=cart_id)
         
         if payment_method == 'cod':
@@ -477,7 +469,7 @@ def create_payment(request):
                 user_id=cart.user_id,
                 order_status="placed",
                 order_date=timezone.now(),
-                tax_amount=0,  # Modify as needed
+                tax_amount=0,  
                 total_amount=amount
             )
 
@@ -494,12 +486,23 @@ def create_payment(request):
             cart_items = CartItems.objects.filter(cart_id=cart_id)
             for item in cart_items:
                 # Create order item
-                OrderItems.objects.create(
+                order_item  =OrderItems.objects.create(
                     order_id=order,
                     product_id=item.product_id,
                     quantity=item.quantity,
                     price=item.product_id.price,
                     user=cart.user_id
+                )
+
+                # ADD LOG TO ORDER_PAYMENT_TRANSACTION table.
+
+                order_payment_transaction = OrderPaymentTransaction.objects.create(
+                    user_id = cart.user_id,
+                    order_id = order_item,
+                    payment_from_cod = payment_from_cod,
+                    paymentfrom_wallet = paymentfrom_wallet,
+                    payment_from_online=payment_from_online,
+                    total_amount=order_item.price
                 )
                 
                 # Update product stock
@@ -544,6 +547,11 @@ def verify_payment(request):
     try:
         payment_id = request.data.get('payment_id')
         razorpay_order_id = request.data.get('order_id')
+
+        paymentfrom_wallet= request.data.get('paymentfrom_wallet')
+        payment_from_cod=request.data.get('payment_from_cod')
+        payment_from_online=request.data.get('payment_from_online')
+
         
         payment = Payment.objects.get(payment_id=razorpay_order_id)
         razorpay_payment = razorpay_client.payment.fetch(payment_id)
@@ -569,13 +577,25 @@ def verify_payment(request):
                 cart_items = CartItems.objects.filter(cart_id=payment.cart_id)
                 for item in cart_items:
                     # Create order item
-                    OrderItems.objects.create(
+                    order_item = OrderItems.objects.create(
                         order_id=order,
                         product_id=item.product_id,
                         quantity=item.quantity,
                         price=item.product_id.price,
                         user=payment.cart_id.user_id
                     )
+
+                    # ADD LOG TO ORDER_PAYMENT_TRANSACTION table.
+
+                    order_payment_transaction = OrderPaymentTransaction.objects.create(
+                    user_id = payment.cart_id.user_id,
+                    order_id = order_item,
+                    payment_from_cod = payment_from_cod,
+                    paymentfrom_wallet = paymentfrom_wallet,
+                    payment_from_online=payment_from_online,
+                    total_amount=order_item.price
+                )
+
                     
                     # Update product stock
                     product = item.product_id
@@ -622,184 +642,7 @@ def create_order_items(order, cart_id, user_id):
     # Clear cart items after order items are created
     cart_items.delete()
     
-# @api_view(['GET', 'POST'])
-# def payment_list_create(request):
-#     if request.method == 'GET':
-#         payments = Payment.objects.all()
-#         serializer = PaymentSerializer(payments, many=True)
-#         return Response(serializer.data)
 
-#     elif request.method == 'POST':
-#         serializer = PaymentSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def payment_detail(request, pk):
-#     try:
-#         payment = Payment.objects.get(pk=pk)
-#     except Payment.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = PaymentSerializer(payment)
-#         return Response(serializer.data)
-
-#     elif request.method == 'PUT':
-#         serializer = PaymentSerializer(payment, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE':
-#         payment.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)  
-
-# @api_view(['POST'])
-# def payment_create(request):
-#     serializer = PaymentSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['PUT'])
-# def payment_update(request, pk):
-#     try:
-#         payment = Payment.objects.get(pk=pk)
-#     except Payment.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     serializer = PaymentSerializer(payment, data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['DELETE'])
-# def payment_delete(request, pk):
-#     try:
-#         payment = Payment.objects.get(pk=pk)
-#     except Payment.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-    
-#     payment.delete()
-#     return Response(status=status.HTTP_204_NO_CONTENT)     
-
-# @api_view(['GET', 'POST'])
-# def address_list(request):
-#     if request.method == 'GET':
-#         addresses = Address.objects.all()
-#         serializer = AddressSerializer(addresses, many=True)
-#         return Response(serializer.data)
-
-#     elif request.method == 'POST':
-#         serializer = AddressSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def address_detail(request, pk):
-#     try:
-#         address = Address.objects.get(pk=pk)
-#     except Address.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = AddressSerializer(address)
-#         return Response(serializer.data)
-
-#     elif request.method == 'PUT':
-#         serializer = AddressSerializer(address, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE':
-#         address.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-#  #  Address function based view   
-    
-# @api_view(['GET', 'POST'])
-# def address_list(request):
-#     if request.method == 'GET':
-#         addresses = Address.objects.all()
-#         serializer = AddressSerializer(addresses, many=True)
-#         return Response(serializer.data)
-
-#     elif request.method == 'POST':
-#         serializer = AddressSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def address_detail(request, pk):
-#     try:
-#         address = Address.objects.get(pk=pk)
-#     except Address.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = AddressSerializer(address)
-#         return Response(serializer.data)
-
-#     elif request.method == 'PUT':
-#         serializer = AddressSerializer(address, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE':
-#         address.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-# @api_view(['POST'])
-# def create_address(request):
-#     if request.method == 'POST':
-#         serializer = AddressSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['PUT'])
-# def update_address(request, pk):
-#     try:
-#         address = Address.objects.get(pk=pk)
-#     except Address.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'PUT':
-#         serializer = AddressSerializer(address, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['DELETE'])
-# def delete_address(request, pk):
-#     try:
-#         address = Address.objects.get(pk=pk)
-#     except Address.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'DELETE':
-#         address.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
 @api_view(['GET', 'POST'])
 def address_list(request):
     if request.method == 'GET':
@@ -1319,74 +1162,83 @@ def best_sellers(request):
             'status': 'error',
             'message': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 @api_view(['POST'])
 def cancel_user_order(request, order_id):
     try:
-        with transaction.atomic():  # Use transaction to ensure data consistency
-            order = Order.objects.get(order_id=order_id)
+        with transaction.atomic():
+            order = Order.objects.select_related('user_id').get(order_id=order_id)
             
-            # Check if order belongs to the requesting user
-            if str(order.user_id.id) != str(request.data.get('user_id')):
-                return Response({
-                    'error': 'Unauthorized to cancel this order'
-                }, status=status.HTTP_403_FORBIDDEN)
             
-            # Only allow cancellation if order is in 'placed' or 'processing' status
-            if order.order_status not in ['placed', 'processing']:
+            CANCELLABLE_STATUSES = {'placed', 'processing'}
+            if order.order_status not in CANCELLABLE_STATUSES:
                 return Response({
-                    'error': 'Order cannot be cancelled in its current status'
+                    'error': f'Order cannot be cancelled. Current status: {order.order_status}'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Update order status to cancelled
+            order_items = OrderItems.objects.select_related(
+                'product_id', 'user'
+            ).filter(order_id=order_id)
+
+            total_refund_amount = 0
+            refund_transactions = []
+
+            for item in order_items:
+                try:
+                    payment_transaction = OrderPaymentTransaction.objects.get(
+                        order_id=item.order_item_id
+                    )
+                    
+                    print("fetching wallet for user",item.user)
+                    wallet = UserWallet.objects.get(user=item.user)
+                    refund_amount = payment_transaction.paymentfrom_wallet+payment_transaction.payment_from_online+payment_transaction.payment_from_cod
+                    print("refund amount",refund_amount)
+                    wallet.wallet_amount += refund_amount
+                    wallet.save()
+                    
+                    
+                    
+                    total_refund_amount += refund_amount
+                    refund_transactions.append({
+                        'amount': refund_amount,
+                        'type': 'wallet'
+                    })
+
+                    product = item.product_id
+                    product.stock_quantity += item.quantity
+                    product.save()
+                    
+                    item.order_status = 'cancelled'
+                    item.save()
+
+                except OrderPaymentTransaction.DoesNotExist:
+                    raise ValidationError(f'Payment transaction not found for order item {item.order_item_id}')
+
             order.order_status = 'cancelled'
             order.save()
 
-            # Get or create user wallet
-            try:
-                wallet = UserWallet.objects.get(user=order.user_id)
-            except UserWallet.DoesNotExist:
-                wallet = UserWallet.objects.create(
-                    user=order.user_id,
-                    wallet_amount=0
-                )
+            response_data = {
+                'message': 'Order cancelled successfully',
+                'order_id': order_id,
+                'refund_details': {
+                    'total_amount': total_refund_amount,
+                    'transactions': refund_transactions
+                } if total_refund_amount > 0 else None
+            }
 
-            # Add order amount to wallet
-            wallet.wallet_amount += float(order.total_amount)
-            wallet.save()
-
-            # Create transaction record
-            Transactions.objects.create(
-                user=order.user_id,
-                transaction_id=f"REF_ORD_{order.order_id}",
-                transaction_status='success',
-                transaction_amount=order.total_amount,
-                transaction_type='credit',
-                transaction_desc=f"Refund for cancelled order #{order.order_id}"
-            )
-
-            # Restore product stock quantities
-            order_items = OrderItems.objects.filter(order_id=order)
-            for item in order_items:
-                product = item.product_id
-                product.stock_quantity += item.quantity
-                product.save()
-                
-                # Update the individual order item status
-                item.order_status = 'cancelled'
-                item.save()
-
-            return Response({
-                'message': 'Order cancelled successfully and amount refunded to wallet',
-                'refunded_amount': order.total_amount,
-                'new_wallet_balance': wallet.wallet_amount
-            }, status=status.HTTP_200_OK)
+            return Response(response_data, status=status.HTTP_200_OK)
 
     except Order.DoesNotExist:
         return Response({
             'error': 'Order not found'
         }, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
+    except ValidationError as e:
         return Response({
             'error': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        print("Error",str(e))
+        return Response({
+            'error': 'An unexpected error occurred while processing your request'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

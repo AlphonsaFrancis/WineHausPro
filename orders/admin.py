@@ -3,6 +3,7 @@ from .models import *
 
 admin.site.register(Order)
 admin.site.register(OrderItems)
+admin.site.register(OrderPaymentTransaction)
 admin.site.register(Wishlist)
 admin.site.register(WishlistItems)
 admin.site.register(Cart)

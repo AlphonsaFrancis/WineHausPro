@@ -32,7 +32,7 @@ class OrderItems(models.Model):
 
 
     def __str__(self):
-        return f"Order Item {self.order_item_id} for Order {self.order_id}"
+        return f"{self.order_item_id}"
 
 
 class Wishlist(models.Model):
@@ -123,3 +123,13 @@ class Shipping(models.Model):
 
     def __str__(self):
         return f"Shipping {self.shipping_id} for Order {self.order_id}"
+    
+class OrderPaymentTransaction(models.Model):
+    user_id =  models.ForeignKey(User, on_delete=models.CASCADE)
+    order_id = models.ForeignKey(OrderItems, on_delete=models.CASCADE)
+    paymentfrom_wallet = models.FloatField()
+    payment_from_cod = models.FloatField()
+    payment_from_online = models.FloatField()
+    total_amount = models.FloatField() 
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
