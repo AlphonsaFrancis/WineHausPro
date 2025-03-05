@@ -61,7 +61,7 @@ urlpatterns = [
     path('food-pairings/', views.get_food_pairings, name='food-pairings'),
 
     path('new-arrivals/', views.get_new_arrivals, name='new-arrivals'),
-    path('getWinePredict/',WineRecommendationView.as_view(),name='getWinePredict')
+    path('getWinePredict/', WineRecommendationView.as_view(), name='getWinePredict')
 
 ]
 

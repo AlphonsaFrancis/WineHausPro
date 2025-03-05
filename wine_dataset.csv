@@ -1,0 +1,127 @@
+wine_id,name,taste,acidity,alcohol_content,category,price,stock_quantity,brand,country,made_of
+1,Fratelli Sette,4.5,3.8,13.5,Red Wine,2500,50,Fratelli,India,Cabernet Sauvignon
+2,Sula Rasa,4.2,4.0,12.5,Red Wine,1800,75,Sula,India,Shiraz
+3,York Arros,4.3,3.7,14.0,Red Wine,2200,40,York,India,Cabernet Sauvignon
+4,Grover La Reserve,4.4,3.9,13.8,Red Wine,1950,60,Grover,India,Cabernet Shiraz
+5,Chandon Brut,4.1,4.2,12.0,Sparkling,2800,45,Chandon,India,Chardonnay
+6,Krsma Sangiovese,4.6,3.6,13.9,Red Wine,3500,30,Krsma,India,Sangiovese
+7,Big Banyan Merlot,4.0,3.8,13.2,Red Wine,1600,80,Big Banyan,India,Merlot
+8,SDU Deva,4.3,3.7,13.6,Red Wine,2100,35,SDU,India,Cabernet Sauvignon
+9,KRSMA Sauvignon Blanc,4.2,4.1,12.8,White Wine,2400,55,Krsma,India,Sauvignon Blanc
+10,Charosa Tempranillo,4.4,3.8,13.7,Red Wine,2600,40,Charosa,India,Tempranillo
+11,Sula Brut Rose,4.0,4.3,12.2,Sparkling,2200,65,Sula,India,Chenin Blanc
+12,Grover Chardonnay,4.1,4.0,13.0,White Wine,1900,70,Grover,India,Chardonnay
+13,York Chenin Blanc,3.9,4.2,12.5,White Wine,1750,55,York,India,Chenin Blanc
+14,Fratelli Vitae,4.7,3.5,14.2,Red Wine,4500,25,Fratelli,India,Cabernet Franc
+15,Sula Dindori Reserve,4.3,3.9,13.8,Red Wine,2100,60,Sula,India,Shiraz
+16,Krsma Cabernet,4.8,3.7,14.0,Red Wine,3800,35,Krsma,India,Cabernet Sauvignon
+17,Charosa Viognier,4.0,4.1,12.8,White Wine,2000,50,Charosa,India,Viognier
+18,Big Banyan Rosa Rossa,3.8,4.0,12.0,Rose Wine,1800,70,Big Banyan,India,Zinfandel
+19,Grover Zampa Soiree,4.2,4.3,12.2,Sparkling,2400,45,Grover,India,Chenin Blanc
+20,SDU Syrah,4.5,3.8,13.9,Red Wine,2300,40,SDU,India,Syrah
+21,Fratelli J'NOON White,4.3,4.2,13.0,White Wine,5500,20,Fratelli,India,Chardonnay
+22,Sula Zinfandel,4.1,3.9,13.5,Red Wine,1950,65,Sula,India,Zinfandel
+23,York Arros Reserve,4.6,3.6,14.3,Red Wine,3200,30,York,India,Cabernet Sauvignon
+24,KRSMA K2,4.7,3.7,14.1,Red Wine,4200,25,Krsma,India,Cabernet Syrah
+25,Charosa Reserve Tempranillo,4.5,3.8,13.9,Red Wine,3500,35,Charosa,India,Tempranillo
+26,Grover Vijay Amritraj,4.4,3.9,13.7,Red Wine,2800,45,Grover,India,Viognier
+27,Sula Riesling,3.9,4.3,12.0,White Wine,2100,60,Sula,India,Riesling
+28,Fratelli TASTE Collection,4.2,4.0,13.2,Red Wine,2600,50,Fratelli,India,Sangiovese
+29,Big Banyan Limited,4.6,3.7,14.0,Red Wine,3900,30,Big Banyan,India,Cabernet
+30,York Nine Hills,4.0,4.1,12.8,White Wine,1900,70,York,India,Chenin Blanc
+
+
+31,Château Margaux 2018,4.9,3.6,13.8,Red Wine,85000,15,Château Margaux,France,Cabernet Sauvignon
+32,Dom Pérignon 2012,4.8,4.4,12.5,Sparkling,45000,20,Moët & Chandon,France,Chardonnay
+33,Château Lafite 2017,4.9,3.7,13.9,Red Wine,78000,12,Château Lafite,France,Cabernet Blend
+34,Louis Jadot Beaujolais,4.2,4.1,12.8,Red Wine,3500,45,Louis Jadot,France,Gamay
+35,Veuve Clicquot Brut,4.6,4.3,12.0,Sparkling,8500,40,Veuve Clicquot,France,Pinot Noir
+
+
+36,Sassicaia 2019,4.8,3.8,13.7,Red Wine,42000,18,Tenuta San Guido,Italy,Cabernet Sauvignon
+37,Barolo Monfortino,4.7,3.9,14.1,Red Wine,65000,15,Giacomo Conterno,Italy,Nebbiolo
+38,Ornellaia 2018,4.8,3.7,14.2,Red Wine,38000,25,Ornellaia,Italy,Cabernet Blend
+39,Prosecco Superiore,4.2,4.2,11.5,Sparkling,3200,60,Valdobbiadene,Italy,Glera
+40,Tignanello 2018,4.7,3.8,14.0,Red Wine,32000,30,Antinori,Italy,Sangiovese
+
+
+41,Vega Sicilia Unico,4.8,3.7,14.3,Red Wine,55000,20,Vega Sicilia,Spain,Tempranillo
+42,La Rioja Alta 904,4.6,3.8,13.9,Red Wine,12000,35,La Rioja Alta,Spain,Tempranillo
+43,Alvaro Palacios L'Ermita,4.7,3.6,14.5,Red Wine,48000,15,Alvaro Palacios,Spain,Garnacha
+44,Cava Reserva,4.3,4.2,11.8,Sparkling,4500,50,Freixenet,Spain,Macabeo
+45,Toro Alabaster,4.5,3.9,14.2,Red Wine,15000,30,Teso La Monja,Spain,Tinta de Toro
+
+
+46,Penfolds Grange 2017,4.9,3.6,14.5,Red Wine,85000,12,Penfolds,Australia,Shiraz
+47,Henschke Hill of Grace,4.8,3.7,14.3,Red Wine,68000,15,Henschke,Australia,Shiraz
+48,Torbreck RunRig,4.7,3.8,14.4,Red Wine,25000,25,Torbreck,Australia,Shiraz
+49,Leeuwin Art Series,4.6,4.0,13.5,White Wine,12000,35,Leeuwin Estate,Australia,Chardonnay
+50,Cloudy Bay,4.5,4.2,13.0,White Wine,8500,45,Cloudy Bay,New Zealand,Sauvignon Blanc
+
+
+51,Opus One 2018,4.8,3.7,14.2,Red Wine,65000,18,Opus One,USA,Cabernet Blend
+52,Screaming Eagle,4.9,3.6,14.4,Red Wine,120000,8,Screaming Eagle,USA,Cabernet Sauvignon
+53,Ridge Monte Bello,4.7,3.8,13.8,Red Wine,35000,25,Ridge Vineyards,USA,Cabernet Blend
+54,Dominus Estate,4.8,3.7,14.1,Red Wine,42000,20,Dominus,USA,Cabernet Blend
+55,Harlan Estate,4.9,3.6,14.5,Red Wine,140000,10,Harlan,USA,Cabernet Blend
+
+
+56,Reveilo Reserve Cabernet Sauvignon,4.4,3.8,13.8,Red Wine,2800,40,Reveilo,India,Cabernet Sauvignon
+57,Alpine Vindiva Shiraz,4.3,3.9,13.6,Red Wine,2200,50,Alpine Wineries,India,Shiraz
+58,Myra Misfit,4.2,4.0,13.4,Red Wine,2400,45,Myra Vineyards,India,Red Blend
+59,Good Drop Wine Cellars Frizzano,4.0,4.2,12.0,Sparkling,1800,60,Good Drop,India,Chenin Blanc
+60,Soma Vine Village Reserve,4.3,3.8,13.7,Red Wine,2600,40,Soma,India,Cabernet Shiraz
+
+
+61,Almaviva 2018,4.7,3.7,14.2,Red Wine,28000,25,Almaviva,Chile,Cabernet Blend
+62,Seña 2018,4.6,3.8,14.0,Red Wine,25000,30,Seña,Chile,Cabernet Blend
+63,Clos Apalta,4.7,3.7,14.3,Red Wine,22000,28,Casa Lapostolle,Chile,Carmenere Blend
+64,Don Melchor,4.6,3.8,14.1,Red Wine,18000,35,Concha y Toro,Chile,Cabernet Sauvignon
+65,Viñedo Chadwick,4.7,3.7,14.2,Red Wine,32000,20,Viñedo Chadwick,Chile,Cabernet Sauvignon
+
+66,Catena Zapata Nicolás,4.6,3.8,14.2,Red Wine,18000,30,Catena Zapata,Argentina,Malbec Blend
+67,Cheval des Andes,4.7,3.7,14.3,Red Wine,22000,25,Cheval des Andes,Argentina,Malbec Blend
+68,Achaval Ferrer Finca Altamira,4.5,3.9,14.0,Red Wine,15000,35,Achaval Ferrer,Argentina,Malbec
+69,Per Se La Craie,4.6,3.8,14.1,Red Wine,12000,40,Per Se,Argentina,Malbec
+70,Zuccardi Finca Piedra Infinita,4.5,3.9,14.0,Red Wine,16000,32,Zuccardi,Argentina,Malbec
+
+
+71,Kanonkop Paul Sauer,4.5,3.8,14.0,Red Wine,12000,35,Kanonkop,South Africa,Cabernet Blend
+72,Sadie Family Columella,4.6,3.7,14.1,Red Wine,15000,30,Sadie Family,South Africa,Syrah Blend
+73,Vilafonte Series C,4.5,3.8,14.2,Red Wine,11000,38,Vilafonte,South Africa,Cabernet Blend
+74,Mullineux Schist Syrah,4.4,3.9,14.0,Red Wine,13000,32,Mullineux,South Africa,Syrah
+75,Klein Constantia Vin de Constance,4.3,4.2,14.0,Dessert Wine,9000,40,Klein Constantia,South Africa,Muscat
+
+
+76,Egon Müller Scharzhofberger,4.4,4.3,8.5,White Wine,35000,20,Egon Müller,Germany,Riesling
+77,Dr. Loosen Erdener Prälat,4.3,4.4,8.0,White Wine,18000,30,Dr. Loosen,Germany,Riesling
+78,Joh. Jos. Prüm Wehlener Sonnenuhr,4.4,4.3,8.5,White Wine,12000,35,J.J. Prüm,Germany,Riesling
+79,Robert Weil Kiedrich Gräfenberg,4.3,4.4,8.0,White Wine,15000,32,Robert Weil,Germany,Riesling
+80,Fritz Haag Brauneberger Juffer,4.2,4.5,8.5,White Wine,11000,38,Fritz Haag,Germany,Riesling
+
+
+81,Quinta do Vale Meão,4.5,3.8,14.2,Red Wine,15000,32,Vale Meão,Portugal,Touriga Nacional
+82,Barca Velha,4.6,3.7,14.0,Red Wine,28000,25,Casa Ferreirinha,Portugal,Touriga Nacional
+83,Quinta do Crasto Vinha Maria Teresa,4.5,3.8,14.1,Red Wine,12000,35,Quinta do Crasto,Portugal,Touriga Nacional
+84,Taylor's Vintage Port,4.4,3.9,20.0,Fortified,18000,30,Taylor's,Portugal,Port Blend
+85,Graham's Vintage Port,4.4,3.9,20.0,Fortified,16000,32,Graham's,Portugal,Port Blend
+
+
+86,Gaja Barbaresco,4.7,3.8,14.0,Red Wine,32000,25,Gaja,Italy,Nebbiolo
+87,Château d'Yquem,4.8,4.2,13.5,Dessert Wine,45000,15,Château d'Yquem,France,Sémillon
+88,Krug Grande Cuvée,4.8,4.3,12.0,Sparkling,28000,28,Krug,France,Champagne Blend
+89,Domaine Romanée-Conti La Tâche,4.9,3.8,13.5,Red Wine,180000,5,DRC,France,Pinot Noir
+90,Masseto,4.8,3.7,14.3,Red Wine,65000,12,Masseto,Italy,Merlot
+
+
+91,KRSMA Estate Cabernet Sauvignon GR,4.7,3.7,14.0,Red Wine,5500,25,Krsma,India,Cabernet Sauvignon
+92,Fratelli MS Red Blend,4.6,3.8,13.8,Red Wine,4800,30,Fratelli,India,Red Blend
+93,York Arros Grand Reserve,4.5,3.7,14.2,Red Wine,4200,35,York,India,Cabernet Sauvignon
+94,Grover Zampa Insignia,4.6,3.8,13.9,Red Wine,5000,28,Grover,India,Shiraz Blend
+95,Sula Rasa Reserve,4.5,3.9,13.7,Red Wine,4500,32,Sula,India,Cabernet Shiraz
+
+96,Inniskillin Ice Wine,4.2,4.4,9.5,Dessert Wine,12000,25,Inniskillin,Canada,Vidal
+97,Château Musar,4.5,3.8,14.0,Red Wine,8500,38,Musar,Lebanon,Red Blend
+98,Domaine Sigalas Santorini,4.3,4.2,13.5,White Wine,6500,42,Sigalas,Greece,Assyrtiko
+99,Felton Road Block 5,4.6,3.9,13.8,Red Wine,9500,35,Felton Road,New Zealand,Pinot Noir
+100,Dal Forno Romano Amarone,4.7,3.7,16.5,Red Wine,45000,15,Dal Forno,Italy,Corvina Blend 

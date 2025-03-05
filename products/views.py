@@ -50,6 +50,8 @@ from .utils import send_low_stock_notification
 from django.utils import timezone
 from datetime import timedelta
 
+import joblib
+
 @api_view(['GET'])
 def product_filter(request):
     category = request.query_params.get('category')
@@ -1297,208 +1299,141 @@ def get_new_arrivals(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-import joblib
-import numpy as np
-import pandas as pd
-
-
-# # Dataset
-# data = {
-#     'wine_id': [1, 2, 3, 4, 5],
-#     'name': ['Wine A', 'Wine B', 'Wine C', 'Wine D', 'Wine E'],
-#     'taste': [5, 3, 4, 2, 5],  
-#     'acidity': [3, 4, 2, 5, 3],  
-#     'alcohol_content': [12.5, 13.0, 12.0, 14.0, 13.5], 
-# }
-
-# # Convert to DataFrame and ensure numeric columns
-# df = pd.DataFrame(data)
-# df[['taste', 'acidity', 'alcohol_content']] = df[['taste', 'acidity', 'alcohol_content']].astype(float)
-
-# class WineRecommendationView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         # Get user input
-#         user_data = request.data
-#         taste = float(user_data.get('taste'))  # Ensure numeric input
-#         acidity = float(user_data.get('acidity'))  # Ensure numeric input
-#         alcohol_content = float(user_data.get('alcohol_content'))  # Ensure numeric input
-        
-#         # Prepare input for comparison
-#         user_input = np.array([taste, acidity, alcohol_content], dtype=float)
-        
-#         # Step 1: Check for exact match
-#         exact_match = df[
-#             (df['taste'] == taste) &
-#             (df['acidity'] == acidity) &
-#             (df['alcohol_content'] == alcohol_content)
-#         ]
-        
-#         if not exact_match.empty:
-#             # Return the exact match
-#             return Response(exact_match.to_dict(orient='records'), status=status.HTTP_200_OK)
-        
-#         # Step 2: Suggest a blend
-#         blends = []
-#         for i in range(len(df)):
-#             for j in range(i + 1, len(df)):
-#                 # Features of the two wines (ensure numeric)
-#                 wine1 = df.iloc[i][['taste', 'acidity', 'alcohol_content']].values.astype(float)
-#                 wine2 = df.iloc[j][['taste', 'acidity', 'alcohol_content']].values.astype(float)
-                
-#                 # Solve for the blending ratio (percentage of each wine)
-#                 # We want: (ratio * wine1 + (1 - ratio) * wine2) = user_input
-#                 # Rearranged: ratio * (wine1 - wine2) = user_input - wine2
-#                 # Solve for ratio using least squares
-#                 A = (wine1 - wine2).reshape(-1, 1)
-#                 b = (user_input - wine2).reshape(-1, 1)
-#                 try:
-#                     ratio = np.linalg.lstsq(A, b, rcond=None)[0][0]
-#                     ratio = float(ratio)  # Convert ratio to a scalar float
-#                 except np.linalg.LinAlgError:
-#                     # Handle cases where the system is underdetermined or singular
-#                     continue
-                
-#                 # Ensure the ratio is between 0 and 1
-#                 ratio = max(0, min(1, ratio))
-                
-#                 # Calculate the blended features
-#                 blended_features = ratio * wine1 + (1 - ratio) * wine2
-                
-#                 # Round the blended features to 2 decimal places
-#                 blended_features = np.round(blended_features, 2)
-                
-#                 # Calculate the difference between the blend and user input
-#                 difference = np.linalg.norm(blended_features - user_input)
-                
-#                 # Store the blend and difference
-#                 blends.append({
-#                     'wine_1': df.iloc[i]['name'],
-#                     'wine_2': df.iloc[j]['name'],
-#                     'percentage_1': round(ratio * 100, 2),  # Percentage of wine 1
-#                     'percentage_2': round((1 - ratio) * 100, 2),  # Percentage of wine 2
-#                     'blend_taste': float(blended_features[0]),  # Convert to float
-#                     'blend_acidity': float(blended_features[1]),  # Convert to float
-#                     'blend_alcohol_content': float(blended_features[2]),  # Convert to float
-#                     'difference': float(difference)  # Convert to float
-#                 })
-        
-#         # Find the blend with the smallest difference
-#         if blends:
-#             best_blend = min(blends, key=lambda x: x['difference'])
-#             return Response({
-#                 'message': 'No exact match found. Suggested blend:',
-#                 'blend': best_blend
-#             }, status=status.HTTP_200_OK)
-        
-#         # If no blend is found
-#         return Response({
-#             'message': 'No exact match or suitable blend found.'
-#         }, status=status.HTTP_404_NOT_FOUND)
-
-
-
-
 # Load the model and scaler
 model = joblib.load('wine_recommender_model.pkl')
 scaler = joblib.load('wine_scaler.pkl')
 
 class WineRecommendationView(APIView):
     def post(self, request, *args, **kwargs):
-        # Get user input
-        user_data = request.data
-        taste = float(user_data.get('taste'))  # Ensure numeric input
-        acidity = float(user_data.get('acidity'))  # Ensure numeric input
-        alcohol_content = float(user_data.get('alcohol_content'))  # Ensure numeric input
-        
-        # Prepare input for comparison
-        user_input = np.array([taste, acidity, alcohol_content], dtype=float)
-        
-        # Scale the user input
-        user_input_scaled = scaler.transform(user_input.reshape(1, -1))
-        
-        # Step 1: Check for exact match
-        products = Product.objects.all()
-        exact_match = None
-        for product in products:
-            if (
-                product.taste == taste and
-                product.acidity == acidity and
-                product.alcohol_content == alcohol_content and
-                product.in_stock  # Check if the product is in stock
-            ):
-                exact_match = product
-                break
-        
-        if exact_match:
-            # Return the exact match
-            return Response([{
-                'wine_id': exact_match.id,
-                'name': exact_match.name,
-                'taste': exact_match.taste,
-                'acidity': exact_match.acidity,
-                'alcohol_content': exact_match.alcohol_content,
-            }], status=status.HTTP_200_OK)
-        
-        # Step 2: Suggest a blend
-        blends = []
-        for i in range(len(products)):
-            for j in range(i + 1, len(products)):
-                # Features of the two wines (ensure numeric)
-                wine1 = np.array([products[i].taste, products[i].acidity, products[i].alcohol_content], dtype=float)
-                wine2 = np.array([products[j].taste, products[j].acidity, products[j].alcohol_content], dtype=float)
-                
-                # Solve for the blending ratio (percentage of each wine)
-                A = (wine1 - wine2).reshape(-1, 1)
-                b = (user_input_scaled - wine2).reshape(-1, 1)
+        try:
+            # Get user input and validate
+            user_data = request.data
+            if not all(key in user_data for key in ['taste', 'acidity', 'alcohol_content']):
+                return Response({
+                    'message': 'Missing required parameters'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Convert to float and validate ranges
+            taste = float(user_data.get('taste', 0))
+            acidity = float(user_data.get('acidity', 0))
+            alcohol_content = float(user_data.get('alcohol_content', 0))
+
+            if not (1 <= taste <= 5 and 1 <= acidity <= 5 and 8 <= alcohol_content <= 15):
+                return Response({
+                    'message': 'Invalid parameter ranges'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Load feature names
+            feature_names = joblib.load('feature_names.pkl')
+
+            # Prepare input with feature names
+            user_input = pd.DataFrame([[taste, acidity, alcohol_content]], 
+                                    columns=feature_names)
+            user_input_scaled = scaler.transform(user_input)
+
+            # Get available products
+            products = Product.objects.filter(is_active=True, stock_quantity__gt=0)
+            
+            # Find best matching wines
+            best_matches = []
+            for product in products:
                 try:
-                    ratio = np.linalg.lstsq(A, b, rcond=None)[0][0]
-                    ratio = float(ratio)  # Convert ratio to a scalar float
-                except np.linalg.LinAlgError:
-                    # Handle cases where the system is underdetermined or singular
+                    product_features = pd.DataFrame([[
+                        float(product.taste),
+                        float(product.acidity), 
+                        float(product.alcohol_content)
+                    ]], columns=feature_names)
+                    
+                    product_features_scaled = scaler.transform(product_features)
+                    
+                    # Calculate similarity using cosine similarity
+                    similarity = cosine_similarity(
+                        user_input_scaled, 
+                        product_features_scaled
+                    )[0][0]
+                    
+                    # Only include wines with similarity above threshold
+                    if similarity >= 0.25:  # 85% similarity threshold
+                        best_matches.append((product, similarity))
+                except (ValueError, TypeError):
                     continue
-                
-                # Ensure the ratio is between 0 and 1
-                ratio = max(0, min(1, ratio))
-                
-                # Calculate the blended features
-                blended_features = ratio * wine1 + (1 - ratio) * wine2
-                
-                # Round the blended features to 2 decimal places
-                blended_features = np.round(blended_features, 2)
-                
-                # Calculate the difference between the blend and user input
-                difference = np.linalg.norm(blended_features - user_input_scaled)
-                
-                # Check if both wines are in stock
-                if products[i].stock_quantity> 1 and products[j].stock_quantity>1:
-                    blends.append({
-                        'wine_1': {
-                            'id': products[i].product_id,
-                            'name': products[i].name,
-                            'percentage_1': round(ratio * 100, 2),  
-
-                        },
-                        'wine_2': {
-                            'id': products[j].product_id,
-                            'name': products[j].name,
-                            'percentage_2': round((1 - ratio) * 100, 2),  
-
-                        },
-                        'blend_taste': float(blended_features[0]),  # Convert to float
-                        'blend_acidity': float(blended_features[1]),  # Convert to float
-                        'blend_alcohol_content': float(blended_features[2]),  # Convert to float
-                        'difference': float(difference)  # Convert to float
-                    })
-        
-        # Find the blend with the smallest difference
-        if blends:
-            best_blend = min(blends, key=lambda x: x['difference'])
+            
+            # Sort by similarity and get top matches
+            best_matches.sort(key=lambda x: x[1], reverse=True)
+            recommended_wines = best_matches[:3]  # Get top 3 matches
+            
+            if not recommended_wines:
+                return Response({
+                    'status': 'success',
+                    'message': 'No highly matching wines found. Try adjusting your preferences.',
+                    'recommendations': []
+                })
+            
+            # Generate blending suggestions
+            blending_suggestions = []
+            if len(best_matches) >= 2:
+                for i in range(len(best_matches)-1):
+                    for j in range(i+1, len(best_matches)):
+                        wine1, sim1 = best_matches[i]
+                        wine2, sim2 = best_matches[j]
+                        
+                        # Check if wines are complementary
+                        if (abs(wine1.acidity - wine2.acidity) >= 0.5 or 
+                            abs(wine1.taste - wine2.taste) >= 0.5):
+                            
+                            blend = {
+                                'wine1': {
+                                    'id': wine1.product_id,
+                                    'name': wine1.name,
+                                    'percentage': 60,
+                                    'characteristics': {
+                                        'taste': wine1.taste,
+                                        'acidity': wine1.acidity,
+                                        'alcohol_content': wine1.alcohol_content
+                                    }
+                                },
+                                'wine2': {
+                                    'id': wine2.product_id,
+                                    'name': wine2.name,
+                                    'percentage': 40,
+                                    'characteristics': {
+                                        'taste': wine2.taste,
+                                        'acidity': wine2.acidity,
+                                        'alcohol_content': wine2.alcohol_content
+                                    }
+                                },
+                                'blend_characteristics': {
+                                    'taste': round((wine1.taste * 0.6 + wine2.taste * 0.4), 1),
+                                    'acidity': round((wine1.acidity * 0.6 + wine2.acidity * 0.4), 1),
+                                    'alcohol_content': round((wine1.alcohol_content * 0.6 + wine2.alcohol_content * 0.4), 1)
+                                }
+                            }
+                            blending_suggestions.append(blend)
+            
+            # Prepare response with both recommendations and blending suggestions
+            recommendations = []
+            for wine, similarity in recommended_wines:
+                recommendations.append({
+                    'id': wine.product_id,
+                    'name': wine.name,
+                    'image': request.build_absolute_uri(wine.image.url) if wine.image else None,
+                    'price': float(wine.price),
+                    'similarity_score': round(float(similarity) * 100, 2),
+                    'characteristics': {
+                        'taste': wine.taste,
+                        'acidity': wine.acidity,
+                        'alcohol_content': wine.alcohol_content
+                    }
+                })
+            
             return Response({
-                'message': 'No exact match found. Suggested blend:',
-                'blend': best_blend
-            }, status=status.HTTP_200_OK)
-        
-        # If no blend is found
-        return Response({
-            'message': 'No exact match or suitable blend found.'
-        }, status=status.HTTP_404_NOT_FOUND)
+                'status': 'success',
+                'recommendations': recommendations,
+                'blending_suggestions': blending_suggestions[:2]  # Return top 2 blend suggestions
+            })
+
+        except Exception as e:
+            print(f"Error in recommendation: {str(e)}")
+            return Response({
+                'message': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
