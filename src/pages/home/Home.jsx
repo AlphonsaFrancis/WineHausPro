@@ -103,6 +103,7 @@ function Home() {
           <h2>Find Your Perfect Wine</h2>
           <p>Tell us your preferences and we'll recommend the perfect wine for you</p>
           <button 
+            id="recommendation"
             className="get-recommendation-btn"
             onClick={() => setShowRecommendationForm(true)}
           >
@@ -112,6 +113,7 @@ function Home() {
 
         {showRecommendationForm && (
           <WineRecommendationForm 
+            id="clickOnRecommend"
             onSubmit={handleGetRecommendations}
             onClose={() => setShowRecommendationForm(false)}
           />
@@ -322,6 +324,7 @@ function Home() {
             onClick={() => setShowRecommendations(true)} 
           />
           <WineRecommendationModal 
+            id="homeRecommend"
             visible={showRecommendations}
             onClose={() => setShowRecommendations(false)}
           />

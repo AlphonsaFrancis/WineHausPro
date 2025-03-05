@@ -41,7 +41,7 @@ export default function BasicModal({open,setOpen,isConfirmModal,onConfirm,headin
         </Typography>
         <div className='modal-button-container'>
          {showCancel && <button onClick={handleClose} className='modal-cancel-button'>Cancel</button>}
-          <button onClick={onConfirm} className='modal-confirm-button'>Ok</button>
+          <button id="ok" onClick={onConfirm} className='modal-confirm-button'>Ok</button>
         </div>
       </Box>:
       <Box sx={{ ...style, ...customStyle }}>

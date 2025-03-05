@@ -119,7 +119,7 @@ const WineRecommendationForm = ({ onSubmit, onClose }) => {
             </ul>
           </div>
 
-          <button type="submit" className="submit-btn">
+          <button type="submit" id="clicksOnRecommend" className="submit-btn">
             Find My Perfect Wine
           </button>
         </form>

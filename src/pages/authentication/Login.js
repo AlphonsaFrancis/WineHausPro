@@ -179,7 +179,7 @@ const Login = ({ setIslogin }) => {
 
           <p className="form-error">{error}</p>
 
-          <button type="submit">Sign in</button>
+          <button id ="login" type="submit">Sign in</button>
 
           <div className="or-section">
             <span>or</span>
