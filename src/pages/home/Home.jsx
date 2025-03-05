@@ -25,6 +25,11 @@ import FloatingRecommendButton from '../../components/FloatingRecommendButton';
 import WineRecommendationModal from '../../components/WineRecommendationModal';
 import NewArrivals from '../../components/NewArrivals';
 import BestSellers from '../../components/BestSellers';
+import WineRecommendationForm from '../../components/WineRecommendationForm';
+import axios from 'axios';
+import { Toaster, toast } from 'react-hot-toast';
+import config from '../../config';
+import { useNavigate } from 'react-router-dom';
 
 
 function Home() {
@@ -37,9 +42,43 @@ function Home() {
 
   const [showRecommendations, setShowRecommendations] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
+  const [showRecommendationForm, setShowRecommendationForm] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+  const [blendingSuggestions, setBlendingSuggestions] = useState([]);
+  const navigate = useNavigate();
+
+  const handleGetRecommendations = async (preferences) => {
+    try {
+      console.log("Sending preferences:", preferences);
+      const response = await axios.post(
+        `${config.BASE_URL}products/getWinePredict/`,
+        preferences,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      
+      console.log("Response:", response.data);
+      
+      if (response.data.status === 'success') {
+        setRecommendations(response.data.recommendations);
+        setBlendingSuggestions(response.data.blending_suggestions || []);
+        toast.success('Recommendations found!');
+      } else if (response.data.message) {
+        toast.info(response.data.message);
+      }
+      setShowRecommendationForm(false);
+    } catch (error) {
+      console.error('Error getting recommendations:', error);
+      toast.error(error.response?.data?.message || 'Failed to get recommendations');
+    }
+  };
 
   return (
     <div>
+      <Toaster position="top-center" />
       {/* Header */}
       <Navbar></Navbar>
       {/* Hero Section */}
@@ -58,6 +97,101 @@ function Home() {
         <div className="text-container">
           <h1>Drink Wine Enjoy Life....</h1>
         </div>
+      </section>
+      <section className="wine-recommendation-section">
+        <div className="recommendation-header">
+          <h2>Find Your Perfect Wine</h2>
+          <p>Tell us your preferences and we'll recommend the perfect wine for you</p>
+          <button 
+            className="get-recommendation-btn"
+            onClick={() => setShowRecommendationForm(true)}
+          >
+            Get Wine Recommendations
+          </button>
+        </div>
+
+        {showRecommendationForm && (
+          <WineRecommendationForm 
+            onSubmit={handleGetRecommendations}
+            onClose={() => setShowRecommendationForm(false)}
+          />
+        )}
+
+        {recommendations.length > 0 && (
+          <div className="recommendations-container">
+            <h3>Recommended Wines</h3>
+            <div className="recommendations-grid">
+              {recommendations.map((wine, index) => (
+                <div 
+                  key={index} 
+                  className="recommendation-card"
+                  onClick={() => navigate(`/products/${wine.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="wine-item">
+                    {wine.image && (
+                      <img 
+                        src={wine.image} 
+                        alt={wine.name}
+                        className="wine-image"
+                      />
+                    )}
+                    <div className="wine-text">
+                      <h5>{wine.name}</h5>
+                      <p>₹{wine.price}</p>
+                      <p>Match Score: {wine.similarity_score}%</p>
+                      <div className="wine-characteristics">
+                        <p>Taste: {wine.characteristics.taste}/5</p>
+                        <p>Acidity: {wine.characteristics.acidity}/5</p>
+                        <p>Alcohol: {wine.characteristics.alcohol_content}%</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {blendingSuggestions.length > 0 && (
+              <div className="blending-suggestions">
+                <h3>Try These Wine Blends</h3>
+                <div className="blends-grid">
+                  {blendingSuggestions.map((blend, index) => (
+                    <div key={index} className="blend-card">
+                      <h4>Suggested Blend {index + 1}</h4>
+                      <div className="blend-wines">
+                        <div className="blend-wine">
+                          <h5>{blend.wine1.name} ({blend.wine1.percentage}%)</h5>
+                          <div className="wine-details">
+                            <p>Taste: {blend.wine1.characteristics.taste}/5</p>
+                            <p>Acidity: pH {blend.wine1.characteristics.acidity}</p>
+                            <p>Alcohol: {blend.wine1.characteristics.alcohol_content}%</p>
+                          </div>
+                        </div>
+                        <div className="blend-plus">+</div>
+                        <div className="blend-wine">
+                          <h5>{blend.wine2.name} ({blend.wine2.percentage}%)</h5>
+                          <div className="wine-details">
+                            <p>Taste: {blend.wine2.characteristics.taste}/5</p>
+                            <p>Acidity: pH {blend.wine2.characteristics.acidity}</p>
+                            <p>Alcohol: {blend.wine2.characteristics.alcohol_content}%</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="blend-result">
+                        <h5>Resulting Blend Characteristics:</h5>
+                        <div className="blend-characteristics">
+                          <p>Taste: {blend.blend_characteristics.taste}/5</p>
+                          <p>Acidity: pH {blend.blend_characteristics.acidity}</p>
+                          <p>Alcohol: {blend.blend_characteristics.alcohol_content}%</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Add New Arrivals section after the banner */}
@@ -161,79 +295,10 @@ function Home() {
       {/* Best Sellers Section */}
       <BestSellers />
 
-      {/* New Arrivals Section */}
-      <section className="best-sellers">
-        <div className="head-seller">
-          <h2>New Arrivals</h2>
-        </div>
-        <div className="home-product-container">
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img
-                src={arriv1}
-                alt="Big Benyan Merot"
-              />
-            </div>
-            <div className="home-product-info">
-              <h3>Big Benyan Merot</h3>
-              <p>₹ 800</p>
-              <div className="home-product-meta">
-                <span className="badge red">Red</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
+      
 
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img src={arriv2} alt="Spade & Spar Rows Rose" />
-            </div>
-            <div className="home-product-info">
-              <h3>Ruinat Rose Champage Brut</h3>
-              <p>₹ 2500</p>
-              <div className="home-product-meta">
-                <span className="badge sparkling">Sparkling</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img
-                src={arriv3}
-                alt="Chardonnay Kendall-Jackson"
-              />
-            </div>
-            <div className="home-product-info">
-              <h3>Riesling Trafethan</h3>
-              <p>₹ 1500</p>
-              <div className="home-product-meta">
-                <span className="badge white">White</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-
-          <div className="home-product-card">
-            <div className="home-product-image">
-              <img src={arriv4} alt="Zampa Soiree Brut" />
-            </div>
-            <div className="home-product-info">
-              <h3>Stella Rose Splash</h3>
-              <p>₹ 1500</p>
-              <div className="home-product-meta">
-                <span className="badge rose">Rose</span>
-                <button className="favorite">&#9825;</button>
-              </div>
-              <button className="buy-now">Buy Now</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Add this before the Footer section */}
+      
 
       {!isAgeVerified &&
 
