@@ -31,7 +31,7 @@ function ProductCard({
               <h4>{product.name}</h4>
               <p className="hard-price">₹ {product.price}</p>
             </div>
-            {(!product.is_active || !product.is_approved || product.stock_quantity === 0) && (
+            {product.stock_quantity <= 0 && (
               <p className="hard-out-of-stock-label">Out of Stock</p>
             )}
 
@@ -50,7 +50,7 @@ function ProductCard({
             </button>
             <button
               className="hard-cart-btn"
-              disabled={!product.is_active || !product.is_approved || product.stock_quantity === 0}
+              disabled={product.stock_quantity <= 0}
               onClick={() => addToCart(product.product_id)}
             >
               <i className="fas fa-shopping-cart"></i> Add to Cart
